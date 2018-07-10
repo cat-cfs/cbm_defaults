@@ -45,24 +45,15 @@ class CBMDefaultsInterface(object):
                   hw_stump_proportion
                 ) 
                 VALUES 
-                (
-                  {id},
-                  {sw_top_proportion},
-                  {sw_stump_proportion},
-                  {hw_top_proportion},
-                  {hw_stump_proportion})""".format(
-                        id=id,
-                        sw_top_proportion=sw_top_proportion,
-                        sw_stump_proportion=sw_stump_proportion,
-                        hw_top_proportion=hw_top_proportion, 
-                        hw_stump_proportion=hw_stump_proportion)
-        self.cur.execute(qry)
+                (?,?,?,?,?)"""
+                        
+        self.cur.execute(qry, (id, sw_top_proportion, sw_stump_proportion, hw_top_proportion, hw_stump_proportion))
         
     #admin_boundary
     def addAdminBoundary(self, id, stump_parameter_id, name):
         self.cur.execute("""INSERT INTO admin_boundary (id,stump_parameter_id,name) 
-                     VALUES ({id},{stump_parameter_id},'{name}')"""
-                    .format(id = id, stump_parameter_id = stump_parameter_id, name = name))
+                     VALUES (?,?,?)""",
+                    (id, stump_parameter_id, name))
 
     #turnover_parameter
     def addTurnoverParameter(self, id, sw_foliage, hw_foliage, stem_turnover, sw_branch,
@@ -73,17 +64,13 @@ class CBMDefaultsInterface(object):
                       hw_branch, branch_snag_split, stem_snag, branch_snag,
                       coarse_root, fine_root, coarse_ag_split, fine_ag_split)
                       VALUES 
-                    ( {id}, {sw_foliage}, {hw_foliage}, {stem_turnover},
-                      {sw_branch}, {hw_branch}, {branch_snag_split},
-                      {stem_snag}, {branch_snag}, {coarse_root},
-                      {fine_root}, {coarse_ag_split}, {fine_ag_split})"""
-                    .format
-                    ( id=id, sw_foliage=sw_foliage, hw_foliage=hw_foliage,
-                      stem_turnover=stem_turnover, sw_branch=sw_branch,
-                      hw_branch=hw_branch, branch_snag_split=branch_snag_split, 
-                      stem_snag=stem_snag, branch_snag=branch_snag, 
-                      coarse_root=coarse_root, fine_root=fine_root, 
-                      coarse_ag_split=coarse_ag_split, fine_ag_split=fine_ag_split
+                    ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )""",
+                    ( id, sw_foliage, hw_foliage,
+                      stem_turnover, sw_branch,
+                      hw_branch, branch_snag_split, 
+                      stem_snag, branch_snag, 
+                      coarse_root, fine_root, 
+                      coarse_ag_split, fine_ag_split
                     ))
                     
     #eco_boundary
