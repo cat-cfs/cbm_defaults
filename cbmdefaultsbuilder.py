@@ -48,6 +48,7 @@ class CBMDefaultsBuilder(object):
             30:     26   #products
         }
         self.pools = {
+            0: "Input",
             1: "SoftwoodMerch",
             2: "SoftwoodFoliage",
             3: "SoftwoodOther",
