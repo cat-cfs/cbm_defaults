@@ -92,12 +92,16 @@ class CBMDefaultsBuilder(object):
 
     def populatePools(self):
 
-        for id,pool in self.pools.iteritems():
-            self.cbmDefaults.addPool(id,pool)
+        for id,name in self.pools.iteritems():
+            self.cbmDefaults.add_record("pool",
+                                        id=id,
+                                        name=name)
 
         domPoolId = 1
         for s in range(11,21+1):
-            self.cbmDefaults.addDomPool(domPoolId, s)
+            self.cbmDefaults.add_record("dom_pool",
+                                        id=domPoolId,
+                                        pool_id=s)
             domPoolId += 1
     
     def populateDecayParameters(self):
@@ -106,7 +110,8 @@ class CBMDefaultsBuilder(object):
             "SELECT * FROM tblDOMParametersDefault ORDER BY SoilPoolID"):
             if row.SoilPoolID > 10:
                 break
-            self.cbmDefaults.addDecayParameter(
+            self.cbmDefaults.add_record(
+                "decay_parameter",
                 dom_pool_id=id, 
                 base_decay_rate=row.OrganicMatterDecayRate, 
                 reference_temp=row.ReferenceTemp, 
@@ -119,14 +124,16 @@ class CBMDefaultsBuilder(object):
 
         id = 1
         for row in self.accessDb.Query("SELECT * FROM tblAdminBoundaryDefault"):
-            self.cbmDefaults.addStumpParameter(
+            self.cbmDefaults.add_record(
+                "stump_parameter",
                 id=row.AdminBoundaryID, 
                 sw_top_proportion=row.SoftwoodTopProportion, 
                 sw_stump_proportion=row.SoftwoodStumpProportion, 
                 hw_top_proportion=row.HardwoodTopProportion, 
                 hw_stump_proportion=row.HardwoodStumpProportion)
             
-            self.cbmDefaults.addAdminBoundary(
+            self.cbmDefaults.add_record(
+                "admin_boundary",
                 id=row.AdminBoundaryID, 
                 stump_parameter_id=id, 
                 name=row.AdminBoundaryName)
@@ -149,7 +156,8 @@ class CBMDefaultsBuilder(object):
         id = 1
         randomReturnIntervalParams = self.GetRandomReturnIntervalParameters()
         for row in self.accessDb.Query("SELECT * FROM tblEcoBoundaryDefault"):
-            self.cbmDefaults.addTurnoverParameter(
+            self.cbmDefaults.add_record(
+                "turnover_parameter",
                 id=id, 
                 sw_foliage=row.SoftwoodFoliageFallRate, 
                 hw_foliage=row.HardwoodFoliageFallRate, 
@@ -165,7 +173,8 @@ class CBMDefaultsBuilder(object):
                 fine_ag_split=0.5)
 
             randomReturnIntervalParam = randomReturnIntervalParams[row.EcoBoundaryID]
-            self.cbmDefaults.addRandomReturnIntervalParameter(
+            self.cbmDefaults.add_record(
+                "random_return_interval_parameter",
                 id=id, 
                 a_Nu=randomReturnIntervalParam["a_Nu"],
                 b_Nu=randomReturnIntervalParam["b_Nu"],
@@ -173,7 +182,8 @@ class CBMDefaultsBuilder(object):
                 b_Lambda=randomReturnIntervalParam["b_Lambda"]
             )
 
-            self.cbmDefaults.addEcoBoundary(
+            self.cbmDefaults.add_record(
+                "eco_boundary",
                 id=row.EcoBoundaryID, 
                 turnover_parameter_id=id,
                 random_return_interval_parameter_id=id, 
@@ -183,7 +193,8 @@ class CBMDefaultsBuilder(object):
             id+=1    
 
     def populateRootParameter(self):
-        self.cbmDefaults.addRootParameter(
+        self.cbmDefaults.add_record(
+            "root_parameter",
             id=1,
             hw_a=1.576,
             sw_a=0.222,
@@ -193,10 +204,12 @@ class CBMDefaultsBuilder(object):
             frp_c=-0.06021195)
 
     def populateBiomassToCarbonRate(self):
-        self.cbmDefaults.addBiomassToCarbonRate(id=1, rate=0.5)
+        self.cbmDefaults.add_record("biomass_to_carbon_rate", 
+                                    id=1, rate=0.5)
 
     def populateSlowMixingRate(self):
-        self.cbmDefaults.addSlowMixingRate(id=1, rate=0.006)
+        self.cbmDefaults.add_record("slow_mixing_rate",
+                                    id=1, rate=0.006)
 
     def populateSpatialUnits(self):
         qry = """SELECT tblSPUDefault.SPUID, tblAdminBoundaryDefault.AdminBoundaryName, tblEcoBoundaryDefault.EcoBoundaryName, tblClimateDefault.MeanAnnualTemp, tblEcoBoundaryDefault.AverageAge
@@ -208,18 +221,21 @@ class CBMDefaultsBuilder(object):
             ecoId = self.ecoBoundaryLookup[row.EcoBoundaryName]
             adminId = self.adminBoundaryLookup[row.AdminBoundaryName]
             
-            self.cbmDefaults.addClimateTimeSeries(id=id)
-            self.cbmDefaults.addClimate(
+            self.cbmDefaults.add_record("climate_time_series", id=id)
+            self.cbmDefaults.add_record(
+                "climate",
                 id = row.SPUID, 
                 climate_time_series_id = id, 
                 t_year = -1, 
                 mean_annual_temperature = row.MeanAnnualTemp)
-            self.cbmDefaults.addSpinupParameter(
+            self.cbmDefaults.add_record(
+                "spinup_parameter",
                 id = id, 
                 return_interval = row.AverageAge,
                 min_rotations = 10, 
                 max_rotations = 30)
-            self.cbmDefaults.addSpatialUnit(
+            self.cbmDefaults.add_record(
+                "spatial_unit",
                 id=row.SPUID, 
                 admin_boundary_id=adminId,
                 eco_boundary_id=ecoId, 
@@ -237,7 +253,8 @@ class CBMDefaultsBuilder(object):
                            GROUP BY tblForestTypeDefault.ForestTypeID, tblForestTypeDefault.ForestTypeName;"""
 
         for row in self.accessDb.Query(sqlForestType):
-            self.cbmDefaults.addForestType(
+            self.cbmDefaults.add_record(
+                "forest_type",
                 id=row.ForestTypeID, 
                 name=row.ForestTypeName)
             self.forestTypeLookup[row.ForestTypeName] = row.ForestTypeID
@@ -248,7 +265,8 @@ class CBMDefaultsBuilder(object):
                       GROUP BY tblGenusTypeDefault.GenusID, tblGenusTypeDefault.GenusName;"""
 
         for row in self.accessDb.Query(sqlGenus):
-            self.cbmDefaults.addGenus(
+            self.cbmDefaults.add_record(
+                "genus",
                 id=row.GenusID, 
                 name=row.GenusName)
             self.genusLookup[row.GenusName] = row.GenusID        
@@ -264,7 +282,8 @@ class CBMDefaultsBuilder(object):
                         ) ON tblGenusTypeDefault.GenusID = tblSpeciesTypeDefault.GenusID;"""
 
         for row in self.accessDb.Query(sqlspecies):
-            self.cbmDefaults.addSpecies(
+            self.cbmDefaults.add_record(
+                "species",
                 id = row.SpeciesTypeID, 
                 forest_type_id = self.forestTypeLookup[row.ForestTypeName],
                 genus_id = self.genusLookup[row.GenusName],
@@ -272,7 +291,8 @@ class CBMDefaultsBuilder(object):
             self.speciesLookup[row.SpeciesTypeName] = row.SpeciesTypeID
     
     def insertVolToBioFactor(self, id, row):
-        self.cbmDefaults.addVolToBioFactor(
+        self.cbmDefaults.add_record(
+            "vol_to_bio_factor",
             id=id, 
             a=row.A,
             b=row.B,
@@ -348,7 +368,8 @@ class CBMDefaultsBuilder(object):
                 self.adminBoundaryLookup[row.AdminBoundaryName],
                 self.ecoBoundaryLookup[row.EcoBoundaryName]
             )]
-            self.cbmDefaults.addVolToBioSpecies(
+            self.cbmDefaults.add_record(
+                "vol_to_bio_species",
                 spatial_unit_id=spuid, 
                 species_id=self.speciesLookup[row.SpeciesTypeName], 
                 vol_to_bio_factor_id=voltoBioParameterid)
@@ -362,7 +383,8 @@ class CBMDefaultsBuilder(object):
                 self.adminBoundaryLookup[row.AdminBoundaryName],
                 self.ecoBoundaryLookup[row.EcoBoundaryName]
             )]
-            self.cbmDefaults.addVolToBioGenus(
+            self.cbmDefaults.add_record(
+                "vol_to_bio_genus",
                 spatial_unit_id=spuid,
                 genus_id=self.genusLookup[row.GenusName],
                 vol_to_bio_factor_id=voltoBioParameterid)
@@ -376,7 +398,8 @@ class CBMDefaultsBuilder(object):
                 self.adminBoundaryLookup[row.AdminBoundaryName],
                 self.ecoBoundaryLookup[row.EcoBoundaryName]
             )]
-            self.cbmDefaults.addVolToBioForestType(
+            self.cbmDefaults.add_record(
+                "vol_to_bio_forest_type",
                 spatial_unit_id=spuid, 
                 forest_type_id=self.forestTypeLookup[row.ForestTypeName], 
                 vol_to_bio_factor_id=voltoBioParameterid)
@@ -397,7 +420,8 @@ class CBMDefaultsBuilder(object):
             reader = csv.DictReader(landClassesCSVFile)
             for row in reader:
                 unfccc_code_lookup[row["code"]] = row["id"]
-                self.cbmDefaults.addLandClass(
+                self.cbmDefaults.add_record(
+                    "land_class",
                     id=row["id"], 
                     code=row["code"],
                     description=row["description"],
@@ -420,8 +444,12 @@ class CBMDefaultsBuilder(object):
         for row in self.accessDb.Query(distTypeQuery):
             landclasstransion = disturbanceTypeLandclassLookup[row.DistTypeID] \
                 if row.DistTypeID in disturbanceTypeLandclassLookup else -1
-            self.cbmDefaults.addDisturbanceType(
-                id, row.DistTypeName, row.Description, landclasstransion)
+            self.cbmDefaults.add_record(
+                "disturbance_type",
+                id=id,
+                name=row.DistTypeName,
+                description=row.Description,
+                transition_land_class_id=landclasstransion)
             self.distTypeLookup[row.DistTypeName]=id
             id += 1
        
@@ -429,7 +457,12 @@ class CBMDefaultsBuilder(object):
         dmidLookup = {}
         dmQuery = """SELECT tblDM.DMID, tblDM.Name, tblDM.Description FROM tblDM;"""
         for row in self.accessDb.Query(dmQuery):
-            self.cbmDefaults.addDisturbanceMatrix(id, row.Name, row.Description)
+            self.cbmDefaults.add_record(
+                "disturbance_matrix", 
+                id = id,
+                name = row.Name,
+                description = row.Description)
+
             dmidLookup[row.DMID] = id
             dmValueQuery = """SELECT 
                 tblDMValuesLookup.DMID,
@@ -445,8 +478,12 @@ class CBMDefaultsBuilder(object):
                 if src == -1 or sink == -1:
                    continue
                 
-                self.cbmDefaults.addDisturbanceMatrixValue(
-                    id, src, sink, dmValueRow.Proportion)
+                self.cbmDefaults.add_record(
+                    "disturbance_matrix_value",
+                    disturbance_matrix_id=id,
+                    source_pool_id=src,
+                    sink_pool_id=sink, 
+                    proportion=dmValueRow.Proportion)
             id += 1
 
         dmEcoAssociationQuery = """SELECT tblDisturbanceTypeDefault.DistTypeName, 
@@ -461,7 +498,8 @@ class CBMDefaultsBuilder(object):
                         WHERE (((tblDMAssociationDefault.DefaultDisturbanceTypeID)<>1) AND ((tblDisturbanceTypeDefault.IsMultiYear)=False));"""
 
         for row in self.accessDb.Query(dmEcoAssociationQuery):
-            self.cbmDefaults.addDisturbanceMatrixAssociation(
+            self.cbmDefaults.add_record(
+                "disturbance_matrix_association",
                 spatial_unit_id=self.spatialUnitLookup[(
                     self.adminBoundaryLookup[row.AdminBoundaryName],
                     self.ecoBoundaryLookup[row.EcoBoundaryName]
@@ -482,7 +520,8 @@ class CBMDefaultsBuilder(object):
                         WHERE (((tblDisturbanceTypeDefault.IsMultiYear)=False));"""
 
         for row in self.accessDb.Query(dmSPUAssociationQuery):
-            self.cbmDefaults.addDisturbanceMatrixAssociation(
+            self.cbmDefaults.add_record(
+                "disturbance_matrix_association",
                 spatial_unit_id=self.spatialUnitLookup[(
                     self.adminBoundaryLookup[row.AdminBoundaryName],
                     self.ecoBoundaryLookup[row.EcoBoundaryName]
@@ -500,8 +539,15 @@ class CBMDefaultsBuilder(object):
                         FROM tblDisturbanceTypeDefault WHERE (((tblDisturbanceTypeDefault.DistTypeID)={0}));""".format(distTypeId)
             distTypeRow = self.accessDb.Query(distTypeQuery).fetchone()
 
-            self.cbmDefaults.addDisturbanceTypeGrowthMultiplierSeries(self.distTypeLookup[distTypeRow.DistTypeName], growthMultId)
-            self.cbmDefaults.addGrowthMultiplierSeries(growthMultId, self.distTypeLookup[distTypeRow.DistTypeName])
+            self.cbmDefaults.add_record(
+                "disturbance_type_growth_multiplier_series",
+                disturbance_type_id=self.distTypeLookup[distTypeRow.DistTypeName], 
+                growth_multiplier_series_id=growthMultId)
+
+            self.cbmDefaults.add_record(
+                "growth_multiplier_series", 
+                id=growthMultId,
+                description=self.distTypeLookup[distTypeRow.DistTypeName])
             
             growthMultipliersQuery = """SELECT tblForestTypeDefault.ForestTypeName, tblGrowthMultiplierDefault.AnnualOrder, tblGrowthMultiplierDefault.GrowthMultiplier
                         FROM (tblDisturbanceTypeDefault INNER JOIN tblGrowthMultiplierDefault ON tblDisturbanceTypeDefault.DistTypeID = tblGrowthMultiplierDefault.DefaultDisturbanceTypeID) 
@@ -511,7 +557,13 @@ class CBMDefaultsBuilder(object):
                         HAVING (((tblDisturbanceTypeDefault.DistTypeID)={distTypeId}));""".format(distTypeId=distTypeId)
 
             for row in self.accessDb.Query(growthMultipliersQuery):
-                self.cbmDefaults.addGrowthMultiplierValue(growthMultId, self.forestTypeLookup[row.ForestTypeName], row.AnnualOrder, row.GrowthMultiplier)
+                self.cbmDefaults.add_record(
+                    "growth_multiplier_value", 
+                    growth_multiplier_series_id=growthMultId,
+                    forest_type_id=self.forestTypeLookup[row.ForestTypeName],
+                    time_step=row.AnnualOrder,
+                    value=row.GrowthMultiplier)
+
             growthMultId += 1
 
 

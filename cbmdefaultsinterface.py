@@ -17,7 +17,22 @@ class CBMDefaultsInterface(object):
     def commitChanges(self):
         self.conn.commit()
         self.conn.close()
-        
+       
+    def add_record(self, table_name, **kwargs):
+
+        record_values = kwargs
+        col_list = kwargs.keys()
+
+        query = "INSERT INTO {table_name} ({col_list}) VALUES ({values})" \
+            .format(
+                table_name=table_name,
+                col_list=",".join(col_list),
+                values=",".join(["?"]*len(col_list))
+            )
+        params = [kwargs[k] for k in col_list]
+        self.cur.execute(query, params)
+            
+
     #pool
     def addPool(self, id, name):
         self.cur.execute("INSERT INTO pool (id,name) VALUES (?,?)", (id, name))
