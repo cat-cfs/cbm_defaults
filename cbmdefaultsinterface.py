@@ -20,24 +20,19 @@ class CBMDefaultsInterface(object):
         
     #pool
     def addPool(self, id, name):
-        self.cur.execute("INSERT INTO pool (id,name) VALUES ({id},'{name}')"
-                    .format(id = id, name = name))
+        self.cur.execute("INSERT INTO pool (id,name) VALUES (?,?)", (id, name))
 
     #dom_pool
     def addDomPool(self, id, pool_id):
-        self.cur.execute("INSERT INTO dom_pool (id,pool_id) VALUES ({id},{pool_id})"
-                    .format(id = id, pool_id = pool_id))
+        self.cur.execute("INSERT INTO dom_pool (id,pool_id) VALUES (?,?)", (id, pool_id))
 
     #decay_parameter
     def addDecayParameter(self, dom_pool_id, base_decay_rate, reference_temp, q10,
                           prop_to_atmosphere, max_rate):
         self.cur.execute("""INSERT INTO decay_parameter (dom_pool_id, base_decay_rate,
                     reference_temp, q10, prop_to_atmosphere, max_rate) VALUES 
-                    ({dom_pool_id}, {base_decay_rate}, {reference_temp}, {q10}, 
-                    {prop_to_atmosphere}, {max_rate})""".format(
-                    dom_pool_id=dom_pool_id, base_decay_rate=base_decay_rate, 
-                    reference_temp=reference_temp, q10=q10,
-                    prop_to_atmosphere = prop_to_atmosphere, max_rate=max_rate))
+                    (?, ?, ?, ?, ?, ?)""",
+                    (dom_pool_id,base_decay_rate, reference_temp, q10, prop_to_atmosphere,max_rate))
 
     #stump_parameter
     def addStumpParameter(self, id, sw_top_proportion, sw_stump_proportion, 
