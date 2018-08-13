@@ -181,7 +181,7 @@ id,composite_flux_indicator_id,locale,name
 180,45,es-MX,Productividad de bioma neta (PBN)
 181,1,pl-PL,Całkowita zmiana ekosystemu
 182,2,pl-PL,Zmiana całkowitej biomasy
-183,3,pl-PL,Zmiana całkowitej, rozpuszczonej martwej materii organicznej (DOM)
+183,3,pl-PL,"Zmiana całkowitej, rozpuszczonej martwej materii organicznej (DOM)"
 184,4,pl-PL,Produkcja podstawowa netto (NPP)
 185,5,pl-PL,Produkcyjność ekosystemu netto (NEP)
 186,6,pl-PL,Wzrost netto
