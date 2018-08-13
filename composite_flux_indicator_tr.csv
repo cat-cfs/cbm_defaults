@@ -1,0 +1,226 @@
+id,composite_flux_indicator_id,locale,name
+1,1,en-CA,Delta Total Ecosystem
+2,2,en-CA,Delta Total Biomass
+3,3,en-CA,Delta Total DOM
+4,4,en-CA,Net Primary Productivity (NPP)
+5,5,en-CA,Net Ecosystem Productivity (NEP)
+6,6,en-CA,Net Growth
+7,7,en-CA,Net Litterfall
+8,8,en-CA,Total Litterfall
+9,9,en-CA,Decomposition Releases
+10,10,en-CA,Total Harvest (Biomass + Snags)
+11,11,en-CA,Total Harvest (Biomass)
+12,12,en-CA,Total Harvest (Snags)
+13,13,en-CA,Softwood Harvest (Biomass)
+14,14,en-CA,Hardwood Harvest (Biomass)
+15,15,en-CA,Softwood Harvest (Snags)
+16,16,en-CA,Hardwood Harvest (Snags)
+17,17,en-CA,Deadwood
+18,18,en-CA,Litter
+19,19,en-CA,Soil C
+20,20,en-CA,Aboveground Very Fast DOM
+21,21,en-CA,Belowground Very Fast DOM
+22,22,en-CA,Aboveground Fast DOM
+23,23,en-CA,Belowground Fast DOM
+24,24,en-CA,Medium DOM
+25,25,en-CA,Aboveground Slow DOM
+26,26,en-CA,Belowground Slow DOM
+27,27,en-CA,Softwood Stem Snag
+28,28,en-CA,Softwood Branch Snag
+29,29,en-CA,Hardwood Stem Snag
+30,30,en-CA,Hardwood Branch Snag
+31,31,en-CA,Total
+32,32,en-CA,Total Biomass
+33,33,en-CA,Total DOM
+34,34,en-CA,Total CO2
+35,35,en-CA,Total CO
+36,36,en-CA,Total CH4
+37,37,en-CA,Bio CO2
+38,38,en-CA,Bio CO
+39,39,en-CA,Bio CH4
+40,40,en-CA,DOM CO2
+41,41,en-CA,DOM CO
+42,42,en-CA,DOM CH4
+43,43,en-CA,Disturbance Losses
+44,44,en-CA,Bio To Soil from Disturbances
+45,45,en-CA,Net Biome Productivity (NBP)
+46,1,fr-CA,Delta écosystème total
+47,2,fr-CA,Delta biomasse totale
+48,3,fr-CA,Delta MOM totale
+49,4,fr-CA,Productivité primaire nette (PPN)
+50,5,fr-CA,Productivité écosystémique nette (PEN)
+51,6,fr-CA,Croissance nette
+52,7,fr-CA,Chute de litière nette
+53,8,fr-CA,Chute de litière totale
+54,9,fr-CA,Rejets de décomposition
+55,10,fr-CA,Récolte totale (biomasse + chicots)
+56,11,fr-CA,Récolte totale (biomasse)
+57,12,fr-CA,Récolte totale (chicots)
+58,13,fr-CA,Récolte de résineux (biomasse)
+59,14,fr-CA,Récolte de feuillus (biomasse)
+60,15,fr-CA,Récolte de résineux (chicots)
+61,16,fr-CA,Récolte de feuillus (chicots)
+62,17,fr-CA,Bois mort
+63,18,fr-CA,Litière
+64,19,fr-CA,C du sol
+65,20,fr-CA,MOM aérienne très rapide
+66,21,fr-CA,MOM souterraine très rapide
+67,22,fr-CA,MOM aérienne rapide
+68,23,fr-CA,MOM souterraine rapide
+69,24,fr-CA,MOM médium
+70,25,fr-CA,MOM aérienne lente
+71,26,fr-CA,MOM souterraine lente
+72,27,fr-CA,Chicot de tige de résineux
+73,28,fr-CA,Chicot de branche de résineux
+74,29,fr-CA,Chicot de tige de feuillu
+75,30,fr-CA,Chicot de branche de feuillu
+76,31,fr-CA,Totales
+77,32,fr-CA,Biomasse totale
+78,33,fr-CA,MOM totale
+79,34,fr-CA,CO2 total
+80,35,fr-CA,CO total
+81,36,fr-CA,CH4 total
+82,37,fr-CA,CO2 bio
+83,38,fr-CA,CO bio
+84,39,fr-CA,CH4 bio
+85,40,fr-CA,CO2 MOM
+86,41,fr-CA,CO MOM
+87,42,fr-CA,CH4 MOM
+88,43,fr-CA,Pertes dues aux perturbations
+89,44,fr-CA,Bio à sol dû aux perturbations
+90,45,fr-CA,Productivité du biome nette (PBN)
+91,1,ru-RU,Дельта всей экосистемы
+92,2,ru-RU,Дельта общей биомассы
+93,3,ru-RU,Дельта общего МОВ
+94,4,ru-RU,Чистая первичная продуктивность (ЧПП)
+95,5,ru-RU,Чистая продуктивность экосистемы (ЧПЭ)
+96,6,ru-RU,Чистый рост
+97,7,ru-RU,Чистый опад
+98,8,ru-RU,Всего опада
+99,9,ru-RU,Выбросы от разложения
+100,10,ru-RU,Общий урожай (биомасса + валеж)
+101,11,ru-RU,Общий урожай (биомасса)
+102,12,ru-RU,Общий урожай (валеж)
+103,13,ru-RU,Урожай хвойных (биомасса)
+104,14,ru-RU,Урожай лиственных (биомасса)
+105,15,ru-RU,Урожай хвойных (валеж)
+106,16,ru-RU,Урожай лиственных (валеж)
+107,17,ru-RU,Сухостой
+108,18,ru-RU,Опад
+109,19,ru-RU,Почвенный C
+110,20,ru-RU,Надземное очень быстро разлагающееся МОВ
+111,21,ru-RU,Подземное очень быстро разлагающееся МОВ
+112,22,ru-RU,Надземное быстро разлагающееся МОВ
+113,23,ru-RU,Подземное быстро разлагающееся МОВ
+114,24,ru-RU,МОВ со средней скоростью разложения
+115,25,ru-RU,Надземное медленно разлагающееся МОВ
+116,26,ru-RU,Подземное медленно разлагающееся МОВ
+117,27,ru-RU,Валеж хвойных пород
+118,28,ru-RU,Валеж ветвей хвойных
+119,29,ru-RU,Валеж лиственных пород:
+120,30,ru-RU,Валеж ветвей лиственных
+121,31,ru-RU,Всего
+122,32,ru-RU,Всего биомассы
+123,33,ru-RU,Всего МОВ
+124,34,ru-RU,Всего CO2
+125,35,ru-RU,Всего CO
+126,36,ru-RU,Всего CH4
+127,37,ru-RU,Био CO2
+128,38,ru-RU,Био CO
+129,39,ru-RU,Био CH4
+130,40,ru-RU,МОВ CO2
+131,41,ru-RU,МОВ CO
+132,42,ru-RU,МОВ CH4
+133,43,ru-RU,Ущербы нарушения
+134,44,ru-RU,Био в почву через нарушения
+135,45,ru-RU,Чистая продуктивность биома (ЧПБ)
+136,1,es-MX,Cambio total en ecosistema
+137,2,es-MX,Cambio total en biomasa
+138,3,es-MX,Cambio total en MOM
+139,4,es-MX,Productividad primaria neta (PPN)
+140,5,es-MX,Productividad neta del ecosistema (PNE)
+141,6,es-MX,Crecimiento neto
+142,7,es-MX,Hojarasca neta
+143,8,es-MX,Hojarasca total
+144,9,es-MX,Emisiones de descomposición
+145,10,es-MX,Explotación total (biomasa + árboles muertos)
+146,11,es-MX,Explotación total (biomasa)
+147,12,es-MX,Explotación total (árboles muertos)
+148,13,es-MX,Explotación de coníferas (biomasa)
+149,14,es-MX,Explotación de caducifolios (biomasa)
+150,15,es-MX,Explotación de coníferas (árboles muertos)
+151,16,es-MX,Explotación de caducifolios (árboles muertos)
+152,17,es-MX,Madera muerta
+153,18,es-MX,Hojarasca
+154,19,es-MX,C de suelo
+155,20,es-MX,MOM muy rápida superficial
+156,21,es-MX,MOM muy rápida subterránea
+157,22,es-MX,MOM rápida superficial
+158,23,es-MX,MOM rápida subterránea
+159,24,es-MX,MOM regular
+160,25,es-MX,MOM lenta superficial
+161,26,es-MX,MOM lenta subterránea
+162,27,es-MX,Troncos muertos de coníferas
+163,28,es-MX,Ramas  muertas de coníferas
+164,29,es-MX,Troncos muertos de caducifolios
+165,30,es-MX,Ramas  muertas de caducifolios
+166,31,es-MX,Total
+167,32,es-MX,Biomasa total
+168,33,es-MX,MOM total
+169,34,es-MX,CO2 total
+170,35,es-MX,CO total
+171,36,es-MX,CH4 total
+172,37,es-MX,CO2 bio
+173,38,es-MX,CO bio
+174,39,es-MX,CH4 bio
+175,40,es-MX,CO2 MOM
+176,41,es-MX,CO MOM
+177,42,es-MX,CH4 MOM
+178,43,es-MX,Pérdidas por perturbación
+179,44,es-MX,Bio a suelo de perturbaciones
+180,45,es-MX,Productividad de bioma neta (PBN)
+181,1,pl-PL,Całkowita zmiana ekosystemu
+182,2,pl-PL,Zmiana całkowitej biomasy
+183,3,pl-PL,Zmiana całkowitej, rozpuszczonej martwej materii organicznej (DOM)
+184,4,pl-PL,Produkcja podstawowa netto (NPP)
+185,5,pl-PL,Produkcyjność ekosystemu netto (NEP)
+186,6,pl-PL,Wzrost netto
+187,7,pl-PL,Opad listowia netto
+188,8,pl-PL,Całkowity opad listowia
+189,9,pl-PL,Emisje rozkładu
+190,10,pl-PL,Całkowite pozyskanie (biomasa + posusz)
+191,11,pl-PL,Całkowite pozyskanie (biomasa)
+192,12,pl-PL,Całkowite pozyskanie (posusz)
+193,13,pl-PL,Pozyskanie iglastych (biomasa)
+194,14,pl-PL,Pozyskanie liściastych (biomasa)
+195,15,pl-PL,Pozyskanie iglastych (posusz)
+196,16,pl-PL,Pozyskanie liściastych (posusz)
+197,17,pl-PL,Martwe drewno
+198,18,pl-PL,Ściółka
+199,19,pl-PL,Węgiel w glebie
+200,20,pl-PL,Nadziemna, bardzo szybko rozpuszczona martwa materia organiczna
+201,21,pl-PL,Podziemna, bardzo szybko rozpuszczona martwa materia organiczna
+202,22,pl-PL,Nadziemna, szybko rozpuszczona martwa materia organiczna (DOM)
+203,23,pl-PL,Podziemna, szybko rozpuszczona martwa materia organiczna (DOM)
+204,24,pl-PL,Średnio rozpuszczona martwa materia organiczna
+205,25,pl-PL,Nadziemna, wolno rozpuszczona martwa materia organiczna (DOM)
+206,26,pl-PL,Podziemna, wolno rozpuszczona martwa materia organiczna (DOM)
+207,27,pl-PL,Iglaste posusz pnie
+208,28,pl-PL,Iglaste posusz gałęzie
+209,29,pl-PL,Liściaste posusz pnie
+210,30,pl-PL,Liściaste posusz gałęzie
+211,31,pl-PL,Całkowity
+212,32,pl-PL,Całkowita biomasa
+213,33,pl-PL,Całkowita rozpuszczona martwa materia organiczna (DOM)
+214,34,pl-PL,Całkowity CO2
+215,35,pl-PL,Całkowity CO
+216,36,pl-PL,Całkowity CH4
+217,37,pl-PL,Bio CO2
+218,38,pl-PL,Bio CO
+219,39,pl-PL,Bio CH4
+220,40,pl-PL,CO2 rozpuszczonej martwej materii organicznej (DOM)
+221,41,pl-PL,CO rozpuszczonej martwej materii organicznej (DOM)
+222,42,pl-PL,CH4 rozpuszczonej martwej materii organicznej (DOM)
+223,43,pl-PL,Straty związane z zakłóceniem
+224,44,pl-PL,Zaburzenia przez biomasę do gleby
+225,45,pl-PL,Produkcja biomu netto (NBP)

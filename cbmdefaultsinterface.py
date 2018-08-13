@@ -31,4 +31,4 @@ class CBMDefaultsInterface(object):
             )
         params = [kwargs[k] for k in col_list]
         self.cur.execute(query, params)
-            
+                

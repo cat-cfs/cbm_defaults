@@ -1,0 +1,116 @@
+id,locale,name
+1,en-CA,Forest Land remaining Forest Land
+2,en-CA,Cropland remaining
+3,en-CA,Grassland remaining
+4,en-CA,Wetlands remaining
+5,en-CA,Settlements remaining
+6,en-CA,Other remaining
+7,en-CA,Cropland converted to Forest Land
+8,en-CA,Grassland converted to Forest Land
+9,en-CA,Wetlands converted to Forest Land
+10,en-CA,Settlements converted to Forest Land
+11,en-CA,Other converted to Forest Land
+12,en-CA,Forest Land converted to Cropland
+13,en-CA,Forest Land converted to Grassland
+14,en-CA,Forest Land converted to Wetlands
+15,en-CA,Forest Land converted to Settlements
+16,en-CA,Forest Land converted to Other
+17,en-CA,Unmanaged Forest Land
+18,en-CA,Unmanaged Forest Land converted to Cropland
+19,en-CA,Unmanaged Forest Land converted to Grassland
+20,en-CA,Unmanaged Forest Land converted to Wetlands
+21,en-CA,Unmanaged Forest Land converted to Settlements
+22,en-CA,Unmanaged Forest Land converted to Other
+23,en-CA,Unmanaged Forest Land converted to Managed Forest
+24,fr-CA,Terres forestières dont la vocation n'a pas changé
+25,fr-CA,Terres cultivées dont la vocation n'a pas changé
+26,fr-CA,Prairies dont la vocation n'a pas changé
+27,fr-CA,Terres humides dont la vocation n'a pas changé
+28,fr-CA,Zones de peuplement dont la vocation n'a pas changé
+29,fr-CA,Autres terres dont la vocation n'a pas changé
+30,fr-CA,Terres cultivées converties en forêt
+31,fr-CA,Prairies converties en forêt
+32,fr-CA,Terres humides converties en forêt
+33,fr-CA,Zones de peuplement converties en forêt
+34,fr-CA,Autres terres converties en forêt
+35,fr-CA,Forêt convertie en terres cultivées
+36,fr-CA,Forêt convertie en prairies
+37,fr-CA,Forêt convertie en terres humides
+38,fr-CA,Forêt convertie en zones de peuplement
+39,fr-CA,Forêt convertie à d'autres utilisations
+40,fr-CA,Forêt non aménagée
+41,fr-CA,Forêt non aménagée convertie en terres cultivées
+42,fr-CA,Forêt non aménagée convertie en prairies
+43,fr-CA,Forêt non aménagée convertie en terres humides
+44,fr-CA,Forêt non aménagée convertie en zones de peuplement
+45,fr-CA,Forêt non aménagée convertie à d'autres utilisations
+46,fr-CA,Forêt non aménagée convertie en forêt aménagée
+47,ru-RU,Лесные угодья, которые остаются лесными угодьями
+48,ru-RU,Остающиеся пахотные земли
+49,ru-RU,Остающиеся пастбища
+50,ru-RU,Остающиеся заболоченные территории.
+51,ru-RU,Остающиеся поселения
+52,ru-RU,Прочее остающееся
+53,ru-RU,Пахотные земли, превращенные в лесные угодья
+54,ru-RU,Пастбища, превращенные в лесные угодья
+55,ru-RU,Заболоченные территории, превращенные в лесные угодья
+56,ru-RU,Поселения, превращенные в лесные угодья
+57,ru-RU,Прочее, превращенное в лесные угодья
+58,ru-RU,Лесные угодья, превращенные в пахотные земли
+59,ru-RU,Лесные угодья, превращенные в пастбища
+60,ru-RU,Лесные угодья, превращенные в заболоченные территории
+61,ru-RU,Лесные угодья, превращенные в поселения
+62,ru-RU,Лесные угодья, превращенные в иное
+63,ru-RU,Неуправляемые лесные угодья
+64,ru-RU,Неуправляемые лесные угодья, превращенные в пахотные земли
+65,ru-RU,Неуправляемые лесные угодья, превращенные в пастбища
+66,ru-RU,Неуправляемые лесные угодья, превращенные в заболоченные территории
+67,ru-RU,Неуправляемые лесные угодья, превращенные в поселения
+68,ru-RU,Неуправляемые лесные угодья, превращенные в другое
+69,ru-RU,Неуправляемые лесные угодья, превращенные в управляемый лес
+70,es-MX,suelo forestal mantenido suelo forestal
+71,es-MX,Suelo de cultivo mantenido
+72,es-MX,Pastizales mantenidos
+73,es-MX,Humedales mantenidos
+74,es-MX,Poblados mantenidos
+75,es-MX,Otros mantenidos
+76,es-MX,Suelo de cultivo convertido en suelo forestal
+77,es-MX,Pastizal convertido en suelo forestal
+78,es-MX,Humedal convertido en suelo forestal
+79,es-MX,Poblado convertido en suelo forestal
+80,es-MX,Otro convertido en suelo forestal
+81,es-MX,Suelo forestal convertido en suelo de cultivo
+82,es-MX,Suelo forestal convertido en pastizal
+83,es-MX,Suelo forestal convertido en humedal
+84,es-MX,Suelo forestal convertido en poblado
+85,es-MX,Suelo forestal convertido en otros
+86,es-MX,Suelo forestal no explotado
+87,es-MX,Suelo forestal no explotado convertido a suelo de cultivo
+88,es-MX,Suelo forestal no explotado convertido en pastizal
+89,es-MX,Suelo forestal no explotado convertido en humedal
+90,es-MX,Suelo forestal no explotado convertido en poblado
+91,es-MX,Suelo forestal no explotado en otros
+92,es-MX,Suelo forestal no explotado convertido en bosque explotado
+93,pl-PL,Powierzchnia leśna, pozostająca powierzchnią leśną
+94,pl-PL,Zachowana ziemia uprawna
+95,pl-PL,Zachowana łąka
+96,pl-PL,Zachowane bagna
+97,pl-PL,Zachowane osady
+98,pl-PL,Inne zachowane
+99,pl-PL,Ziemia uprawna przekształcona w teren leśny
+100,pl-PL,Łąka przekształcona w teren leśny
+101,pl-PL,Bagna przekształcone w teren leśny
+102,pl-PL,Osady przekształcone w teren leśny
+103,pl-PL,Inne przekształcone w teren leśny
+104,pl-PL,Teren leśny przekształcony w ziemię uprawną
+105,pl-PL,Teren leśny przekształcony w łąkę
+106,pl-PL,Teren leśny przekształcony w bagna
+107,pl-PL,Teren leśny przekształcony w osady
+108,pl-PL,Teren leśny przekształcony w inne
+109,pl-PL,Niezagospodarowany teren leśny
+110,pl-PL,Niezagospodarowany teren leśny przekształcony w ziemię uprawną
+111,pl-PL,Niezagospodarowany teren leśny przekształcony w łąkę
+112,pl-PL,Niezagospodarowany teren leśny przekształcony w bagna
+113,pl-PL,Niezagospodarowany teren leśny przekształcony w osady
+114,pl-PL,Niezagospodarowany teren leśny przekształcony w inne
+115,pl-PL,Niezagospodarowany las przekształcony w las zagospodarowany
