@@ -198,13 +198,13 @@ id,composite_flux_indicator_id,locale,name
 197,17,pl-PL,Martwe drewno
 198,18,pl-PL,Ściółka
 199,19,pl-PL,Węgiel w glebie
-200,20,pl-PL,Nadziemna, bardzo szybko rozpuszczona martwa materia organiczna
-201,21,pl-PL,Podziemna, bardzo szybko rozpuszczona martwa materia organiczna
-202,22,pl-PL,Nadziemna, szybko rozpuszczona martwa materia organiczna (DOM)
-203,23,pl-PL,Podziemna, szybko rozpuszczona martwa materia organiczna (DOM)
+200,20,pl-PL,"Nadziemna, bardzo szybko rozpuszczona martwa materia organiczna"
+201,21,pl-PL,"Podziemna, bardzo szybko rozpuszczona martwa materia organiczna"
+202,22,pl-PL,"Nadziemna, szybko rozpuszczona martwa materia organiczna (DOM)"
+203,23,pl-PL,"Podziemna, szybko rozpuszczona martwa materia organiczna (DOM)"
 204,24,pl-PL,Średnio rozpuszczona martwa materia organiczna
-205,25,pl-PL,Nadziemna, wolno rozpuszczona martwa materia organiczna (DOM)
-206,26,pl-PL,Podziemna, wolno rozpuszczona martwa materia organiczna (DOM)
+205,25,pl-PL,"Nadziemna, wolno rozpuszczona martwa materia organiczna (DOM)"
+206,26,pl-PL,"Podziemna, wolno rozpuszczona martwa materia organiczna (DOM)"
 207,27,pl-PL,Iglaste posusz pnie
 208,28,pl-PL,Iglaste posusz gałęzie
 209,29,pl-PL,Liściaste posusz pnie
