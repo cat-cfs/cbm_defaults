@@ -413,24 +413,29 @@ class CBMDefaultsBuilder(object):
         else:
             raise TypeError("cannot parse {0} as boolean".format(str))
 
+    def read_local_csv_file(self, filename):
+        local_dir = os.path.dirname(os.path.realpath(__file__))
+        local_file = os.path.join(local_idr, "landclasses.csv")
+        with open(local_file, 'rb') as local_csv_file:
+            reader = csv.DictReader(local_file)
+            for row in reader:
+                yield row
+
     def populateDisturbanceTypes(self):
         unfccc_code_lookup = {}
-        landClassesCSVPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "landclasses.csv")
-        with open(landClassesCSVPath, 'rb') as landClassesCSVFile:
-            reader = csv.DictReader(landClassesCSVFile)
-            for row in reader:
-                unfccc_code_lookup[row["code"]] = row["id"]
-                self.cbmDefaults.add_record(
-                    "land_class",
-                    id=row["id"], 
-                    code=row["code"],
-                    description=row["description"],
-                    is_forest=self.asBoolean(row["is_forest"]),
-                    transitional_period=row["transitional_period"],
-                    transition_id=row["transition_id"])
+        for row in self.read_local_csv_file("landclass.csv"):
+            unfccc_code_lookup[row["code"]] = row["id"]
+            self.cbmDefaults.add_record(
+                "land_class",
+                id=row["id"], 
+                code=row["code"],
+                description=row["description"],
+                is_forest=self.asBoolean(row["is_forest"]),
+                transitional_period=row["transitional_period"],
+                transition_id=row["transition_id"])
         
         disturbanceTypeLandclassLookup = {}
-        disturbanceTypeLandclassesCSVPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "disturbanceTypeLandClasses.csv")
+        disturbanceTypeLandclassesCSVPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "disturbance_type_landclass.csv")
         with open(disturbanceTypeLandclassesCSVPath, 'rb') as disturbanceTypeLandclassesCSVFile:
             reader = csv.DictReader(disturbanceTypeLandclassesCSVFile)
             for row in reader: 

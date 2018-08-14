@@ -1,34 +1,29 @@
 CREATE TABLE spatial_unit (
-  id                      INTEGER NOT NULL, 
-  admin_boundary_id      integer(10) NOT NULL, 
-  eco_boundary_id        integer(10) NOT NULL, 
-  root_parameter_id      integer(10) NOT NULL, 
-  climate_time_series_id integer(10) NOT NULL, 
-  spinup_parameter_id    integer(10) NOT NULL, 
+  id                       INTEGER NOT NULL, 
+  admin_boundary_id       integer(10) NOT NULL, 
+  eco_boundary_id         integer(10) NOT NULL, 
+  root_parameter_id       integer(10) NOT NULL, 
+  spinup_parameter_id     integer(10) NOT NULL, 
+  mean_annual_temperature double(10) NOT NULL, 
   PRIMARY KEY (id), 
   FOREIGN KEY(admin_boundary_id) REFERENCES admin_boundary(id), 
   FOREIGN KEY(eco_boundary_id) REFERENCES eco_boundary(id), 
   FOREIGN KEY(root_parameter_id) REFERENCES root_parameter(id), 
-  FOREIGN KEY(climate_time_series_id) REFERENCES climate_time_series(id), 
-  FOREIGN KEY(spinup_parameter_id) REFERENCES spinup_parameters(id));
+  FOREIGN KEY(spinup_parameter_id) REFERENCES spinup_parameter(id));
 CREATE TABLE admin_boundary (
   id                  INTEGER NOT NULL, 
   stump_parameter_id integer(10) NOT NULL, 
-  name               varchar(255) NOT NULL UNIQUE, 
   PRIMARY KEY (id), 
   FOREIGN KEY(stump_parameter_id) REFERENCES stump_parameter(id));
 CREATE TABLE eco_boundary (
-  id                     INTEGER NOT NULL, 
-  turnover_parameter_id integer(10) NOT NULL, 
-  random_return_interval_parameter_id integer(10) NOT NULL,
-  name                  varchar(255) NOT NULL UNIQUE, 
+  id                         INTEGER NOT NULL, 
+  turnover_parameter_id     integer(10) NOT NULL, 
+  random_return_interval_id integer(10) NOT NULL, 
   PRIMARY KEY (id), 
-  FOREIGN KEY(turnover_parameter_id) REFERENCES turnover_parameter(id)
-  FOREIGN KEY(random_return_interval_parameter_id) REFERENCES random_return_interval_parameter(id));
+  FOREIGN KEY(turnover_parameter_id) REFERENCES turnover_parameter(id), 
+  FOREIGN KEY(random_return_interval_id) REFERENCES random_return_interval(id));
 CREATE TABLE disturbance_matrix (
-  id    INTEGER NOT NULL, 
-  name clob NOT NULL, 
-  description clob NOT NULL,
+  id  INTEGER NOT NULL, 
   PRIMARY KEY (id));
 CREATE TABLE disturbance_matrix_value (
   disturbance_matrix_id integer(10) NOT NULL, 
@@ -43,7 +38,7 @@ CREATE TABLE disturbance_matrix_value (
   FOREIGN KEY(sink_pool_id) REFERENCES pool(id));
 CREATE TABLE pool (
   id    INTEGER NOT NULL, 
-  name clob NOT NULL UNIQUE, 
+  code varchar(255) NOT NULL UNIQUE, 
   PRIMARY KEY (id));
 CREATE TABLE decay_parameter (
   dom_pool_id        integer(10) NOT NULL, 
@@ -60,17 +55,14 @@ CREATE TABLE dom_pool (
   PRIMARY KEY (id), 
   FOREIGN KEY(pool_id) REFERENCES pool(id));
 CREATE TABLE land_class (
-  id           INTEGER NOT NULL, 
-  code        clob NOT NULL UNIQUE, 
-  description clob NOT NULL, 
-  is_forest   integer NOT NULL, 
-  transitional_period integer NOT NULL,
-  transition_id integer NOT NULL,
+  id                   INTEGER NOT NULL, 
+  code                clob NOT NULL UNIQUE, 
+  is_forest           integer NOT NULL, 
+  transitional_period integer(10) NOT NULL, 
+  transition_id       integer(10) NOT NULL, 
   PRIMARY KEY (id));
 CREATE TABLE disturbance_type (
   id                        INTEGER NOT NULL, 
-  name                     varchar(255) NOT NULL UNIQUE, 
-  description clob NOT NULL,
   transition_land_class_id integer(10), 
   PRIMARY KEY (id), 
   FOREIGN KEY(transition_land_class_id) REFERENCES land_class(id));
@@ -84,16 +76,13 @@ CREATE TABLE disturbance_matrix_association (
   FOREIGN KEY(disturbance_type_id) REFERENCES disturbance_type(id), 
   FOREIGN KEY(spatial_unit_id) REFERENCES spatial_unit(id));
 CREATE TABLE forest_type (
-  id    INTEGER NOT NULL, 
-  name varchar(255) NOT NULL, 
+  id  INTEGER NOT NULL, 
   PRIMARY KEY (id));
 CREATE TABLE genus (
-  id    INTEGER NOT NULL, 
-  name varchar(255) NOT NULL, 
+  id  INTEGER NOT NULL, 
   PRIMARY KEY (id));
 CREATE TABLE species (
   id              INTEGER NOT NULL, 
-  name           varchar(255) NOT NULL, 
   forest_type_id integer(10) NOT NULL, 
   genus_id       integer(10) NOT NULL, 
   PRIMARY KEY (id), 
@@ -143,8 +132,7 @@ CREATE TABLE root_parameter (
   CONSTRAINT u_root_parameters 
     UNIQUE (hw_a, sw_a, hw_b, frp_a, frp_b, frp_c));
 CREATE TABLE growth_multiplier_series (
-  id           INTEGER NOT NULL, 
-  description varchar(255) NOT NULL UNIQUE, 
+  id  INTEGER NOT NULL, 
   PRIMARY KEY (id));
 CREATE TABLE growth_multiplier_value (
   growth_multiplier_series_id integer(10) NOT NULL, 
@@ -178,18 +166,6 @@ CREATE TABLE turnover_parameter (
   coarse_ag_split   double(10) NOT NULL, 
   fine_ag_split     double(10) NOT NULL, 
   PRIMARY KEY (id));
-CREATE TABLE climate_time_series (
-  id  INTEGER NOT NULL, 
-  PRIMARY KEY (id));
-CREATE TABLE climate (
-  id                       INTEGER NOT NULL, 
-  climate_time_series_id  integer(10) NOT NULL, 
-  t_year                  integer(10) NOT NULL, 
-  mean_annual_temperature double(10) NOT NULL, 
-  PRIMARY KEY (id), 
-  CONSTRAINT u_c_climate_time_series_id_t_year 
-    UNIQUE (climate_time_series_id, t_year), 
-  FOREIGN KEY(climate_time_series_id) REFERENCES climate_time_series(id));
 CREATE TABLE disturbance_type_growth_multiplier_series (
   disturbance_type_id         integer(10) NOT NULL, 
   growth_multiplier_series_id integer(10) NOT NULL, 
@@ -225,28 +201,162 @@ CREATE TABLE vol_to_bio_forest_type (
   FOREIGN KEY(forest_type_id) REFERENCES forest_type(id));
 CREATE TABLE spinup_parameter (
   id                        integer(10) NOT NULL, 
-  return_interval           double(10) NOT NULL, 
+  return_interval           integer(10) NOT NULL, 
   min_rotations             integer(10) NOT NULL, 
   max_rotations             integer(10) NOT NULL, 
+  historic_mean_temperature integer(10) NOT NULL, 
   PRIMARY KEY (id));
-CREATE TABLE biomass_to_carbon_rate (
-  id     INTEGER NOT NULL, 
-  rate   double(10) NOT NULL,
+CREATE TABLE pool_tr (
+  id         INTEGER NOT NULL, 
+  pool_id   integer(10) NOT NULL, 
+  locale_id integer(10) NOT NULL, 
+  name      clob NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(pool_id) REFERENCES pool(id), 
+  FOREIGN KEY(locale_id) REFERENCES locale(id));
+CREATE TABLE locale (
+  id   integer(10) NOT NULL, 
+  code integer(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE land_class_tr (
+  id            integer(10) NOT NULL, 
+  land_class_id integer(10) NOT NULL, 
+  locale_id     integer(10) NOT NULL, 
+  description   varchar(255) NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(locale_id) REFERENCES locale(id), 
+  FOREIGN KEY(land_class_id) REFERENCES land_class(id));
+CREATE TABLE disturbance_type_tr (
+  id                  integer(10) NOT NULL, 
+  disturbance_type_id integer(10) NOT NULL, 
+  locale_id           integer(10) NOT NULL, 
+  name                clob NOT NULL, 
+  description         clob NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(disturbance_type_id) REFERENCES disturbance_type(id), 
+  FOREIGN KEY(locale_id) REFERENCES locale(id));
+CREATE TABLE disturbance_matrix_tr (
+  id                    integer(10) NOT NULL, 
+  disturbance_matrix_id integer(10) NOT NULL, 
+  locale_id             integer(10) NOT NULL, 
+  name                  clob NOT NULL, 
+  description           clob NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(disturbance_matrix_id) REFERENCES disturbance_matrix(id), 
+  FOREIGN KEY(locale_id) REFERENCES locale(id));
+CREATE TABLE admin_boundary_tr (
+  id                 INTEGER NOT NULL, 
+  admin_boundary_id integer(10) NOT NULL, 
+  locale_id         integer(10) NOT NULL, 
+  name              clob NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(admin_boundary_id) REFERENCES admin_boundary(id), 
+  FOREIGN KEY(locale_id) REFERENCES locale(id));
+CREATE TABLE eco_boundary_tr (
+  id               INTEGER NOT NULL, 
+  eco_boundary_id integer(10) NOT NULL, 
+  locale_id       integer(10) NOT NULL, 
+  name            clob NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(eco_boundary_id) REFERENCES eco_boundary(id), 
+  FOREIGN KEY(locale_id) REFERENCES locale(id));
+CREATE TABLE genus_tr (
+  id         INTEGER NOT NULL, 
+  genus_id  integer(10) NOT NULL, 
+  locale_id integer(10) NOT NULL, 
+  name      clob NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(genus_id) REFERENCES genus(id), 
+  FOREIGN KEY(locale_id) REFERENCES locale(id));
+CREATE TABLE species_tr (
+  id          INTEGER NOT NULL, 
+  species_id integer(10) NOT NULL, 
+  locale_id  integer(10) NOT NULL, 
+  name       clob NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(species_id) REFERENCES species(id), 
+  FOREIGN KEY(locale_id) REFERENCES locale(id));
+CREATE TABLE forest_type_tr (
+  id             bigint(19) NOT NULL, 
+  forest_type_id integer(10) NOT NULL, 
+  locale_id      integer(10) NOT NULL, 
+  name           clob NOT NULL, 
+  FOREIGN KEY(forest_type_id) REFERENCES forest_type(id), 
+  FOREIGN KEY(locale_id) REFERENCES locale(id));
+CREATE TABLE flux_indicator (
+  id               INTEGER NOT NULL, 
+  name            clob NOT NULL UNIQUE, 
+  flux_process_id integer(10) NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(flux_process_id) REFERENCES flux_process(id));
+CREATE TABLE flux_process (
+  id    INTEGER NOT NULL, 
+  name clob NOT NULL UNIQUE, 
+  PRIMARY KEY (id));
+CREATE TABLE flux_indicator_category (
+  id integer(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE flux_indicator_category_tr (
+  id                          INTEGER NOT NULL, 
+  flux_indicator_category_id integer(10) NOT NULL, 
+  locale_id                  integer(10) NOT NULL, 
+  category_name              clob NOT NULL, 
+  subcategory_name           clob NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(flux_indicator_category_id) REFERENCES flux_indicator_category(id), 
+  FOREIGN KEY(locale_id) REFERENCES locale(id));
+CREATE TABLE flux_indicator_source (
+  id                 INTEGER NOT NULL, 
+  flux_indicator_id integer(10) NOT NULL, 
+  pool_id           integer(10) NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(flux_indicator_id) REFERENCES flux_indicator(id), 
+  FOREIGN KEY(pool_id) REFERENCES pool(id));
+CREATE TABLE flux_indicator_sink (
+  id                integer(10) NOT NULL, 
+  flux_indicator_id integer(10) NOT NULL, 
+  pool_id           integer(10) NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(flux_indicator_id) REFERENCES flux_indicator(id), 
+  FOREIGN KEY(pool_id) REFERENCES pool(id));
+CREATE TABLE composite_flux_indicator (
+  id                         integer(10) NOT NULL, 
+  flux_indicator_category_id integer(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE composite_flux_indicator_value (
+  id                integer(10) NOT NULL, 
+  flux_indicator_id integer(10) NOT NULL, 
+  multiplier        integer(10) NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(flux_indicator_id) REFERENCES flux_indicator(id));
+CREATE TABLE composite_flux_indicator_tr (
+  id                           INTEGER NOT NULL, 
+  composite_flux_indicator_id integer(10) NOT NULL, 
+  locale_id                   integer(10) NOT NULL, 
+  name                        clob NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(composite_flux_indicator_id) REFERENCES composite_flux_indicator(id), 
+  FOREIGN KEY(locale_id) REFERENCES locale(id));
+CREATE TABLE random_return_interval (
+  id       integer(10) NOT NULL, 
+  a_Nu     integer(10) NOT NULL, 
+  b_Nu     integer(10) NOT NULL, 
+  a_Lambda integer(10) NOT NULL, 
+  b_Lambda integer(10) NOT NULL, 
   PRIMARY KEY (id));
 CREATE TABLE slow_mixing_rate (
-  id     INTEGER NOT NULL, 
-  rate   double(10) NOT NULL,
+  id    INTEGER NOT NULL, 
+  rate double(10) NOT NULL, 
   PRIMARY KEY (id));
-CREATE TABLE random_return_interval_parameter(
-    id INTEGER NOT NULL,
-    a_Nu double(10) NOT NULL,
-    b_Nu double(10) NOT NULL,
-    a_Lambda double(10) NOT NULL,
-    b_Lambda double(10) NOT NULL,
-    PRIMARY KEY (id));
-CREATE UNIQUE INDEX forest_type_name 
-  ON forest_type (name);
-CREATE UNIQUE INDEX genus_name 
-  ON genus (name);
-CREATE UNIQUE INDEX species_name 
-  ON species (name);
+CREATE TABLE biomass_to_cabon_rate (
+  id    INTEGER NOT NULL, 
+  rate integer(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE INDEX disturbance_matrix_id 
+  ON disturbance_matrix (id);
+CREATE INDEX disturbance_matrix_value_disturbance_matrix_id 
+  ON disturbance_matrix_value (disturbance_matrix_id);
+CREATE INDEX vol_to_bio_factor_id 
+  ON vol_to_bio_factor (id);
+CREATE INDEX pool_tr_id 
+  ON pool_tr (id);
