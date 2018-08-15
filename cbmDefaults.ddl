@@ -348,7 +348,7 @@ CREATE TABLE slow_mixing_rate (
   id    INTEGER NOT NULL, 
   rate double(10) NOT NULL, 
   PRIMARY KEY (id));
-CREATE TABLE biomass_to_cabon_rate (
+CREATE TABLE biomass_to_carbon_rate (
   id    INTEGER NOT NULL, 
   rate integer(10) NOT NULL, 
   PRIMARY KEY (id));

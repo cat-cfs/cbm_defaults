@@ -3,22 +3,22 @@ from accessdb import AccessDB
 class CBMDefaultsBuilder(object):
 
     def __init__(self, aidb_paths, cbmDefaults):
-        self.locales = {
-            "en-CA": 1,
-            "fr-CA": 2,
-            "es-MX": 3,
-            "ru-RU": 4,
-            "pl-PL": 5
-        }
+        self.locales = [
+            {"id": 1, "code": "en-CA" },
+            {"id": 2, "code": "fr-CA" },
+            {"id": 3, "code": "es-MX" },
+            {"id": 4, "code": "ru-RU" },
+            {"id": 5, "code": "pl-PL" }
+        ]
         self.aidb_paths = aidb_paths 
         self.cbmDefaults = cbmDefaults
-        self.adminBoundaryLookup = {}
-        self.ecoBoundaryLookup = {}
-        self.spatialUnitLookup = {}
-        self.forestTypeLookup = {}
-        self.genusLookup = {}
-        self.speciesLookup = {}
-        self.distTypeLookup = {}
+        #self.adminBoundaryLookup = {}
+        #self.ecoBoundaryLookup = {}
+        #self.spatialUnitLookup = {}
+        #self.forestTypeLookup = {}
+        #self.genusLookup = {}
+        #self.speciesLookup = {}
+        #self.distTypeLookup = {}
 
     @contextlib.contextmanager
     def GetAIDB(self, language="en-CA"):
@@ -26,40 +26,40 @@ class CBMDefaultsBuilder(object):
             yield a
 
     def run(self):
-        self.poolCrossWalk = {
-            #cbm3:  #cbm3.5 (-1 is defunct)
-            1:      1,   #swmerch
-            2:      2,   #swfol
-            3:      3,   #swoth
-            4:      -1,  #swsubmerch
-            5:      4,   #swcr
-            6:      5,   #swfr
-            7:      6,   #hwmerch
-            8:      7,   #hwfol
-            9:      8,   #hwoth
-            10:     -1,  #hwsubmerch
-            11:     9,   #hwcr
-            12:     10,  #hwfr
-            13:     11,  #agvf
-            14:     12,  #bgvf
-            15:     13,  #agf
-            16:     14,  #bgf
-            17:     15,  #med
-            18:     16,  #agslow
-            19:     17,  #bgslow
-            20:     18,  #swss
-            21:     19,  #swbs
-            22:     20,  #hwss
-            23:     21,  #hwbs
-            24:     -1,  #blackC
-            25:     -1,  #peat
-            26:     22,  #CO2
-            27:     23,  #CH4
-            28:     24,  #CO
-            29:     25,  #NO2
-            30:     26   #products
-        }
-
+        #self.poolCrossWalk = {
+        #    #cbm3:  #cbm3.5 (-1 is defunct)
+        #    1:      1,   #swmerch
+        #    2:      2,   #swfol
+        #    3:      3,   #swoth
+        #    4:      -1,  #swsubmerch
+        #    5:      4,   #swcr
+        #    6:      5,   #swfr
+        #    7:      6,   #hwmerch
+        #    8:      7,   #hwfol
+        #    9:      8,   #hwoth
+        #    10:     -1,  #hwsubmerch
+        #    11:     9,   #hwcr
+        #    12:     10,  #hwfr
+        #    13:     11,  #agvf
+        #    14:     12,  #bgvf
+        #    15:     13,  #agf
+        #    16:     14,  #bgf
+        #    17:     15,  #med
+        #    18:     16,  #agslow
+        #    19:     17,  #bgslow
+        #    20:     18,  #swss
+        #    21:     19,  #swbs
+        #    22:     20,  #hwss
+        #    23:     21,  #hwbs
+        #    24:     -1,  #blackC
+        #    25:     -1,  #peat
+        #    26:     22,  #CO2
+        #    27:     23,  #CH4
+        #    28:     24,  #CO
+        #    29:     25,  #NO2
+        #    30:     26   #products
+        #}
+        
         self.populate_locale()
         self.populatePools()
         self.populateDecayParameters()
@@ -68,11 +68,11 @@ class CBMDefaultsBuilder(object):
         self.populateRootParameter()
         self.populateBiomassToCarbonRate()
         self.populateSlowMixingRate()
-        self.populateSpatialUnits()
-        self.populateSpecies()
-        self.populateVolumeToBiomass()
-        self.populateDisturbanceTypes()
-        self.PopulateGrowthMultipliers()
+        #self.populateSpatialUnits()
+        #self.populateSpecies()
+        #self.populateVolumeToBiomass()
+        #self.populateDisturbanceTypes()
+        #self.PopulateGrowthMultipliers()
 
     
     def UnicodeDictReader(self, utf8_data, **kwargs):
@@ -92,16 +92,16 @@ class CBMDefaultsBuilder(object):
                 yield row
 
     def populate_locale(self):
-        for code, id in self.locales.items(): 
+        for l in self.locales: 
             self.cbmDefaults.add_record("locale",
-                                        id=id,
-                                        code=code)
+                                        id=l["id"],
+                                        code=l["code"])
+
     def populatePools(self):
         for row in self.read_local_csv_file("pool.csv"):
             self.cbmDefaults.add_record("pool",
                 id = row["id"],
                 code = row["code"])
-
 
         for row in self.read_local_csv_file("dom_pool.csv"):
             self.cbmDefaults.add_record("dom_pool",
@@ -115,7 +115,6 @@ class CBMDefaultsBuilder(object):
                                         locale_id = row["locale_id"],
                                         name = row["name"])
 
-    
     def populateDecayParameters(self):
         id = 1
         with self.GetAIDB() as aidb:
@@ -132,38 +131,37 @@ class CBMDefaultsBuilder(object):
                     prop_to_atmosphere=row.PropToAtmosphere, 
                     max_rate=1)
                 id += 1
-            
+
     def populateAdminBoundaries(self):
 
-        id = 1
-        for row in self.accessDb.Query("SELECT * FROM tblAdminBoundaryDefault"):
-            self.cbmDefaults.add_record(
-                "stump_parameter",
-                id=row.AdminBoundaryID, 
-                sw_top_proportion=row.SoftwoodTopProportion, 
-                sw_stump_proportion=row.SoftwoodStumpProportion, 
-                hw_top_proportion=row.HardwoodTopProportion, 
-                hw_stump_proportion=row.HardwoodStumpProportion)
-            
-            self.cbmDefaults.add_record(
-                "admin_boundary",
-                id=row.AdminBoundaryID, 
-                stump_parameter_id=id, 
-                name=row.AdminBoundaryName)
-
-            tr_id = 1
-            for k,v in self.locales.items():
+        with self.GetAIDB("en-CA") as aidb_en_ca:
+            stump_parameter_id = 1
+            for row in aidb_en_ca.Query("SELECT * FROM tblAdminBoundaryDefault"):
+                self.cbmDefaults.add_record(
+                    "stump_parameter",
+                    id=row.AdminBoundaryID, 
+                    sw_top_proportion=row.SoftwoodTopProportion, 
+                    sw_stump_proportion=row.SoftwoodStumpProportion, 
+                    hw_top_proportion=row.HardwoodTopProportion, 
+                    hw_stump_proportion=row.HardwoodStumpProportion)
 
                 self.cbmDefaults.add_record(
-                    "admin_boundary_tr",
-                    id=tr_id,
-                    admin_boundary_id=id,
-                    locale_id=v,
-                    name="")
-                tr_id+=1
-            id+=1
-            
-            self.adminBoundaryLookup[row.AdminBoundaryName]=row.AdminBoundaryID
+                    "admin_boundary",
+                    id=row.AdminBoundaryID,
+                    stump_parameter_id=stump_parameter_id)
+            stump_parameter_id+=1
+
+        translation_id = 1
+        for locale in self.locales:
+            with self.GetAIDB(locale["code"]) as aidb:
+                for row in aidb.Query("SELECT AdminBoundaryID, AdminBoundaryName FROM tblAdminBoundaryDefault"):
+                    self.cbmDefaults.add_record(
+                        "admin_boundary_tr",
+                        admin_boundary_id=row.AdminBoundaryID,
+                        locale_id=locale["id"],
+                        name=row.AdminBoundaryName)
+                    translation_id+=1
+
 
     def GetRandomReturnIntervalParameters(self):
         randomReturnIntervalPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "uc_random_return_interval_parameters.csv")
@@ -177,44 +175,56 @@ class CBMDefaultsBuilder(object):
             
     def populateEcoBoundaries(self):
 
-        id = 1
+
         randomReturnIntervalParams = self.GetRandomReturnIntervalParameters()
-        for row in self.accessDb.Query("SELECT * FROM tblEcoBoundaryDefault"):
-            self.cbmDefaults.add_record(
-                "turnover_parameter",
-                id=id, 
-                sw_foliage=row.SoftwoodFoliageFallRate, 
-                hw_foliage=row.HardwoodFoliageFallRate, 
-                stem_turnover=row.StemAnnualTurnOverRate, 
-                sw_branch=row.SoftwoodBranchTurnOverRate,
-                hw_branch=row.HardwoodBranchTurnOverRate, 
-                branch_snag_split=0.25, 
-                stem_snag=row.SoftwoodStemSnagToDOM, 
-                branch_snag=row.SoftwoodBranchSnagToDOM,
-                coarse_root=0.02, 
-                fine_root=0.641, 
-                coarse_ag_split=0.5, 
-                fine_ag_split=0.5)
+        with self.GetAIDB("en-CA") as aidb:
+            id = 1
+            for row in aidb.Query("SELECT * FROM tblEcoBoundaryDefault"):
+                self.cbmDefaults.add_record(
+                    "turnover_parameter",
+                    id=id, 
+                    sw_foliage=row.SoftwoodFoliageFallRate, 
+                    hw_foliage=row.HardwoodFoliageFallRate, 
+                    stem_turnover=row.StemAnnualTurnOverRate, 
+                    sw_branch=row.SoftwoodBranchTurnOverRate,
+                    hw_branch=row.HardwoodBranchTurnOverRate, 
+                    branch_snag_split=0.25, 
+                    stem_snag=row.SoftwoodStemSnagToDOM, 
+                    branch_snag=row.SoftwoodBranchSnagToDOM,
+                    coarse_root=0.02, 
+                    fine_root=0.641, 
+                    coarse_ag_split=0.5, 
+                    fine_ag_split=0.5)
 
-            randomReturnIntervalParam = randomReturnIntervalParams[row.EcoBoundaryID]
-            self.cbmDefaults.add_record(
-                "random_return_interval_parameter",
-                id=id, 
-                a_Nu=randomReturnIntervalParam["a_Nu"],
-                b_Nu=randomReturnIntervalParam["b_Nu"],
-                a_Lambda=randomReturnIntervalParam["a_Lambda"],
-                b_Lambda=randomReturnIntervalParam["b_Lambda"]
-            )
+                randomReturnIntervalParam = randomReturnIntervalParams[row.EcoBoundaryID]
+                self.cbmDefaults.add_record(
+                    "random_return_interval",
+                    id=id, 
+                    a_Nu=randomReturnIntervalParam["a_Nu"],
+                    b_Nu=randomReturnIntervalParam["b_Nu"],
+                    a_Lambda=randomReturnIntervalParam["a_Lambda"],
+                    b_Lambda=randomReturnIntervalParam["b_Lambda"]
+                )
 
-            self.cbmDefaults.add_record(
-                "eco_boundary",
-                id=row.EcoBoundaryID, 
-                turnover_parameter_id=id,
-                random_return_interval_parameter_id=id, 
-                name=row.EcoBoundaryName)
+                self.cbmDefaults.add_record(
+                    "eco_boundary",
+                    id=row.EcoBoundaryID, 
+                    turnover_parameter_id=id,
+                    random_return_interval_id=id)
 
-            self.ecoBoundaryLookup[row.EcoBoundaryName]=row.EcoBoundaryID 
-            id+=1    
+                id+=1
+
+        translation_id = 1
+        for locale in self.locales:
+            with self.GetAIDB(locale["code"]) as aidb:
+                for row in aidb.Query("SELECT EcoBoundaryID, EcoBoundaryName FROM tblEcoBoundaryDefault"):
+                    self.cbmDefaults.add_record("eco_boundary_tr",
+                                                id=translation_id,
+                                                eco_boundary_id=row.EcoBoundaryID,
+                                                locale_id=locale["id"],
+                                                name=row.EcoBoundaryName)
+                    translation_id += 1
+
 
     def populateRootParameter(self):
         self.cbmDefaults.add_record(
@@ -293,8 +303,8 @@ class CBMDefaultsBuilder(object):
                 "genus",
                 id=row.GenusID, 
                 name=row.GenusName)
-            self.genusLookup[row.GenusName] = row.GenusID        
-            
+            self.genusLookup[row.GenusName] = row.GenusID
+
         sqlspecies = """SELECT tblSpeciesTypeDefault.SpeciesTypeID, 
                         tblSpeciesTypeDefault.SpeciesTypeName, 
                         tblForestTypeDefault.ForestTypeName, 

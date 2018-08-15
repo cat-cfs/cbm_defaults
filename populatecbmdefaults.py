@@ -2,6 +2,9 @@ import os
 from cbmdefaultsinterface import CBMDefaultsInterface
 from accessdb import AccessDB
 from cbmdefaultsbuilder import CBMDefaultsBuilder
+from loghelper import *
+
+start_logging("populate_cbm_defaults.log")
 
 aidb_dir = r"M:\CBM Tools and Development\Builds\OpScaleArchiveIndex\20180611"
 

@@ -1,5 +1,4 @@
-import os
-import sqlite3
+import os, logging, sqlite3
 class CBMDefaultsInterface(object):
 
     def __init__(self, sqlitePath, createNew=True):
@@ -8,6 +7,7 @@ class CBMDefaultsInterface(object):
         self.conn = sqlite3.connect(sqlitePath)
         self.cur = self.conn.cursor()
         self.sqlitePath = sqlitePath
+        self.tables = set([])
     
     def executeDDLFile(self, ddlPath):
         with open(ddlPath, 'r') as ddlfile:
@@ -19,6 +19,9 @@ class CBMDefaultsInterface(object):
         self.conn.close()
        
     def add_record(self, table_name, **kwargs):
+        if not table_name in self.tables:
+            self.tables.add(table_name)
+            logging.info("writing: " + table_name)
 
         record_values = kwargs
         col_list = kwargs.keys()
@@ -30,5 +33,6 @@ class CBMDefaultsInterface(object):
                 values=",".join(["?"]*len(col_list))
             )
         params = [kwargs[k] for k in col_list]
+
         self.cur.execute(query, params)
-                
+
