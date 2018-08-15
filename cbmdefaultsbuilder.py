@@ -26,40 +26,7 @@ class CBMDefaultsBuilder(object):
             yield a
 
     def run(self):
-        #self.poolCrossWalk = {
-        #    #cbm3:  #cbm3.5 (-1 is defunct)
-        #    1:      1,   #swmerch
-        #    2:      2,   #swfol
-        #    3:      3,   #swoth
-        #    4:      -1,  #swsubmerch
-        #    5:      4,   #swcr
-        #    6:      5,   #swfr
-        #    7:      6,   #hwmerch
-        #    8:      7,   #hwfol
-        #    9:      8,   #hwoth
-        #    10:     -1,  #hwsubmerch
-        #    11:     9,   #hwcr
-        #    12:     10,  #hwfr
-        #    13:     11,  #agvf
-        #    14:     12,  #bgvf
-        #    15:     13,  #agf
-        #    16:     14,  #bgf
-        #    17:     15,  #med
-        #    18:     16,  #agslow
-        #    19:     17,  #bgslow
-        #    20:     18,  #swss
-        #    21:     19,  #swbs
-        #    22:     20,  #hwss
-        #    23:     21,  #hwbs
-        #    24:     -1,  #blackC
-        #    25:     -1,  #peat
-        #    26:     22,  #CO2
-        #    27:     23,  #CH4
-        #    28:     24,  #CO
-        #    29:     25,  #NO2
-        #    30:     26   #products
-        #}
-        
+
         self.populate_locale()
         self.populatePools()
         self.populateDecayParameters()
@@ -75,8 +42,8 @@ class CBMDefaultsBuilder(object):
         self.populateDisturbanceTypes()
         self.populateDMValues()
         self.populateDMAssociations()
-        #self.PopulateGrowthMultipliers()
-
+        self.PopulateGrowthMultipliers()
+        self.populateFluxIndicators()
 
     def asBoolean(self,str):
         if str.lower() in ["true", "yes", "1"]:
@@ -104,6 +71,10 @@ class CBMDefaultsBuilder(object):
             for row in reader:
                 yield row
 
+    def insert_csv_file(self, table_name, csv_file_name):
+        for row in self.read_local_csv_file(csv_file_name):
+            self.cbmDefaults.add_record(table_name,
+                                        **row)
 
     def populate_locale(self):
         for l in self.locales: 
@@ -573,35 +544,39 @@ class CBMDefaultsBuilder(object):
         #these are the default disturbance types that have growth multipliers attached
         distTypeIds = [12,13,14,15,16,17,18,19,20,21]
         growthMultId = 1
-        for distTypeId in distTypeIds:
-
-            distTypeQuery = """SELECT tblDisturbanceTypeDefault.DistTypeID, tblDisturbanceTypeDefault.DistTypeName 
-                        FROM tblDisturbanceTypeDefault WHERE (((tblDisturbanceTypeDefault.DistTypeID)={0}));""".format(distTypeId)
-            distTypeRow = self.accessDb.Query(distTypeQuery).fetchone()
-
-            self.cbmDefaults.add_record(
-                "disturbance_type_growth_multiplier_series",
-                disturbance_type_id=self.distTypeLookup[distTypeRow.DistTypeName],
-                growth_multiplier_series_id=growthMultId)
-
-            self.cbmDefaults.add_record(
-                "growth_multiplier_series", 
-                id=growthMultId,
-                description=self.distTypeLookup[distTypeRow.DistTypeName])
-            
-            growthMultipliersQuery = """SELECT tblForestTypeDefault.ForestTypeName, tblGrowthMultiplierDefault.AnnualOrder, tblGrowthMultiplierDefault.GrowthMultiplier
-                        FROM (tblDisturbanceTypeDefault INNER JOIN tblGrowthMultiplierDefault ON tblDisturbanceTypeDefault.DistTypeID = tblGrowthMultiplierDefault.DefaultDisturbanceTypeID) 
-                        INNER JOIN tblForestTypeDefault ON 
-                        IIF(tblGrowthMultiplierDefault.DefaultSpeciesTypeID=1,tblGrowthMultiplierDefault.DefaultSpeciesTypeID,tblGrowthMultiplierDefault.DefaultSpeciesTypeID+1) = tblForestTypeDefault.ForestTypeID
-                        GROUP BY tblDisturbanceTypeDefault.DistTypeID, tblForestTypeDefault.ForestTypeName, tblGrowthMultiplierDefault.AnnualOrder, tblGrowthMultiplierDefault.GrowthMultiplier
-                        HAVING (((tblDisturbanceTypeDefault.DistTypeID)={distTypeId}));""".format(distTypeId=distTypeId)
-
-            for row in self.accessDb.Query(growthMultipliersQuery):
+        with self.GetAIDB("en-CA") as aidb:
+            for distTypeId in distTypeIds:
                 self.cbmDefaults.add_record(
-                    "growth_multiplier_value", 
-                    growth_multiplier_series_id=growthMultId,
-                    forest_type_id=self.forestTypeLookup[row.ForestTypeName],
-                    time_step=row.AnnualOrder,
-                    value=row.GrowthMultiplier)
+                    "disturbance_type_growth_multiplier_series",
+                    disturbance_type_id=distTypeId,
+                    growth_multiplier_series_id=growthMultId)
 
-            growthMultId += 1
+                self.cbmDefaults.add_record(
+                    "growth_multiplier_series", 
+                    id=growthMultId)
+
+                growthMultipliersQuery = """SELECT tblForestTypeDefault.ForestTypeID, tblGrowthMultiplierDefault.AnnualOrder, tblGrowthMultiplierDefault.GrowthMultiplier
+                            FROM (tblDisturbanceTypeDefault INNER JOIN tblGrowthMultiplierDefault ON tblDisturbanceTypeDefault.DistTypeID = tblGrowthMultiplierDefault.DefaultDisturbanceTypeID) 
+                            INNER JOIN tblForestTypeDefault ON 
+                            IIF(tblGrowthMultiplierDefault.DefaultSpeciesTypeID=1,tblGrowthMultiplierDefault.DefaultSpeciesTypeID,tblGrowthMultiplierDefault.DefaultSpeciesTypeID+1) = tblForestTypeDefault.ForestTypeID
+                            GROUP BY tblDisturbanceTypeDefault.DistTypeID, tblForestTypeDefault.ForestTypeID, tblGrowthMultiplierDefault.AnnualOrder, tblGrowthMultiplierDefault.GrowthMultiplier
+                            HAVING (((tblDisturbanceTypeDefault.DistTypeID)=?));"""
+
+                for row in aidb.Query(growthMultipliersQuery, (distTypeId,)):
+                    self.cbmDefaults.add_record(
+                        "growth_multiplier_value", 
+                        growth_multiplier_series_id=growthMultId,
+                        forest_type_id=row.ForestTypeID,
+                        time_step=row.AnnualOrder,
+                        value=row.GrowthMultiplier)
+
+                growthMultId += 1
+
+
+
+    def populateFluxIndicators(self):
+        self.insert_csv_file("flux_indicator_category", "flux_indicator_category.csv")
+        self.insert_csv_file("flux_indicator_category_tr", "flux_indicator_category_tr.csv")
+        self.insert_csv_file("flux_indicator","flux_indicator.csv")
+        self.insert_csv_file("flux_indicator_source","flux_indicator_source.csv")
+        self.insert_csv_file("flux_indicator_sink","flux_indicator_sink.csv")

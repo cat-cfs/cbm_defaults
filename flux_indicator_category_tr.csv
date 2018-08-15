@@ -1,61 +1,61 @@
-id,flux_indicator_category_id,locale,category_name,sub_category_name
-1,1,en-CA,Stock Changes,Total
-2,2,en-CA,Stock Changes,Biomass Totals
-3,3,en-CA,Stock Changes,DOM Totals
-4,4,en-CA,Ecosystem Indicators,Productivity
-5,6,en-CA,Ecosystem Indicators,Ecosystem Indicators
-6,7,en-CA,Ecosystem Indicators,Ecosystem to Forest Products
-7,8,en-CA,Ecosystem Indicators,Release to Atmostphere
-8,9,en-CA,Emissions,Emissions By Source
-9,10,en-CA,Emissions,Emissions By Gas
-10,11,en-CA,Emissions,Biomass Emissions By Gas
-11,12,en-CA,Emissions,DOM Emissions By Gas
-12,13,en-CA,Disturbance Transfers,Disturbance Transfers
-13,1,fr-CA,Changements aux réservoirs,Totales
-14,2,fr-CA,Changements aux réservoirs,Totaux de la biomasse
-15,3,fr-CA,Changements aux réservoirs,Totaux MOM
-16,4,fr-CA,Indicateurs d'écosystème,Productivité
-17,6,fr-CA,Indicateurs d'écosystème,Indicateurs d'écosystème
-18,7,fr-CA,Indicateurs d'écosystème,Écosystème à produits forestiers
-19,8,fr-CA,Indicateurs d'écosystème,Émission à l'atmosphère
-20,9,fr-CA,Émissions,Émissions par source
-21,10,fr-CA,Émissions,Émissions par gaz
-22,11,fr-CA,Émissions,Émissions de la biomasse par gaz
-23,12,fr-CA,Émissions,Émissions MOM par gaz
-24,13,fr-CA,Transferts issus des perturbation,Transferts issus des perturbation
-25,1,ru-RU,Изменения запаса,Всего
-26,2,ru-RU,Изменения запаса,Общая биомасса
-27,3,ru-RU,Изменения запаса,Всего МОВ
-28,4,ru-RU,Экосистемные индикаторы,Продуктивность
-29,6,ru-RU,Экосистемные индикаторы,Экосистемные индикаторы
-30,7,ru-RU,Экосистемные индикаторы,Экосистема в лесные-продукты
-31,8,ru-RU,Экосистемные индикаторы,Высвобождается в атмосферу
-32,9,ru-RU,Эмиссии,Эмиссии источников
-33,10,ru-RU,Эмиссии,Эмиссии газов
-34,11,ru-RU,Эмиссии,Газовые эмиссии биомассы
-35,12,ru-RU,Эмиссии,МОВ эмиссия в газе
-36,13,ru-RU,Передача нарушения,Передача нарушения
-37,1,es-MX,Cambios en los reservorios,Total
-38,2,es-MX,Cambios en los reservorios,Totales de biomasa
-39,3,es-MX,Cambios en los reservorios,Totales de MOM
-40,4,es-MX,Indicadores de ecosistema,Productividad
-41,6,es-MX,Indicadores de ecosistema,Indicadores de ecosistema
-42,7,es-MX,Indicadores de ecosistema,Del Ecosistema a productos forestales
-43,8,es-MX,Indicadores de ecosistema,Liberar a la atmósfera
-44,9,es-MX,Emisiones,Emisiones por fuente
-45,10,es-MX,Emisiones,Emisiones por gas
-46,11,es-MX,Emisiones,Emisiones de biomasa por gas
-47,12,es-MX,Emisiones,Emisiones de MOM por gas
-48,13,es-MX,Transferencias de perturbaciones,Transferencias de perturbaciones
-49,1,pl-PL,Zmiany zasobów,Całkowity
-50,2,pl-PL,Zmiany zasobów,Podsumowanie biomasy do produktów leśnych
-51,3,pl-PL,Zmiany zasobów,Podsumowanie rozpuszczonej martwej materii organicznej (DOM)
-52,4,pl-PL,Wskaźniki ekosystemowe,Produktywność
-53,6,pl-PL,Wskaźniki ekosystemowe,Wskaźniki ekosystemu
-54,7,pl-PL,Wskaźniki ekosystemowe,Ekosystem do produktów leśnych
-55,8,pl-PL,Wskaźniki ekosystemowe,Uwolnione do atmosfery
-56,9,pl-PL,Emisje,Emisje według źródła
-57,10,pl-PL,Emisje,Emisje według gazu
-58,11,pl-PL,Emisje,Emisje biomasy według gazu
-59,12,pl-PL,Emisje,Emisje rozpuszczonej martwej materii organicznej (DOM) według gazu
-60,13,pl-PL,Transfery zakłóceń,Transfery zakłóceń
+id,flux_indicator_category_id,locale_id,category_name,subcategory_name
+1,1,1,Stock Changes,Total
+2,2,1,Stock Changes,Biomass Totals
+3,3,1,Stock Changes,DOM Totals
+4,4,1,Ecosystem Indicators,Productivity
+5,6,1,Ecosystem Indicators,Ecosystem Indicators
+6,7,1,Ecosystem Indicators,Ecosystem to Forest Products
+7,8,1,Ecosystem Indicators,Release to Atmostphere
+8,9,1,Emissions,Emissions By Source
+9,10,1,Emissions,Emissions By Gas
+10,11,1,Emissions,Biomass Emissions By Gas
+11,12,1,Emissions,DOM Emissions By Gas
+12,13,1,Disturbance Transfers,Disturbance Transfers
+13,1,2,Changements aux réservoirs,Totales
+14,2,2,Changements aux réservoirs,Totaux de la biomasse
+15,3,2,Changements aux réservoirs,Totaux MOM
+16,4,2,Indicateurs d'écosystème,Productivité
+17,6,2,Indicateurs d'écosystème,Indicateurs d'écosystème
+18,7,2,Indicateurs d'écosystème,Écosystème à produits forestiers
+19,8,2,Indicateurs d'écosystème,Émission à l'atmosphère
+20,9,2,Émissions,Émissions par source
+21,10,2,Émissions,Émissions par gaz
+22,11,2,Émissions,Émissions de la biomasse par gaz
+23,12,2,Émissions,Émissions MOM par gaz
+24,13,2,Transferts issus des perturbation,Transferts issus des perturbation
+25,1,4,Изменения запаса,Всего
+26,2,4,Изменения запаса,Общая биомасса
+27,3,4,Изменения запаса,Всего МОВ
+28,4,4,Экосистемные индикаторы,Продуктивность
+29,6,4,Экосистемные индикаторы,Экосистемные индикаторы
+30,7,4,Экосистемные индикаторы,Экосистема в лесные-продукты
+31,8,4,Экосистемные индикаторы,Высвобождается в атмосферу
+32,9,4,Эмиссии,Эмиссии источников
+33,10,4,Эмиссии,Эмиссии газов
+34,11,4,Эмиссии,Газовые эмиссии биомассы
+35,12,4,Эмиссии,МОВ эмиссия в газе
+36,13,4,Передача нарушения,Передача нарушения
+37,1,3,Cambios en los reservorios,Total
+38,2,3,Cambios en los reservorios,Totales de biomasa
+39,3,3,Cambios en los reservorios,Totales de MOM
+40,4,3,Indicadores de ecosistema,Productividad
+41,6,3,Indicadores de ecosistema,Indicadores de ecosistema
+42,7,3,Indicadores de ecosistema,Del Ecosistema a productos forestales
+43,8,3,Indicadores de ecosistema,Liberar a la atmósfera
+44,9,3,Emisiones,Emisiones por fuente
+45,10,3,Emisiones,Emisiones por gas
+46,11,3,Emisiones,Emisiones de biomasa por gas
+47,12,3,Emisiones,Emisiones de MOM por gas
+48,13,3,Transferencias de perturbaciones,Transferencias de perturbaciones
+49,1,5,Zmiany zasobów,Całkowity
+50,2,5,Zmiany zasobów,Podsumowanie biomasy do produktów leśnych
+51,3,5,Zmiany zasobów,Podsumowanie rozpuszczonej martwej materii organicznej (DOM)
+52,4,5,Wskaźniki ekosystemowe,Produktywność
+53,6,5,Wskaźniki ekosystemowe,Wskaźniki ekosystemu
+54,7,5,Wskaźniki ekosystemowe,Ekosystem do produktów leśnych
+55,8,5,Wskaźniki ekosystemowe,Uwolnione do atmosfery
+56,9,5,Emisje,Emisje według źródła
+57,10,5,Emisje,Emisje według gazu
+58,11,5,Emisje,Emisje biomasy według gazu
+59,12,5,Emisje,Emisje rozpuszczonej martwej materii organicznej (DOM) według gazu
+60,13,5,Transfery zakłóceń,Transfery zakłóceń
