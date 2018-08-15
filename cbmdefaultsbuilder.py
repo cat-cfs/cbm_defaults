@@ -71,8 +71,12 @@ class CBMDefaultsBuilder(object):
         self.populateSpatialUnits()
         self.populateSpecies()
         self.populateVolumeToBiomass()
-        #self.populateDisturbanceTypes()
+        self.populateLandClasses()
+        self.populateDisturbanceTypes()
+        self.populateDMValues()
+        self.populateDMAssociations()
         #self.PopulateGrowthMultipliers()
+
 
     def asBoolean(self,str):
         if str.lower() in ["true", "yes", "1"]:
@@ -82,6 +86,7 @@ class CBMDefaultsBuilder(object):
         else:
             raise TypeError("cannot parse {0} as boolean".format(str))
 
+
     def UnicodeDictReader(self, utf8_data, **kwargs):
         '''
         https://stackoverflow.com/questions/5004687/python-csv-dictreader-with-utf-8-data
@@ -89,6 +94,7 @@ class CBMDefaultsBuilder(object):
         csv_reader = csv.DictReader(utf8_data, **kwargs)
         for row in csv_reader:
             yield {unicode(key, 'utf-8'):unicode(value, 'utf-8') for key, value in row.iteritems()}
+
 
     def read_local_csv_file(self, filename):
         local_dir = os.path.dirname(os.path.realpath(__file__))
@@ -98,11 +104,13 @@ class CBMDefaultsBuilder(object):
             for row in reader:
                 yield row
 
+
     def populate_locale(self):
         for l in self.locales: 
             self.cbmDefaults.add_record("locale",
                                         id=l["id"],
                                         code=l["code"])
+
 
     def populatePools(self):
         for row in self.read_local_csv_file("pool.csv"):
@@ -122,6 +130,7 @@ class CBMDefaultsBuilder(object):
                                         locale_id = row["locale_id"],
                                         name = row["name"])
 
+
     def populateDecayParameters(self):
         id = 1
         with self.GetAIDB() as aidb:
@@ -138,6 +147,7 @@ class CBMDefaultsBuilder(object):
                     prop_to_atmosphere=row.PropToAtmosphere, 
                     max_rate=1)
                 id += 1
+
 
     def populateAdminBoundaries(self):
 
@@ -244,13 +254,16 @@ class CBMDefaultsBuilder(object):
             frp_b=0.354,
             frp_c=-0.06021195)
 
+
     def populateBiomassToCarbonRate(self):
         self.cbmDefaults.add_record("biomass_to_carbon_rate", 
                                     id=1, rate=0.5)
 
+
     def populateSlowMixingRate(self):
         self.cbmDefaults.add_record("slow_mixing_rate",
                                     id=1, rate=0.006)
+
 
     def populateSpatialUnits(self):
         qry = """SELECT tblSPUDefault.SPUID, tblSPUDefault.AdminBoundaryID, tblSPUDefault.EcoBoundaryID, tblClimateDefault.MeanAnnualTemp, tblEcoBoundaryDefault.AverageAge
@@ -278,8 +291,6 @@ class CBMDefaultsBuilder(object):
                     spinup_parameter_id=spinupu_parameter_id,
                     mean_annual_temperature=row.MeanAnnualTemp)
                 spinupu_parameter_id+=1
-
-
 
 
     def populateSpecies(self):
@@ -383,12 +394,13 @@ class CBMDefaultsBuilder(object):
             high_branches_prop=row.high_branches_prop,
             low_foliage_prop=row.low_foliage_prop,
             high_foliage_prop=row.high_foliage_prop )
-        
+
+
     def populateVolumeToBiomass(self):
         sqlVolToBioSpecies = "SELECT * FROM tblBioTotalStemwoodSpeciesTypeDefault"
         sqlVolToBioGenus = "SELECT * FROM tblBioTotalStemwoodGenusDefault"
         sqlVolToBioForestType = "SELECT * FROM tblBioTotalStemwoodForestTypeDefault"
-            
+
         voltoBioParameterid = 1
         with self.GetAIDB("en-CA") as aidb:
             for row in aidb.Query(sqlVolToBioSpecies):
@@ -421,118 +433,141 @@ class CBMDefaultsBuilder(object):
                     vol_to_bio_factor_id=voltoBioParameterid)
                 voltoBioParameterid += 1
 
+
+    def populateLandClasses(self):
+        for row in self.read_local_csv_file("landclass.csv"):
+            self.cbmDefaults.add_record(
+                "land_class",
+                code=row["code"],
+                id=row["id"], 
+                is_forest=self.asBoolean(row["is_forest"]),
+                transitional_period=row["transitional_period"],
+                transition_id=row["transition_id"])
+
+        for row in self.read_local_csv_file("landclass_translation.csv"):
+            self.cbmDefaults.add_record(
+                "land_class_tr",
+                id=row["id"],
+                land_class_id=row["landclass_id"],
+                locale_id=row["locale_id"],
+                description=row["description"])
+
+
     def populateDisturbanceTypes(self):
         unfccc_code_lookup = {}
         for row in self.read_local_csv_file("landclass.csv"):
             unfccc_code_lookup[row["code"]] = row["id"]
-            self.cbmDefaults.add_record(
-                "land_class",
-                id=row["id"], 
-                code=row["code"],
-                description=row["description"],
-                is_forest=self.asBoolean(row["is_forest"]),
-                transitional_period=row["transitional_period"],
-                transition_id=row["transition_id"])
-        
+
         disturbanceTypeLandclassLookup = {}
-        disturbanceTypeLandclassesCSVPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "disturbance_type_landclass.csv")
-        with open(disturbanceTypeLandclassesCSVPath, 'rb') as disturbanceTypeLandclassesCSVFile:
-            reader = csv.DictReader(disturbanceTypeLandclassesCSVFile)
-            for row in reader: 
-                disturbanceTypeLandclassLookup[int(row["DefaultDisturbanceTypeId"])] = unfccc_code_lookup[row["UNFCCC_CODE"]]
+        for row in self.read_local_csv_file("disturbance_type_landclass.csv"): 
+            disturbanceTypeLandclassLookup[int(row["DefaultDisturbanceTypeId"])] = unfccc_code_lookup[row["UNFCCC_CODE"]]
 
         distTypeQuery = """SELECT tblDisturbanceTypeDefault.DistTypeID, tblDisturbanceTypeDefault.DistTypeName, tblDisturbanceTypeDefault.Description
                             FROM tblDisturbanceTypeDefault
                             WHERE (((tblDisturbanceTypeDefault.IsMultiYear)=False));"""
-        
-        id = 1
-        for row in self.accessDb.Query(distTypeQuery):
-            landclasstransion = disturbanceTypeLandclassLookup[row.DistTypeID] \
-                if row.DistTypeID in disturbanceTypeLandclassLookup else -1
-            self.cbmDefaults.add_record(
-                "disturbance_type",
-                id=id,
-                name=row.DistTypeName,
-                description=row.Description,
-                transition_land_class_id=landclasstransion)
-            self.distTypeLookup[row.DistTypeName]=id
-            id += 1
-       
-        id = 1
-        dmidLookup = {}
-        dmQuery = """SELECT tblDM.DMID, tblDM.Name, tblDM.Description FROM tblDM;"""
-        for row in self.accessDb.Query(dmQuery):
-            self.cbmDefaults.add_record(
-                "disturbance_matrix", 
-                id = id,
-                name = row.Name,
-                description = row.Description)
 
-            dmidLookup[row.DMID] = id
-            dmValueQuery = """SELECT 
-                tblDMValuesLookup.DMID,
-                tblDMValuesLookup.DMRow,
-                tblDMValuesLookup.DMColumn,
-                tblDMValuesLookup.Proportion
-                FROM tblDMValuesLookup
-                WHERE tblDMValuesLookup.DMID={0};
-                """.format(row.DMID)
-            for dmValueRow in self.accessDb.Query(dmValueQuery):
-                src = self.poolCrossWalk[dmValueRow.DMRow]
-                sink = self.poolCrossWalk[dmValueRow.DMColumn]
-                if src == -1 or sink == -1:
-                   continue
-                
+        with self.GetAIDB("en-CA") as aidb:
+
+            for row in aidb.Query(distTypeQuery):
+                landclasstransion = disturbanceTypeLandclassLookup[row.DistTypeID] \
+                    if row.DistTypeID in disturbanceTypeLandclassLookup else -1
                 self.cbmDefaults.add_record(
-                    "disturbance_matrix_value",
-                    disturbance_matrix_id=id,
-                    source_pool_id=src,
-                    sink_pool_id=sink, 
-                    proportion=dmValueRow.Proportion)
-            id += 1
+                    "disturbance_type",
+                    id=row.DistTypeID,
+                    transition_land_class_id=landclasstransion)
 
-        dmEcoAssociationQuery = """SELECT tblDisturbanceTypeDefault.DistTypeName, 
-                        tblAdminBoundaryDefault.AdminBoundaryName, 
-                        tblEcoBoundaryDefault.EcoBoundaryName, 
-                        tblDMAssociationDefault.DMID
-                        FROM ((tblDisturbanceTypeDefault INNER JOIN (tblDMAssociationDefault 
-                        INNER JOIN tblSPUDefault ON tblDMAssociationDefault.DefaultEcoBoundaryID = tblSPUDefault.EcoBoundaryID) 
-                        ON tblDisturbanceTypeDefault.DistTypeID = tblDMAssociationDefault.DefaultDisturbanceTypeID) 
-                        INNER JOIN tblAdminBoundaryDefault ON tblSPUDefault.AdminBoundaryID = tblAdminBoundaryDefault.AdminBoundaryID) 
-                        INNER JOIN tblEcoBoundaryDefault ON tblSPUDefault.EcoBoundaryID = tblEcoBoundaryDefault.EcoBoundaryID
-                        WHERE (((tblDMAssociationDefault.DefaultDisturbanceTypeID)<>1) AND ((tblDisturbanceTypeDefault.IsMultiYear)=False));"""
+        tr_id= 1
+        for locale in self.locales:
+            with self.GetAIDB(locale["code"]) as aidb:
+                for row in aidb.Query(distTypeQuery):
+                    self.cbmDefaults.add_record(
+                        "disturbance_type_tr",
+                        id=tr_id,
+                        disturbance_type_id=row.DistTypeID,
+                        locale_id=locale["id"],
+                        name=row.DistTypeName,
+                        description=row.Description)
+                    tr_id += 1
 
-        for row in self.accessDb.Query(dmEcoAssociationQuery):
-            self.cbmDefaults.add_record(
-                "disturbance_matrix_association",
-                spatial_unit_id=self.spatialUnitLookup[(
-                    self.adminBoundaryLookup[row.AdminBoundaryName],
-                    self.ecoBoundaryLookup[row.EcoBoundaryName]
-                )],
-                disturbance_type_id=self.distTypeLookup[row.DistTypeName],
-                disturbance_matrix_id=dmidLookup[row.DMID])
 
-        dmSPUAssociationQuery = """SELECT 
-                        tblDisturbanceTypeDefault.DistTypeName, 
-                        tblAdminBoundaryDefault.AdminBoundaryName,
-                        tblEcoBoundaryDefault.EcoBoundaryName,
-                        tblDMAssociationSPUDefault.DMID
-                        FROM (((tblDMAssociationSPUDefault 
-                        INNER JOIN tblDisturbanceTypeDefault ON tblDMAssociationSPUDefault.DefaultDisturbanceTypeID = tblDisturbanceTypeDefault.DistTypeID)
-                        INNER JOIN tblSPUDefault ON tblDMAssociationSPUDefault.SPUID = tblSPUDefault.SPUID)
-                        INNER JOIN tblEcoBoundaryDefault ON tblSPUDefault.EcoBoundaryID = tblEcoBoundaryDefault.EcoBoundaryID)
-                        INNER JOIN tblAdminBoundaryDefault ON tblSPUDefault.AdminBoundaryID = tblAdminBoundaryDefault.AdminBoundaryID
-                        WHERE (((tblDisturbanceTypeDefault.IsMultiYear)=False));"""
+    def populateDMValues(self):
+        poolCrossWalk = {}
+        for row in self.read_local_csv_file("pool_cross_walk.csv"):
+            poolCrossWalk[int(row["cbm3_pool_code"])]=int(row["cbm3_5_pool_code"])
 
-        for row in self.accessDb.Query(dmSPUAssociationQuery):
-            self.cbmDefaults.add_record(
-                "disturbance_matrix_association",
-                spatial_unit_id=self.spatialUnitLookup[(
-                    self.adminBoundaryLookup[row.AdminBoundaryName],
-                    self.ecoBoundaryLookup[row.EcoBoundaryName]
-                )],
-                disturbance_type_id=self.distTypeLookup[row.DistTypeName],
-                disturbance_matrix_id=dmidLookup[row.DMID])
+        dmQuery = """SELECT tblDM.DMID, tblDM.Name, tblDM.Description FROM tblDM;"""
+
+        with self.GetAIDB("en-CA") as aidb:
+            id = 1
+
+            for row in aidb.Query(dmQuery):
+                self.cbmDefaults.add_record(
+                    "disturbance_matrix", 
+                    id = row.DMID)
+
+                dmValueQuery = """SELECT 
+                    tblDMValuesLookup.DMID,
+                    tblDMValuesLookup.DMRow,
+                    tblDMValuesLookup.DMColumn,
+                    tblDMValuesLookup.Proportion
+                    FROM tblDMValuesLookup
+                    WHERE tblDMValuesLookup.DMID=?;"""
+                    
+                for dmValueRow in aidb.Query(dmValueQuery, (row.DMID,)):
+                    src = poolCrossWalk[dmValueRow.DMRow]
+                    sink = poolCrossWalk[dmValueRow.DMColumn]
+                    if src == -1 or sink == -1:
+                       continue
+                    self.cbmDefaults.add_record(
+                        "disturbance_matrix_value",
+                        disturbance_matrix_id=row.DMID,
+                        source_pool_id=src,
+                        sink_pool_id=sink, 
+                        proportion=dmValueRow.Proportion)
+                id += 1
+
+        tr_id = 1
+        for locale in self.locales:
+            with self.GetAIDB(locale["code"]) as aidb:
+                for row in aidb.Query(dmQuery):
+                    self.cbmDefaults.add_record(
+                        "disturbance_matrix_tr", 
+                        id = tr_id,
+                        disturbance_matrix_id = row.DMID,
+                        locale_id = locale["id"],
+                        name = row.Name,
+                        description = row.Description)
+                    tr_id += 1
+
+
+    def populateDMAssociations(self):
+        dmEcoAssociationQuery = """SELECT tblDMAssociationDefault.DefaultDisturbanceTypeID, tblSPUDefault.SPUID, tblDMAssociationDefault.DMID
+            FROM tblDMAssociationDefault INNER JOIN tblSPUDefault ON tblDMAssociationDefault.DefaultEcoBoundaryID = tblSPUDefault.EcoBoundaryID
+            GROUP BY tblDMAssociationDefault.DefaultDisturbanceTypeID, tblSPUDefault.SPUID, tblDMAssociationDefault.DMID, tblDMAssociationDefault.DefaultDisturbanceTypeID
+            HAVING (((tblDMAssociationDefault.DefaultDisturbanceTypeID)<>1));
+            """
+        
+        with self.GetAIDB("en-CA") as aidb:
+            for row in aidb.Query(dmEcoAssociationQuery):
+                self.cbmDefaults.add_record(
+                    "disturbance_matrix_association",
+                    spatial_unit_id=row.SPUID,
+                    disturbance_type_id=row.DefaultDisturbanceTypeID,
+                    disturbance_matrix_id=row.DMID)
+        
+        dmSPUAssociationQuery = """SELECT tblDMAssociationSPUDefault.DefaultDisturbanceTypeID, tblDMAssociationSPUDefault.SPUID, tblDMAssociationSPUDefault.DMID
+                FROM tblDMAssociationSPUDefault
+                GROUP BY tblDMAssociationSPUDefault.DefaultDisturbanceTypeID, tblDMAssociationSPUDefault.SPUID, tblDMAssociationSPUDefault.DMID;
+        """
+        
+        with self.GetAIDB("en-CA") as aidb:
+            for row in aidb.Query(dmSPUAssociationQuery):
+                self.cbmDefaults.add_record(
+                    "disturbance_matrix_association",
+                    spatial_unit_id=row.SPUID,
+                    disturbance_type_id=row.DefaultDisturbanceTypeID,
+                    disturbance_matrix_id=row.DMID)
+
 
     def PopulateGrowthMultipliers(self):
         #these are the default disturbance types that have growth multipliers attached
@@ -546,7 +581,7 @@ class CBMDefaultsBuilder(object):
 
             self.cbmDefaults.add_record(
                 "disturbance_type_growth_multiplier_series",
-                disturbance_type_id=self.distTypeLookup[distTypeRow.DistTypeName], 
+                disturbance_type_id=self.distTypeLookup[distTypeRow.DistTypeName],
                 growth_multiplier_series_id=growthMultId)
 
             self.cbmDefaults.add_record(
