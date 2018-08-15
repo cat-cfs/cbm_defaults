@@ -132,8 +132,10 @@ CREATE TABLE root_parameter (
   CONSTRAINT u_root_parameters 
     UNIQUE (hw_a, sw_a, hw_b, frp_a, frp_b, frp_c));
 CREATE TABLE growth_multiplier_series (
-  id  INTEGER NOT NULL, 
-  PRIMARY KEY (id));
+  id                   INTEGER NOT NULL, 
+  disturbance_type_id integer(10) NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(disturbance_type_id) REFERENCES disturbance_type(id));
 CREATE TABLE growth_multiplier_value (
   growth_multiplier_series_id integer(10) NOT NULL, 
   forest_type_id              integer(10) NOT NULL, 
@@ -166,12 +168,6 @@ CREATE TABLE turnover_parameter (
   coarse_ag_split   double(10) NOT NULL, 
   fine_ag_split     double(10) NOT NULL, 
   PRIMARY KEY (id));
-CREATE TABLE disturbance_type_growth_multiplier_series (
-  disturbance_type_id         integer(10) NOT NULL, 
-  growth_multiplier_series_id integer(10) NOT NULL, 
-  PRIMARY KEY (disturbance_type_id), 
-  FOREIGN KEY(growth_multiplier_series_id) REFERENCES growth_multiplier_series(id), 
-  FOREIGN KEY(disturbance_type_id) REFERENCES disturbance_type(id));
 CREATE TABLE vol_to_bio_species (
   spatial_unit_id      integer(10) NOT NULL, 
   species_id           integer(10) NOT NULL, 
