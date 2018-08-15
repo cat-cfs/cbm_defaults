@@ -1,0 +1,105 @@
+id,pool_id,locale_id,name
+1,1,1,Softwood Merchantable
+2,2,1,Softwood Foliage
+3,3,1,Softwood Other
+4,4,1,Softwood Coarse Roots
+5,5,1,Softwood Fine Roots
+6,6,1,Hardwood Merchantable
+7,7,1,Hardwood Foliage
+8,8,1,Hardwood Other
+9,9,1,Hardwood Coarse roots
+10,10,1,Hardwood Fine Roots
+11,11,1,Aboveground Very Fast DOM
+12,12,1,Belowground Very Fast DOM
+13,13,1,Aboveground Fast DOM
+14,14,1,Belowground Fast DOM
+15,15,1,Medium DOM
+16,16,1,Aboveground Slow DOM
+17,17,1,Belowground Slow DOM
+18,18,1,Softwood Stem Snag
+19,19,1,Softwood Branch Snag
+20,20,1,Hardwood Stem Snag
+21,21,1,Hardwood Branch Snag
+22,22,1,CO2
+23,23,1,CH4
+24,24,1,CO
+25,25,1,NO2
+26,26,1,Products
+27,1,2,Résineux marchand
+28,2,2,Résineux feuillage
+29,3,2,Résineux autre
+30,4,2,Résineux grosses racines
+31,5,2,Résineux radicelles
+32,6,2,Feuillu marchand
+33,7,2,Feuillu feuillage
+34,8,2,Feuillu autre
+35,9,2,Feuillu grosses racines
+36,10,2,Feuillu radicelles
+37,11,2,MOM aérienne très rapide
+38,12,2,MOM souterraine très rapide
+39,13,2,MOM aérienne rapide
+40,14,2,MOM souterraine rapide
+41,15,2,MOM médium
+42,16,2,MOM aérienne lente
+43,17,2,MOM souterraine lente
+44,18,2,Chicot de tige de résineux
+45,19,2,Chicot de branche de résineux
+46,20,2,Chicot de tige de feuillu
+47,21,2,Chicot de branche de feuillu
+48,22,2,CO2
+49,23,2,CH4
+50,24,2,CO
+51,25,2,NO2
+52,26,2,Produits
+53,1,3,Coníferas comerciables
+54,2,3,Follaje de coníferas
+55,3,3,Otras coníferas
+56,4,3,Raíces gruesas de coníferas
+57,5,3,Raíces finas de coníferas
+58,6,3,Caducifolios comerciables
+59,7,3,Follaje de caducifolios
+60,8,3,Otro de caducifolios
+61,9,3,Raíces gruesas de caducifolios
+62,10,3,Raíces finas de caducifolios
+63,11,3,MOM muy rápida superficial
+64,12,3,MOM muy rápida subterránea
+65,13,3,MOM rápida superficial
+66,14,3,MOM rápida subterránea
+67,15,3,MOM regular
+68,16,3,MOM superficial lenta
+69,17,3,MOM subterránea lenta
+70,18,3,Troncos muertos de coníferas
+71,19,3,Ramas muertas de coníferas
+72,20,3,Troncos muertos de caducifolios
+73,21,3,Ramas muertas de caducifolios
+74,22,3,CO2
+75,23,3,CH4
+76,24,3,CO
+77,25,3,NO2
+78,26,3,Productos
+79,1,4,Товарная хвойная древесина
+80,2,4,Хвоя
+81,3,4,Хвойные прочее
+82,4,4,Крупные корни хвойных
+83,5,4,Тонкие корни хвойных
+84,6,4,Деловая древесина лиственных пород
+85,7,4,Листва лиственных пород
+86,8,4,Другие лиственные породы
+87,9,4,Крупные корни лиственных пород
+88,10,4,Тонкие корни лиственных пород
+89,11,4,Надземное очень быстро разлагающееся МОВ
+90,12,4,Подземное очень быстро разлагающееся МОВ
+91,13,4,Надземное быстро разлагающеея МОВ
+92,14,4,Подземное быстро разлагающееся МОВ
+93,15,4,МОВ со средней скоростью разложения
+94,16,4,Надземное медленно разлагающееся МОВ
+95,17,4,Подземное медленно разлагающееся МОВ
+96,18,4,Валеж стволов хвойных пород
+97,19,4,Валеж ветвей хвойных
+98,20,4,Валеж стволов лиственных пород
+99,21,4,Валеж ветвей лиственных пород
+100,22,4,CO2
+101,23,4,CH4
+102,24,4,CO
+103,25,4,NO2
+104,26,4,Продукты

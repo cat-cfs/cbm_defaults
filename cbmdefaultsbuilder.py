@@ -1,9 +1,16 @@
-import os, csv
-
+import os, csv, contextlib
+from accessdb import AccessDB
 class CBMDefaultsBuilder(object):
 
-    def __init__(self, accessDb, cbmDefaults):
-        self.accessDb = accessDb 
+    def __init__(self, aidb_paths, cbmDefaults):
+        self.locales = {
+            "en-CA": 1,
+            "fr-CA": 2,
+            "es-MX": 3,
+            "ru-RU": 4,
+            "pl-PL": 5
+        }
+        self.aidb_paths = aidb_paths 
         self.cbmDefaults = cbmDefaults
         self.adminBoundaryLookup = {}
         self.ecoBoundaryLookup = {}
@@ -12,7 +19,12 @@ class CBMDefaultsBuilder(object):
         self.genusLookup = {}
         self.speciesLookup = {}
         self.distTypeLookup = {}
-        
+
+    @contextlib.contextmanager
+    def GetAIDB(self, language="en-CA"):
+        with AccessDB(self.aidb_paths[language],False) as a:
+            yield a
+
     def run(self):
         self.poolCrossWalk = {
             #cbm3:  #cbm3.5 (-1 is defunct)
@@ -47,36 +59,8 @@ class CBMDefaultsBuilder(object):
             29:     25,  #NO2
             30:     26   #products
         }
-        self.pools = {
-            0: "Input",
-            1: "SoftwoodMerch",
-            2: "SoftwoodFoliage",
-            3: "SoftwoodOther",
-            4: "SoftwoodCoarseRoots",
-            5: "SoftwoodFineRoots",
-            6: "HardwoodMerch",
-            7: "HardwoodFoliage",
-            8: "HardwoodOther",
-            9: "HardwoodCoarseRoots",
-            10: "HardwoodFineRoots",
-            11: "AboveGroundVeryFastSoil",
-            12: "BelowGroundVeryFastSoil",
-            13: "AboveGroundFastSoil",
-            14: "BelowGroundFastSoil",
-            15: "MediumSoil",
-            16: "AboveGroundSlowSoil",
-            17: "BelowGroundSlowSoil",
-            18: "SoftwoodStemSnag",
-            19: "SoftwoodBranchSnag",
-            20: "HardwoodStemSnag",
-            21: "HardwoodBranchSnag",
-            22: "CO2",
-            23: "CH4",
-            24: "CO",
-            25: "NO2",
-            26: "Products"
-        }
 
+        self.populate_locale()
         self.populatePools()
         self.populateDecayParameters()
         self.populateAdminBoundaries()
@@ -90,35 +74,64 @@ class CBMDefaultsBuilder(object):
         self.populateDisturbanceTypes()
         self.PopulateGrowthMultipliers()
 
-    def populatePools(self):
+    
+    def UnicodeDictReader(self, utf8_data, **kwargs):
+        '''
+        https://stackoverflow.com/questions/5004687/python-csv-dictreader-with-utf-8-data
+        '''
+        csv_reader = csv.DictReader(utf8_data, **kwargs)
+        for row in csv_reader:
+            yield {unicode(key, 'utf-8'):unicode(value, 'utf-8') for key, value in row.iteritems()}
 
-        for id,name in self.pools.iteritems():
-            self.cbmDefaults.add_record("pool",
+    def read_local_csv_file(self, filename):
+        local_dir = os.path.dirname(os.path.realpath(__file__))
+        local_file = os.path.join(local_dir, filename)
+        with open(local_file, 'r') as local_csv_file:
+            reader = self.UnicodeDictReader(local_csv_file)
+            for row in reader:
+                yield row
+
+    def populate_locale(self):
+        for code, id in self.locales.items(): 
+            self.cbmDefaults.add_record("locale",
                                         id=id,
-                                        name=name)
+                                        code=code)
+    def populatePools(self):
+        for row in self.read_local_csv_file("pool.csv"):
+            self.cbmDefaults.add_record("pool",
+                id = row["id"],
+                code = row["code"])
 
-        domPoolId = 1
-        for s in range(11,21+1):
+
+        for row in self.read_local_csv_file("dom_pool.csv"):
             self.cbmDefaults.add_record("dom_pool",
-                                        id=domPoolId,
-                                        pool_id=s)
-            domPoolId += 1
+                                        id=row["id"],
+                                        pool_id=row["pool_id"])
+
+        for row in self.read_local_csv_file("pool_tr.csv"):
+            self.cbmDefaults.add_record("pool_tr",
+                                        id = row["id"],
+                                        pool_id = row["pool_id"],
+                                        locale_id = row["locale_id"],
+                                        name = row["name"])
+
     
     def populateDecayParameters(self):
         id = 1
-        for row in self.accessDb.Query(
-            "SELECT * FROM tblDOMParametersDefault ORDER BY SoilPoolID"):
-            if row.SoilPoolID > 10:
-                break
-            self.cbmDefaults.add_record(
-                "decay_parameter",
-                dom_pool_id=id, 
-                base_decay_rate=row.OrganicMatterDecayRate, 
-                reference_temp=row.ReferenceTemp, 
-                q10=row.Q10,
-                prop_to_atmosphere=row.PropToAtmosphere, 
-                max_rate=1)
-            id += 1
+        with self.GetAIDB() as aidb:
+            for row in aidb.Query(
+                "SELECT * FROM tblDOMParametersDefault ORDER BY SoilPoolID"):
+                if row.SoilPoolID > 10:
+                    break
+                self.cbmDefaults.add_record(
+                    "decay_parameter",
+                    dom_pool_id=id, 
+                    base_decay_rate=row.OrganicMatterDecayRate, 
+                    reference_temp=row.ReferenceTemp, 
+                    q10=row.Q10,
+                    prop_to_atmosphere=row.PropToAtmosphere, 
+                    max_rate=1)
+                id += 1
             
     def populateAdminBoundaries(self):
 
@@ -137,6 +150,17 @@ class CBMDefaultsBuilder(object):
                 id=row.AdminBoundaryID, 
                 stump_parameter_id=id, 
                 name=row.AdminBoundaryName)
+
+            tr_id = 1
+            for k,v in self.locales.items():
+
+                self.cbmDefaults.add_record(
+                    "admin_boundary_tr",
+                    id=tr_id,
+                    admin_boundary_id=id,
+                    locale_id=v,
+                    name="")
+                tr_id+=1
             id+=1
             
             self.adminBoundaryLookup[row.AdminBoundaryName]=row.AdminBoundaryID
@@ -413,13 +437,7 @@ class CBMDefaultsBuilder(object):
         else:
             raise TypeError("cannot parse {0} as boolean".format(str))
 
-    def read_local_csv_file(self, filename):
-        local_dir = os.path.dirname(os.path.realpath(__file__))
-        local_file = os.path.join(local_idr, "landclasses.csv")
-        with open(local_file, 'rb') as local_csv_file:
-            reader = csv.DictReader(local_file)
-            for row in reader:
-                yield row
+
 
     def populateDisturbanceTypes(self):
         unfccc_code_lookup = {}
