@@ -320,11 +320,13 @@ CREATE TABLE composite_flux_indicator (
   flux_indicator_category_id integer(10) NOT NULL, 
   PRIMARY KEY (id));
 CREATE TABLE composite_flux_indicator_value (
-  id                integer(10) NOT NULL, 
-  flux_indicator_id integer(10) NOT NULL, 
-  multiplier        integer(10) NOT NULL, 
+  id                          integer(10) NOT NULL, 
+  composite_flux_indicator_id integer(10) NOT NULL, 
+  flux_indicator_id           integer(10) NOT NULL, 
+  multiplier                  integer(10) NOT NULL, 
   PRIMARY KEY (id), 
-  FOREIGN KEY(flux_indicator_id) REFERENCES flux_indicator(id));
+  FOREIGN KEY(flux_indicator_id) REFERENCES flux_indicator(id), 
+  FOREIGN KEY(composite_flux_indicator_id) REFERENCES composite_flux_indicator(id));
 CREATE TABLE composite_flux_indicator_tr (
   id                           INTEGER NOT NULL, 
   composite_flux_indicator_id integer(10) NOT NULL, 

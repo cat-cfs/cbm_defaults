@@ -441,7 +441,7 @@ class CBMDefaultsBuilder(object):
 
             for row in aidb.Query(distTypeQuery):
                 landclasstransion = disturbanceTypeLandclassLookup[row.DistTypeID] \
-                    if row.DistTypeID in disturbanceTypeLandclassLookup else -1
+                    if row.DistTypeID in disturbanceTypeLandclassLookup else None
                 self.cbmDefaults.add_record(
                     "disturbance_type",
                     id=row.DistTypeID,
@@ -547,13 +547,9 @@ class CBMDefaultsBuilder(object):
         with self.GetAIDB("en-CA") as aidb:
             for distTypeId in distTypeIds:
                 self.cbmDefaults.add_record(
-                    "disturbance_type_growth_multiplier_series",
-                    disturbance_type_id=distTypeId,
-                    growth_multiplier_series_id=growthMultId)
-
-                self.cbmDefaults.add_record(
                     "growth_multiplier_series", 
-                    id=growthMultId)
+                    id=growthMultId,
+                    disturbance_type_id=distTypeId)
 
                 growthMultipliersQuery = """SELECT tblForestTypeDefault.ForestTypeID, tblGrowthMultiplierDefault.AnnualOrder, tblGrowthMultiplierDefault.GrowthMultiplier
                             FROM (tblDisturbanceTypeDefault INNER JOIN tblGrowthMultiplierDefault ON tblDisturbanceTypeDefault.DistTypeID = tblGrowthMultiplierDefault.DefaultDisturbanceTypeID) 
@@ -575,8 +571,12 @@ class CBMDefaultsBuilder(object):
 
 
     def populateFluxIndicators(self):
+        self.insert_csv_file("flux_process", "flux_process.csv")
         self.insert_csv_file("flux_indicator_category", "flux_indicator_category.csv")
         self.insert_csv_file("flux_indicator_category_tr", "flux_indicator_category_tr.csv")
         self.insert_csv_file("flux_indicator","flux_indicator.csv")
         self.insert_csv_file("flux_indicator_source","flux_indicator_source.csv")
         self.insert_csv_file("flux_indicator_sink","flux_indicator_sink.csv")
+        self.insert_csv_file("composite_flux_indicator","composite_flux_indicator.csv")
+        self.insert_csv_file("composite_flux_indicator_tr", "composite_flux_indicator_tr.csv")
+        self.insert_csv_file("composite_flux_indicator_value","composite_flux_indicator_value.csv")

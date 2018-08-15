@@ -5,6 +5,7 @@ class CBMDefaultsInterface(object):
         if createNew and os.path.exists(sqlitePath):
             os.remove(sqlitePath)
         self.conn = sqlite3.connect(sqlitePath)
+        self.conn.execute("PRAGMA foreign_keys = 1")
         self.cur = self.conn.cursor()
         self.sqlitePath = sqlitePath
         self.tables = set([]) #purely for logging/user feedback
