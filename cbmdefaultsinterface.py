@@ -7,11 +7,12 @@ class CBMDefaultsInterface(object):
         self.conn = sqlite3.connect(sqlitePath)
         self.cur = self.conn.cursor()
         self.sqlitePath = sqlitePath
-        self.tables = set([])
+        self.last_table = "" #purely for logging/user feedback
     
     def executeDDLFile(self, ddlPath):
         with open(ddlPath, 'r') as ddlfile:
             for ddl in [x for x in ddlfile.read().split(";") if x is not None]:
+                logging.info("ddl: "+ ddl)
                 self.cur.execute(ddl)
 
     def commitChanges(self):
@@ -19,8 +20,8 @@ class CBMDefaultsInterface(object):
         self.conn.close()
        
     def add_record(self, table_name, **kwargs):
-        if not table_name in self.tables:
-            self.tables.add(table_name)
+        if not table_name == self.last_table:
+            self.last_table = table_name
             logging.info("writing: " + table_name)
 
         record_values = kwargs

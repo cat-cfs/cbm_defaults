@@ -16,7 +16,7 @@ aidb_paths = {
     "pl-PL": os.path.join(aidb_dir, "ArchiveIndex_Beta_Install.mdb")#since there is no polish aidb, use the english terms
 }
 
-cbmDefaultsPath = r"\\dstore\carbon1\CBM Tools and Development\CBM3.5\documentation\next_generation_schema\populateCBMDefaults\cbm_defaults.db"
+cbmDefaultsPath = r"C:\dev\LibCBM\cbm_defaults\cbm_defaults.db"
 ddlPath = "cbmDefaults.ddl"
 
 cbmDefaults = CBMDefaultsInterface(cbmDefaultsPath)

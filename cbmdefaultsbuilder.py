@@ -68,13 +68,20 @@ class CBMDefaultsBuilder(object):
         self.populateRootParameter()
         self.populateBiomassToCarbonRate()
         self.populateSlowMixingRate()
-        #self.populateSpatialUnits()
-        #self.populateSpecies()
-        #self.populateVolumeToBiomass()
+        self.populateSpatialUnits()
+        self.populateSpecies()
+        self.populateVolumeToBiomass()
         #self.populateDisturbanceTypes()
         #self.PopulateGrowthMultipliers()
 
-    
+    def asBoolean(self,str):
+        if str.lower() in ["true", "yes", "1"]:
+            return True
+        elif str.lower() in ["false", "no", "0"]:
+            return False
+        else:
+            raise TypeError("cannot parse {0} as boolean".format(str))
+
     def UnicodeDictReader(self, utf8_data, **kwargs):
         '''
         https://stackoverflow.com/questions/5004687/python-csv-dictreader-with-utf-8-data
@@ -172,9 +179,9 @@ class CBMDefaultsBuilder(object):
                 result[int(row["eco_boundary_id"])] = row
 
             return result
-            
-    def populateEcoBoundaries(self):
 
+
+    def populateEcoBoundaries(self):
 
         randomReturnIntervalParams = self.GetRandomReturnIntervalParameters()
         with self.GetAIDB("en-CA") as aidb:
@@ -246,38 +253,33 @@ class CBMDefaultsBuilder(object):
                                     id=1, rate=0.006)
 
     def populateSpatialUnits(self):
-        qry = """SELECT tblSPUDefault.SPUID, tblAdminBoundaryDefault.AdminBoundaryName, tblEcoBoundaryDefault.EcoBoundaryName, tblClimateDefault.MeanAnnualTemp, tblEcoBoundaryDefault.AverageAge
-        FROM (tblEcoBoundaryDefault INNER JOIN (tblAdminBoundaryDefault INNER JOIN tblSPUDefault ON tblAdminBoundaryDefault.AdminBoundaryID = tblSPUDefault.AdminBoundaryID) ON tblEcoBoundaryDefault.EcoBoundaryID = tblSPUDefault.EcoBoundaryID) INNER JOIN tblClimateDefault ON tblSPUDefault.SPUID = tblClimateDefault.DefaultSPUID
-        WHERE (((tblClimateDefault.Year)=1981));"""
-        id = 1
-        for row in self.accessDb.Query(qry):
+        qry = """SELECT tblSPUDefault.SPUID, tblSPUDefault.AdminBoundaryID, tblSPUDefault.EcoBoundaryID, tblClimateDefault.MeanAnnualTemp, tblEcoBoundaryDefault.AverageAge
+                FROM (tblSPUDefault INNER JOIN tblClimateDefault ON tblSPUDefault.SPUID = tblClimateDefault.DefaultSPUID) INNER JOIN tblEcoBoundaryDefault ON tblSPUDefault.EcoBoundaryID = tblEcoBoundaryDefault.EcoBoundaryID
+                WHERE (((tblClimateDefault.Year)=1981));
+            """
+        spinupu_parameter_id = 1
+        with self.GetAIDB("en-CA") as aidb:
+            for row in aidb.Query(qry):
 
-            ecoId = self.ecoBoundaryLookup[row.EcoBoundaryName]
-            adminId = self.adminBoundaryLookup[row.AdminBoundaryName]
-            
-            self.cbmDefaults.add_record("climate_time_series", id=id)
-            self.cbmDefaults.add_record(
-                "climate",
-                id = row.SPUID, 
-                climate_time_series_id = id, 
-                t_year = -1, 
-                mean_annual_temperature = row.MeanAnnualTemp)
-            self.cbmDefaults.add_record(
-                "spinup_parameter",
-                id = id, 
-                return_interval = row.AverageAge,
-                min_rotations = 10, 
-                max_rotations = 30)
-            self.cbmDefaults.add_record(
-                "spatial_unit",
-                id=row.SPUID, 
-                admin_boundary_id=adminId,
-                eco_boundary_id=ecoId, 
-                root_parameter_id=1,
-                climate_time_series_id=id, 
-                spinup_parameter_id=id)
-            self.spatialUnitLookup[(adminId,ecoId)]=row.SPUID
-            id+=1
+                self.cbmDefaults.add_record(
+                    "spinup_parameter",
+                    id = spinupu_parameter_id, 
+                    return_interval = row.AverageAge,
+                    min_rotations = 10, 
+                    max_rotations = 30,
+                    historic_mean_temperature=row.MeanAnnualTemp)
+
+                self.cbmDefaults.add_record(
+                    "spatial_unit",
+                    id=row.SPUID, 
+                    admin_boundary_id=row.AdminBoundaryID,
+                    eco_boundary_id=row.EcoBoundaryID, 
+                    root_parameter_id=1,
+                    spinup_parameter_id=spinupu_parameter_id,
+                    mean_annual_temperature=row.MeanAnnualTemp)
+                spinupu_parameter_id+=1
+
+
 
 
     def populateSpecies(self):
@@ -286,44 +288,68 @@ class CBMDefaultsBuilder(object):
                            FROM tblForestTypeDefault
                            GROUP BY tblForestTypeDefault.ForestTypeID, tblForestTypeDefault.ForestTypeName;"""
 
-        for row in self.accessDb.Query(sqlForestType):
-            self.cbmDefaults.add_record(
-                "forest_type",
-                id=row.ForestTypeID, 
-                name=row.ForestTypeName)
-            self.forestTypeLookup[row.ForestTypeName] = row.ForestTypeID
-            
-                
         sqlGenus = """SELECT tblGenusTypeDefault.GenusID, tblGenusTypeDefault.GenusName
                       FROM tblGenusTypeDefault
                       GROUP BY tblGenusTypeDefault.GenusID, tblGenusTypeDefault.GenusName;"""
 
-        for row in self.accessDb.Query(sqlGenus):
-            self.cbmDefaults.add_record(
-                "genus",
-                id=row.GenusID, 
-                name=row.GenusName)
-            self.genusLookup[row.GenusName] = row.GenusID
+        sqlspecies = """SELECT tblSpeciesTypeDefault.SpeciesTypeID, tblSpeciesTypeDefault.SpeciesTypeName,
+                    tblSpeciesTypeDefault.ForestTypeID, tblSpeciesTypeDefault.GenusID
+                    FROM tblSpeciesTypeDefault;
+                    """
 
-        sqlspecies = """SELECT tblSpeciesTypeDefault.SpeciesTypeID, 
-                        tblSpeciesTypeDefault.SpeciesTypeName, 
-                        tblForestTypeDefault.ForestTypeName, 
-                        tblGenusTypeDefault.GenusName
-                        FROM tblGenusTypeDefault INNER JOIN 
-                        ( tblForestTypeDefault 
-                            INNER JOIN tblSpeciesTypeDefault 
-                                ON tblForestTypeDefault.ForestTypeID = tblSpeciesTypeDefault.ForestTypeID
-                        ) ON tblGenusTypeDefault.GenusID = tblSpeciesTypeDefault.GenusID;"""
+        with self.GetAIDB("en-CA") as aidb:
+            for row in aidb.Query(sqlForestType):
+                self.cbmDefaults.add_record(
+                    "forest_type",
+                    id=row.ForestTypeID)
 
-        for row in self.accessDb.Query(sqlspecies):
-            self.cbmDefaults.add_record(
-                "species",
-                id = row.SpeciesTypeID, 
-                forest_type_id = self.forestTypeLookup[row.ForestTypeName],
-                genus_id = self.genusLookup[row.GenusName],
-                name = row.SpeciesTypeName)
-            self.speciesLookup[row.SpeciesTypeName] = row.SpeciesTypeID
-    
+            for row in aidb.Query(sqlGenus):
+                self.cbmDefaults.add_record(
+                    "genus",
+                    id=row.GenusID)
+
+            for row in aidb.Query(sqlspecies):
+                self.cbmDefaults.add_record(
+                    "species",
+                    id = row.SpeciesTypeID,
+                    forest_type_id = row.ForestTypeID,
+                    genus_id = row.GenusID)
+
+        forest_type_tr_id=1
+        genus_tr_id=1
+        species_tr_id=1
+        for locale in self.locales:
+            with self.GetAIDB(locale["code"]) as aidb:
+
+                for row in aidb.Query(sqlForestType):
+                    self.cbmDefaults.add_record(
+                        "forest_type_tr",
+                        id=forest_type_tr_id,
+                        forest_type_id=row.ForestTypeID,
+                        locale_id=locale["id"],
+                        name=row.ForestTypeName)
+
+                    forest_type_tr_id += 1
+
+                for row in aidb.Query(sqlGenus):
+                    self.cbmDefaults.add_record(
+                        "genus_tr",
+                        id=genus_tr_id,
+                        genus_id=row.GenusID,
+                        locale_id=locale["id"],
+                        name=row.GenusName)
+                    genus_tr_id += 1
+
+                for row in aidb.Query(sqlspecies):
+                    self.cbmDefaults.add_record(
+                        "species_tr",
+                        id=species_tr_id,
+                        species_id=row.SpeciesTypeID,
+                        locale_id=locale["id"],
+                        name=row.SpeciesTypeName)
+                    species_tr_id += 1
+
+
     def insertVolToBioFactor(self, id, row):
         self.cbmDefaults.add_record(
             "vol_to_bio_factor",
@@ -359,95 +385,41 @@ class CBMDefaultsBuilder(object):
             high_foliage_prop=row.high_foliage_prop )
         
     def populateVolumeToBiomass(self):
-        sqlVolToBioSpecies = """SELECT 
-            tblAdminBoundaryDefault.AdminBoundaryName, 
-            tblEcoBoundaryDefault.EcoBoundaryName, 
-            tblSpeciesTypeDefault.SpeciesTypeName, 
-            tblBioTotalStemwoodSpeciesTypeDefault.*
-            FROM (((tblBioTotalStemwoodSpeciesTypeDefault 
-            INNER JOIN tblSPUDefault ON tblBioTotalStemwoodSpeciesTypeDefault.DefaultSPUID = tblSPUDefault.SPUID) 
-            INNER JOIN tblAdminBoundaryDefault ON tblSPUDefault.AdminBoundaryID = tblAdminBoundaryDefault.AdminBoundaryID) 
-            INNER JOIN tblEcoBoundaryDefault ON tblSPUDefault.EcoBoundaryID = tblEcoBoundaryDefault.EcoBoundaryID)
-            INNER JOIN tblSpeciesTypeDefault ON tblBioTotalStemwoodSpeciesTypeDefault.DefaultSpeciesTypeID = tblSpeciesTypeDefault.SpeciesTypeID;"""
-        sqlVolToBioGenus = """SELECT 
-            tblAdminBoundaryDefault.AdminBoundaryName, 
-            tblEcoBoundaryDefault.EcoBoundaryName, 
-            tblGenusTypeDefault.GenusName, 
-            tblBioTotalStemwoodGenusDefault.*
-            FROM tblGenusTypeDefault 
-            INNER JOIN (((tblSPUDefault 
-            INNER JOIN tblAdminBoundaryDefault ON tblSPUDefault.AdminBoundaryID = tblAdminBoundaryDefault.AdminBoundaryID) 
-            INNER JOIN tblEcoBoundaryDefault ON tblSPUDefault.EcoBoundaryID = tblEcoBoundaryDefault.EcoBoundaryID) 
-            INNER JOIN tblBioTotalStemwoodGenusDefault ON tblSPUDefault.SPUID = tblBioTotalStemwoodGenusDefault.DefaultSPUID) 
-            ON tblGenusTypeDefault.GenusID = tblBioTotalStemwoodGenusDefault.DefaultGenusID;"""
-        sqlVolToBioForestType = """SELECT 
-            tblAdminBoundaryDefault.AdminBoundaryName, 
-            tblEcoBoundaryDefault.EcoBoundaryName, 
-            tblForestTypeDefault.ForestTypeName, 
-            tblBioTotalStemwoodForestTypeDefault.*
-            FROM (tblBioTotalStemwoodForestTypeDefault 
-            INNER JOIN ((tblSPUDefault 
-            INNER JOIN tblAdminBoundaryDefault ON tblSPUDefault.AdminBoundaryID = tblAdminBoundaryDefault.AdminBoundaryID) 
-            INNER JOIN tblEcoBoundaryDefault ON tblSPUDefault.EcoBoundaryID = tblEcoBoundaryDefault.EcoBoundaryID) 
-            ON tblBioTotalStemwoodForestTypeDefault.DefaultSPUID = tblSPUDefault.SPUID) 
-            INNER JOIN tblForestTypeDefault 
-            ON tblBioTotalStemwoodForestTypeDefault.DefaultForestTypeID = tblForestTypeDefault.ForestTypeID;"""
+        sqlVolToBioSpecies = "SELECT * FROM tblBioTotalStemwoodSpeciesTypeDefault"
+        sqlVolToBioGenus = "SELECT * FROM tblBioTotalStemwoodGenusDefault"
+        sqlVolToBioForestType = "SELECT * FROM tblBioTotalStemwoodForestTypeDefault"
             
         voltoBioParameterid = 1
-        for row in self.accessDb.Query(sqlVolToBioSpecies):
-            self.insertVolToBioFactor(voltoBioParameterid, row)
+        with self.GetAIDB("en-CA") as aidb:
+            for row in aidb.Query(sqlVolToBioSpecies):
+                self.insertVolToBioFactor(voltoBioParameterid, row)
 
-            spuid = self.spatialUnitLookup[
-            (
-                self.adminBoundaryLookup[row.AdminBoundaryName],
-                self.ecoBoundaryLookup[row.EcoBoundaryName]
-            )]
-            self.cbmDefaults.add_record(
-                "vol_to_bio_species",
-                spatial_unit_id=spuid, 
-                species_id=self.speciesLookup[row.SpeciesTypeName], 
-                vol_to_bio_factor_id=voltoBioParameterid)
-            voltoBioParameterid += 1
+                self.cbmDefaults.add_record(
+                    "vol_to_bio_species",
+                    spatial_unit_id=row.DefaultSPUID,
+                    species_id=row.DefaultSpeciesTypeID,
+                    vol_to_bio_factor_id=voltoBioParameterid)
+                voltoBioParameterid += 1
 
-        for row in self.accessDb.Query(sqlVolToBioGenus):
-            self.insertVolToBioFactor(voltoBioParameterid, row)
+            for row in aidb.Query(sqlVolToBioGenus):
+                self.insertVolToBioFactor(voltoBioParameterid, row)
 
-            spuid = self.spatialUnitLookup[
-            (
-                self.adminBoundaryLookup[row.AdminBoundaryName],
-                self.ecoBoundaryLookup[row.EcoBoundaryName]
-            )]
-            self.cbmDefaults.add_record(
-                "vol_to_bio_genus",
-                spatial_unit_id=spuid,
-                genus_id=self.genusLookup[row.GenusName],
-                vol_to_bio_factor_id=voltoBioParameterid)
-            voltoBioParameterid += 1
-            
-        for row in self.accessDb.Query(sqlVolToBioForestType):
-            self.insertVolToBioFactor(voltoBioParameterid, row)
+                self.cbmDefaults.add_record(
+                    "vol_to_bio_genus",
+                    spatial_unit_id=row.DefaultSPUID,
+                    genus_id=row.DefaultGenusID,
+                    vol_to_bio_factor_id=voltoBioParameterid)
+                voltoBioParameterid += 1
 
-            spuid = self.spatialUnitLookup[
-            (
-                self.adminBoundaryLookup[row.AdminBoundaryName],
-                self.ecoBoundaryLookup[row.EcoBoundaryName]
-            )]
-            self.cbmDefaults.add_record(
-                "vol_to_bio_forest_type",
-                spatial_unit_id=spuid, 
-                forest_type_id=self.forestTypeLookup[row.ForestTypeName], 
-                vol_to_bio_factor_id=voltoBioParameterid)
-            voltoBioParameterid += 1
+            for row in aidb.Query(sqlVolToBioForestType):
+                self.insertVolToBioFactor(voltoBioParameterid, row)
 
-    def asBoolean(self,str):
-        if str.lower() in ["true", "yes", "1"]:
-            return True
-        elif str.lower() in ["false", "no", "0"]:
-            return False
-        else:
-            raise TypeError("cannot parse {0} as boolean".format(str))
-
-
+                self.cbmDefaults.add_record(
+                    "vol_to_bio_forest_type",
+                    spatial_unit_id=row.DefaultSPUID,
+                    forest_type_id=row.DefaultForestTypeID,
+                    vol_to_bio_factor_id=voltoBioParameterid)
+                voltoBioParameterid += 1
 
     def populateDisturbanceTypes(self):
         unfccc_code_lookup = {}
@@ -598,6 +570,3 @@ class CBMDefaultsBuilder(object):
                     value=row.GrowthMultiplier)
 
             growthMultId += 1
-
-
-                
