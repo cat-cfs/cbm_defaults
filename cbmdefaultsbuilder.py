@@ -572,11 +572,12 @@ class CBMDefaultsBuilder(object):
 
     def populateFluxIndicators(self):
         self.insert_csv_file("flux_process", "flux_process.csv")
-        self.insert_csv_file("flux_indicator_category", "flux_indicator_category.csv")
-        self.insert_csv_file("flux_indicator_category_tr", "flux_indicator_category_tr.csv")
         self.insert_csv_file("flux_indicator","flux_indicator.csv")
         self.insert_csv_file("flux_indicator_source","flux_indicator_source.csv")
         self.insert_csv_file("flux_indicator_sink","flux_indicator_sink.csv")
+        
+        self.insert_csv_file("composite_flux_indicator_category", "composite_flux_indicator_category.csv")
+        self.insert_csv_file("composite_flux_indicator_category_tr", "composite_flux_indicator_category_tr.csv")
         self.insert_csv_file("composite_flux_indicator","composite_flux_indicator.csv")
         self.insert_csv_file("composite_flux_indicator_tr", "composite_flux_indicator_tr.csv")
         self.insert_csv_file("composite_flux_indicator_value","composite_flux_indicator_value.csv")

@@ -289,17 +289,17 @@ CREATE TABLE flux_process (
   id    INTEGER NOT NULL, 
   name clob NOT NULL UNIQUE, 
   PRIMARY KEY (id));
-CREATE TABLE flux_indicator_category (
+CREATE TABLE composite_flux_indicator_category (
   id integer(10) NOT NULL, 
   PRIMARY KEY (id));
-CREATE TABLE flux_indicator_category_tr (
-  id                          INTEGER NOT NULL, 
-  flux_indicator_category_id integer(10) NOT NULL, 
-  locale_id                  integer(10) NOT NULL, 
-  category_name              clob NOT NULL, 
-  subcategory_name           clob NOT NULL, 
+CREATE TABLE composite_flux_indicator_category_tr (
+  id                                    INTEGER NOT NULL, 
+  composite_flux_indicator_category_id integer(10) NOT NULL, 
+  locale_id                            integer(10) NOT NULL, 
+  category_name                        clob NOT NULL, 
+  subcategory_name                     clob NOT NULL, 
   PRIMARY KEY (id), 
-  FOREIGN KEY(flux_indicator_category_id) REFERENCES flux_indicator_category(id), 
+  FOREIGN KEY(composite_flux_indicator_category_id) REFERENCES composite_flux_indicator_category(id), 
   FOREIGN KEY(locale_id) REFERENCES locale(id));
 CREATE TABLE flux_indicator_source (
   id                 INTEGER NOT NULL, 
@@ -316,9 +316,10 @@ CREATE TABLE flux_indicator_sink (
   FOREIGN KEY(flux_indicator_id) REFERENCES flux_indicator(id), 
   FOREIGN KEY(pool_id) REFERENCES pool(id));
 CREATE TABLE composite_flux_indicator (
-  id                         integer(10) NOT NULL, 
-  flux_indicator_category_id integer(10) NOT NULL, 
-  PRIMARY KEY (id));
+  id                                   integer(10) NOT NULL, 
+  composite_flux_indicator_category_id integer(10) NOT NULL, 
+  PRIMARY KEY (id), 
+  FOREIGN KEY(composite_flux_indicator_category_id) REFERENCES composite_flux_indicator_category(id));
 CREATE TABLE composite_flux_indicator_value (
   id                          integer(10) NOT NULL, 
   composite_flux_indicator_id integer(10) NOT NULL, 
