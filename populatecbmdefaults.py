@@ -6,7 +6,7 @@ from loghelper import *
 
 start_logging("populate_cbm_defaults.log")
 
-aidb_dir = r"M:\CBM Tools and Development\Builds\OpScaleArchiveIndex\20180611"
+aidb_dir = r"M:\CBM Tools and Development\Builds\OpScaleArchiveIndex\20180816"
 
 aidb_paths = {
     "en-CA": os.path.join(aidb_dir, "ArchiveIndex_Beta_Install.mdb"),

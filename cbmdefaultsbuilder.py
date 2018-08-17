@@ -12,13 +12,6 @@ class CBMDefaultsBuilder(object):
         ]
         self.aidb_paths = aidb_paths 
         self.cbmDefaults = cbmDefaults
-        #self.adminBoundaryLookup = {}
-        #self.ecoBoundaryLookup = {}
-        #self.spatialUnitLookup = {}
-        #self.forestTypeLookup = {}
-        #self.genusLookup = {}
-        #self.speciesLookup = {}
-        #self.distTypeLookup = {}
 
     @contextlib.contextmanager
     def GetAIDB(self, language="en-CA"):
@@ -44,6 +37,7 @@ class CBMDefaultsBuilder(object):
         self.populateDMAssociations()
         self.PopulateGrowthMultipliers()
         self.populateFluxIndicators()
+        self.populateAfforestation()
 
     def asBoolean(self,str):
         if str.lower() in ["true", "yes", "1"]:
@@ -581,3 +575,48 @@ class CBMDefaultsBuilder(object):
         self.insert_csv_file("composite_flux_indicator","composite_flux_indicator.csv")
         self.insert_csv_file("composite_flux_indicator_tr", "composite_flux_indicator_tr.csv")
         self.insert_csv_file("composite_flux_indicator_value","composite_flux_indicator_value.csv")
+
+
+    def populateAfforestation(self):
+        sql_pre_type_values = """
+            SELECT tblSPUDefault.SPUID, tblSVLAttributesDefaultAfforestation.PreTypeID, tblSVLAttributesDefaultAfforestation.SSoilPoolC_BG
+            FROM tblSVLAttributesDefaultAfforestation INNER JOIN tblSPUDefault ON (tblSVLAttributesDefaultAfforestation.EcoBoundaryID = tblSPUDefault.EcoBoundaryID) AND (tblSVLAttributesDefaultAfforestation.AdminBoundaryID = tblSPUDefault.AdminBoundaryID)
+            GROUP BY tblSPUDefault.SPUID, tblSVLAttributesDefaultAfforestation.PreTypeID, tblSVLAttributesDefaultAfforestation.SSoilPoolC_BG;
+        """
+
+        sql_pre_types = """
+            SELECT tblAfforestationPreTypeDefault.PreTypeID, tblAfforestationPreTypeDefault.Name
+            FROM tblAfforestationPreTypeDefault;
+        """
+        slow_bg_pool = [x for x in self.read_local_csv_file("pool.csv") 
+                        if x["code"] == "BelowGroundSlowSoil"][0]["id"]
+
+        with self.GetAIDB("en-CA") as aidb:
+            for row in aidb.Query(sql_pre_types):
+                self.cbmDefaults.add_record(
+                    "afforestation_pre_type",
+                    id=row.PreTypeID)
+
+            id = 1
+            for row in aidb.Query(sql_pre_type_values):
+                self.cbmDefaults.add_record(
+                    "afforestation_initial_pool",
+                    id=id,
+                    spatial_unit_id=row.SPUID,
+                    afforestation_pre_type_id=row.PreTypeID,
+                    pool_id=slow_bg_pool,
+                    value=row.SSoilPoolC_BG)
+                id+=1
+
+        id=1
+        for locale in self.locales:
+            with self.GetAIDB(locale["code"]) as aidb:
+                for row in aidb.Query(sql_pre_types):
+                    self.cbmDefaults.add_record(
+                        "afforestation_pre_type_tr",
+                        id=id,
+                        afforestation_pre_type_id=row.PreTypeID,
+                        locale_id=locale["id"],
+                        name=row.Name)
+                    id+=1
+
