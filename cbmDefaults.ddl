@@ -351,6 +351,27 @@ CREATE TABLE biomass_to_carbon_rate (
   id    INTEGER NOT NULL, 
   rate integer(10) NOT NULL, 
   PRIMARY KEY (id));
+CREATE TABLE afforestation_pre_type (
+  id integer(10) NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE afforestation_pre_type_tr (
+  id                         INTEGER NOT NULL, 
+  afforestation_pre_type_id integer(10) NOT NULL, 
+  locale_id                 integer(10) NOT NULL, 
+  name                      clob NOT NULL, 
+  PRIMARY KEY (id));
+CREATE TABLE afforestation_initial_pool (
+  id                         INTEGER NOT NULL, 
+  spatial_unit_id           integer(10) NOT NULL, 
+  afforestation_pre_type_id integer(10) NOT NULL, 
+  pool_id                   integer(10) NOT NULL, 
+  value                     double(10) NOT NULL, 
+  PRIMARY KEY (id), 
+  CONSTRAINT unique_pool_value 
+    UNIQUE (id, spatial_unit_id, afforestation_pre_type_id, pool_id), 
+  FOREIGN KEY(afforestation_pre_type_id) REFERENCES afforestation_pre_type(id), 
+  FOREIGN KEY(spatial_unit_id) REFERENCES spatial_unit(id), 
+  FOREIGN KEY(pool_id) REFERENCES pool(id));
 CREATE INDEX disturbance_matrix_id 
   ON disturbance_matrix (id);
 CREATE INDEX disturbance_matrix_value_disturbance_matrix_id 
