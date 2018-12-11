@@ -6,7 +6,7 @@ from loghelper import *
 
 start_logging("populate_cbm_defaults.log")
 
-aidb_dir = r"M:\CBM Tools and Development\Builds\OpScaleArchiveIndex\20180816"
+aidb_dir = r"M:\CBM Tools and Development\Builds\OpScaleArchiveIndex\20180828"
 
 aidb_paths = {
     "en-CA": os.path.join(aidb_dir, "ArchiveIndex_Beta_Install.mdb"),
@@ -16,7 +16,7 @@ aidb_paths = {
     "pl-PL": os.path.join(aidb_dir, "ArchiveIndex_Beta_Install.mdb")#since there is no polish aidb, use the english terms
 }
 
-cbmDefaultsPath = r"C:\dev\LibCBM\cbm_defaults\cbm_defaults.db"
+cbmDefaultsPath = r"C:\dev\cbm_defaults\cbm_defaults.db"
 ddlPath = "cbmDefaults.ddl"
 
 cbmDefaults = CBMDefaultsInterface(cbmDefaultsPath)
