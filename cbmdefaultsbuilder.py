@@ -131,7 +131,7 @@ class CBMDefaultsBuilder(object):
                     "admin_boundary",
                     id=row.AdminBoundaryID,
                     stump_parameter_id=stump_parameter_id)
-            stump_parameter_id+=1
+                stump_parameter_id+=1
 
         translation_id = 1
         for locale in self.locales:
