@@ -58,6 +58,7 @@ CREATE TABLE land_class (
   id                   INTEGER NOT NULL, 
   code                clob NOT NULL UNIQUE, 
   is_forest           integer NOT NULL, 
+  is_simulated        integer NOT NULL,
   transitional_period integer(10) NOT NULL, 
   transition_id       integer(10) NOT NULL, 
   PRIMARY KEY (id));

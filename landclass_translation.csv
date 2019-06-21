@@ -22,95 +22,100 @@ id,landclass_id,locale_id,description
 21,21,1,Unmanaged Forest Land converted to Settlements
 22,22,1,Unmanaged Forest Land converted to Other
 23,23,1,Unmanaged Forest Land converted to Managed Forest
-24,1,2,Terres forestières dont la vocation n'a pas changé
-25,2,2,Terres cultivées dont la vocation n'a pas changé
-26,3,2,Prairies dont la vocation n'a pas changé
-27,4,2,Terres humides dont la vocation n'a pas changé
-28,5,2,Zones de peuplement dont la vocation n'a pas changé
-29,6,2,Autres terres dont la vocation n'a pas changé
-30,7,2,Terres cultivées converties en forêt
-31,8,2,Prairies converties en forêt
-32,9,2,Terres humides converties en forêt
-33,10,2,Zones de peuplement converties en forêt
-34,11,2,Autres terres converties en forêt
-35,12,2,Forêt convertie en terres cultivées
-36,13,2,Forêt convertie en prairies
-37,14,2,Forêt convertie en terres humides
-38,15,2,Forêt convertie en zones de peuplement
-39,16,2,Forêt convertie à d'autres utilisations
-40,17,2,Forêt non aménagée
-41,18,2,Forêt non aménagée convertie en terres cultivées
-42,19,2,Forêt non aménagée convertie en prairies
-43,20,2,Forêt non aménagée convertie en terres humides
-44,21,2,Forêt non aménagée convertie en zones de peuplement
-45,22,2,Forêt non aménagée convertie à d'autres utilisations
-46,23,2,Forêt non aménagée convertie en forêt aménagée
-47,1,4,"Лесные угодья, которые остаются лесными угодьями"
-48,2,4,Остающиеся пахотные земли
-49,3,4,Остающиеся пастбища
-50,4,4,Остающиеся заболоченные территории.
-51,5,4,Остающиеся поселения
-52,6,4,Прочее остающееся
-53,7,4,"Пахотные земли, превращенные в лесные угодья"
-54,8,4,"Пастбища, превращенные в лесные угодья"
-55,9,4,"Заболоченные территории, превращенные в лесные угодья"
-56,10,4,"Поселения, превращенные в лесные угодья"
-57,11,4,"Прочее, превращенное в лесные угодья"
-58,12,4,"Лесные угодья, превращенные в пахотные земли"
-59,13,4,"Лесные угодья, превращенные в пастбища"
-60,14,4,"Лесные угодья, превращенные в заболоченные территории"
-61,15,4,"Лесные угодья, превращенные в поселения"
-62,16,4,"Лесные угодья, превращенные в иное"
-63,17,4,Неуправляемые лесные угодья
-64,18,4,"Неуправляемые лесные угодья, превращенные в пахотные земли"
-65,19,4,"Неуправляемые лесные угодья, превращенные в пастбища"
-66,20,4,"Неуправляемые лесные угодья, превращенные в заболоченные территории"
-67,21,4,"Неуправляемые лесные угодья, превращенные в поселения"
-68,22,4,"Неуправляемые лесные угодья, превращенные в другое"
-69,23,4,"Неуправляемые лесные угодья, превращенные в управляемый лес"
-70,1,3,suelo forestal mantenido suelo forestal
-71,2,3,Suelo de cultivo mantenido
-72,3,3,Pastizales mantenidos
-73,4,3,Humedales mantenidos
-74,5,3,Poblados mantenidos
-75,6,3,Otros mantenidos
-76,7,3,Suelo de cultivo convertido en suelo forestal
-77,8,3,Pastizal convertido en suelo forestal
-78,9,3,Humedal convertido en suelo forestal
-79,10,3,Poblado convertido en suelo forestal
-80,11,3,Otro convertido en suelo forestal
-81,12,3,Suelo forestal convertido en suelo de cultivo
-82,13,3,Suelo forestal convertido en pastizal
-83,14,3,Suelo forestal convertido en humedal
-84,15,3,Suelo forestal convertido en poblado
-85,16,3,Suelo forestal convertido en otros
-86,17,3,Suelo forestal no explotado
-87,18,3,Suelo forestal no explotado convertido a suelo de cultivo
-88,19,3,Suelo forestal no explotado convertido en pastizal
-89,20,3,Suelo forestal no explotado convertido en humedal
-90,21,3,Suelo forestal no explotado convertido en poblado
-91,22,3,Suelo forestal no explotado en otros
-92,23,3,Suelo forestal no explotado convertido en bosque explotado
-93,1,5,"Powierzchnia leśna, pozostająca powierzchnią leśną"
-94,2,5,Zachowana ziemia uprawna
-95,3,5,Zachowana łąka
-96,4,5,Zachowane bagna
-97,5,5,Zachowane osady
-98,6,5,Inne zachowane
-99,7,5,Ziemia uprawna przekształcona w teren leśny
-100,8,5,Łąka przekształcona w teren leśny
-101,9,5,Bagna przekształcone w teren leśny
-102,10,5,Osady przekształcone w teren leśny
-103,11,5,Inne przekształcone w teren leśny
-104,12,5,Teren leśny przekształcony w ziemię uprawną
-105,13,5,Teren leśny przekształcony w łąkę
-106,14,5,Teren leśny przekształcony w bagna
-107,15,5,Teren leśny przekształcony w osady
-108,16,5,Teren leśny przekształcony w inne
-109,17,5,Niezagospodarowany teren leśny
-110,18,5,Niezagospodarowany teren leśny przekształcony w ziemię uprawną
-111,19,5,Niezagospodarowany teren leśny przekształcony w łąkę
-112,20,5,Niezagospodarowany teren leśny przekształcony w bagna
-113,21,5,Niezagospodarowany teren leśny przekształcony w osady
-114,22,5,Niezagospodarowany teren leśny przekształcony w inne
-115,23,5,Niezagospodarowany las przekształcony w las zagospodarowany
+24,24,1,Peatland
+25,1,2,Terres forestières dont la vocation n'a pas changé
+26,2,2,Terres cultivées dont la vocation n'a pas changé
+27,3,2,Prairies dont la vocation n'a pas changé
+28,4,2,Terres humides dont la vocation n'a pas changé
+29,5,2,Zones de peuplement dont la vocation n'a pas changé
+30,6,2,Autres terres dont la vocation n'a pas changé
+31,7,2,Terres cultivées converties en forêt
+32,8,2,Prairies converties en forêt
+33,9,2,Terres humides converties en forêt
+34,10,2,Zones de peuplement converties en forêt
+35,11,2,Autres terres converties en forêt
+36,12,2,Forêt convertie en terres cultivées
+37,13,2,Forêt convertie en prairies
+38,14,2,Forêt convertie en terres humides
+39,15,2,Forêt convertie en zones de peuplement
+40,16,2,Forêt convertie à d'autres utilisations
+41,17,2,Forêt non aménagée
+42,18,2,Forêt non aménagée convertie en terres cultivées
+43,19,2,Forêt non aménagée convertie en prairies
+44,20,2,Forêt non aménagée convertie en terres humides
+45,21,2,Forêt non aménagée convertie en zones de peuplement
+46,22,2,Forêt non aménagée convertie à d'autres utilisations
+47,23,2,Forêt non aménagée convertie en forêt aménagée
+48,24,2,Peatland
+49,1,4,"Лесные угодья, которые остаются лесными угодьями"
+50,2,4,Остающиеся пахотные земли
+51,3,4,Остающиеся пастбища
+52,4,4,Остающиеся заболоченные территории.
+53,5,4,Остающиеся поселения
+54,6,4,Прочее остающееся
+55,7,4,"Пахотные земли, превращенные в лесные угодья"
+56,8,4,"Пастбища, превращенные в лесные угодья"
+57,9,4,"Заболоченные территории, превращенные в лесные угодья"
+58,10,4,"Поселения, превращенные в лесные угодья"
+59,11,4,"Прочее, превращенное в лесные угодья"
+60,12,4,"Лесные угодья, превращенные в пахотные земли"
+61,13,4,"Лесные угодья, превращенные в пастбища"
+62,14,4,"Лесные угодья, превращенные в заболоченные территории"
+63,15,4,"Лесные угодья, превращенные в поселения"
+64,16,4,"Лесные угодья, превращенные в иное"
+65,17,4,Неуправляемые лесные угодья
+66,18,4,"Неуправляемые лесные угодья, превращенные в пахотные земли"
+67,19,4,"Неуправляемые лесные угодья, превращенные в пастбища"
+68,20,4,"Неуправляемые лесные угодья, превращенные в заболоченные территории"
+69,21,4,"Неуправляемые лесные угодья, превращенные в поселения"
+70,22,4,"Неуправляемые лесные угодья, превращенные в другое"
+71,23,4,"Неуправляемые лесные угодья, превращенные в управляемый лес"
+72,24,4,Peatland
+73,1,3,suelo forestal mantenido suelo forestal
+74,2,3,Suelo de cultivo mantenido
+75,3,3,Pastizales mantenidos
+76,4,3,Humedales mantenidos
+77,5,3,Poblados mantenidos
+78,6,3,Otros mantenidos
+79,7,3,Suelo de cultivo convertido en suelo forestal
+80,8,3,Pastizal convertido en suelo forestal
+81,9,3,Humedal convertido en suelo forestal
+82,10,3,Poblado convertido en suelo forestal
+83,11,3,Otro convertido en suelo forestal
+84,12,3,Suelo forestal convertido en suelo de cultivo
+85,13,3,Suelo forestal convertido en pastizal
+86,14,3,Suelo forestal convertido en humedal
+87,15,3,Suelo forestal convertido en poblado
+88,16,3,Suelo forestal convertido en otros
+89,17,3,Suelo forestal no explotado
+90,18,3,Suelo forestal no explotado convertido a suelo de cultivo
+91,19,3,Suelo forestal no explotado convertido en pastizal
+92,20,3,Suelo forestal no explotado convertido en humedal
+93,21,3,Suelo forestal no explotado convertido en poblado
+94,22,3,Suelo forestal no explotado en otros
+95,23,3,Suelo forestal no explotado convertido en bosque explotado
+96,24,3,Peatland
+97,1,5,"Powierzchnia leśna, pozostająca powierzchnią leśną"
+98,2,5,Zachowana ziemia uprawna
+99,3,5,Zachowana łąka
+100,4,5,Zachowane bagna
+101,5,5,Zachowane osady
+102,6,5,Inne zachowane
+103,7,5,Ziemia uprawna przekształcona w teren leśny
+104,8,5,Łąka przekształcona w teren leśny
+105,9,5,Bagna przekształcone w teren leśny
+106,10,5,Osady przekształcone w teren leśny
+107,11,5,Inne przekształcone w teren leśny
+108,12,5,Teren leśny przekształcony w ziemię uprawną
+109,13,5,Teren leśny przekształcony w łąkę
+110,14,5,Teren leśny przekształcony w bagna
+111,15,5,Teren leśny przekształcony w osady
+112,16,5,Teren leśny przekształcony w inne
+113,17,5,Niezagospodarowany teren leśny
+114,18,5,Niezagospodarowany teren leśny przekształcony w ziemię uprawną
+115,19,5,Niezagospodarowany teren leśny przekształcony w łąkę
+116,20,5,Niezagospodarowany teren leśny przekształcony w bagna
+117,21,5,Niezagospodarowany teren leśny przekształcony w osady
+118,22,5,Niezagospodarowany teren leśny przekształcony w inne
+119,23,5,Niezagospodarowany las przekształcony w las zagospodarowany
+120,24,5,Peatland

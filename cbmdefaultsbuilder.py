@@ -406,6 +406,7 @@ class CBMDefaultsBuilder(object):
                 code=row["code"],
                 id=row["id"], 
                 is_forest=self.asBoolean(row["is_forest"]),
+                is_simulated=self.asBoolean(row["is_simulated"]),
                 transitional_period=row["transitional_period"],
                 transition_id=row["transition_id"])
 
