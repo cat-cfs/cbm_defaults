@@ -428,9 +428,16 @@ class CBMDefaultsBuilder(object):
         for row in self.read_local_csv_file("disturbance_type_landclass.csv"): 
             disturbanceTypeLandclassLookup[int(row["DefaultDisturbanceTypeId"])] = unfccc_code_lookup[row["UNFCCC_CODE"]]
 
-        distTypeQuery = """SELECT tblDisturbanceTypeDefault.DistTypeID, tblDisturbanceTypeDefault.DistTypeName, tblDisturbanceTypeDefault.Description
-                            FROM tblDisturbanceTypeDefault
-                            WHERE (((tblDisturbanceTypeDefault.IsMultiYear)=False));"""
+        distTypeQuery = """
+            SELECT tblDisturbanceTypeDefault.DistTypeID,
+            tblDisturbanceTypeDefault.DistTypeName,
+            tblDisturbanceTypeDefault.Description
+            FROM tblDisturbanceTypeDefault LEFT JOIN (
+                SELECT tblDMAssociationDefault.DefaultDisturbanceTypeID
+                FROM tblDMAssociationDefault
+                GROUP BY tblDMAssociationDefault.DefaultDisturbanceTypeID) as dma
+                on tblDisturbanceTypeDefault.DistTypeID = dma.DefaultDisturbanceTypeID
+            WHERE dma.DefaultDisturbanceTypeID is not Null;"""
 
         with self.GetAIDB("en-CA") as aidb:
 
