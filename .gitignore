@@ -1,4 +1,9 @@
+# Temporary files #
+.DS_Store
 *.suo
 *.sln
 *.pyproj
 *.pyc
+
+# IDE files #
+/.idea
