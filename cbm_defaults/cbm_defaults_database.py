@@ -35,8 +35,17 @@ def get_connection(sqlite_path):
 
 
 def execute_ddl_files(ddl_path, sqlite_path):
+    """Execute the semicolon delimited sqlite data definition (DDL) statements
+    in the specified *ddl_path* on the database at the specified sqlite_path.
+
+    Args:
+        ddl_path (str): path to a file containing semicolon delimited sqlite
+            DDL statements.
+        sqlite_path (str): path to a sqlite database on which the statements
+            will be run.
+    """
     with get_connection(sqlite_path) as conn, \
-         open(ddl_path, 'r') as ddl_file:
+            open(ddl_path, 'r') as ddl_file:
 
         ddl_statements = [
             x for x in ddl_file.read().split(";") if x is not None]
@@ -47,6 +56,13 @@ def execute_ddl_files(ddl_path, sqlite_path):
 
 
 def add_record(connection, table_name, **kwargs):
+    """Add a record to the specified table in the connected database with
+    the column name, row value pairs specified by keyword args
+
+    Args:
+        connection (sqlite3.Connection): a connection to an sqlite database
+        table_name (str): the name of the table to which the record is added
+    """
     col_list = kwargs.keys()
 
     query = "INSERT INTO {table_name} ({col_list}) VALUES ({values})" \
@@ -58,4 +74,3 @@ def add_record(connection, table_name, **kwargs):
     params = [kwargs[k] for k in col_list]
     cursor = connection.cursor()
     cursor.execute(query, params)
-
