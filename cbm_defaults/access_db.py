@@ -1,6 +1,5 @@
-"""Functions for querying an MS-Access database
+"""Functions for querying the MS-Access database format
 """
-
 import pyodbc
 
 

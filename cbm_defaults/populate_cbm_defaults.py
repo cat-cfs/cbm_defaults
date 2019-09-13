@@ -7,6 +7,13 @@ start_logging("populate_cbm_defaults.log")
 
 aidb_dir = r"M:\CBM Tools and Development\Builds\OpScaleArchiveIndex\20180828"
 
+locales = [
+    {"id": 1, "code": "en-CA" },
+    {"id": 2, "code": "fr-CA" },
+    {"id": 3, "code": "es-MX" },
+    {"id": 4, "code": "ru-RU" },
+    {"id": 5, "code": "pl-PL" }
+]
 aidb_paths = {
     "en-CA": os.path.join(aidb_dir, "ArchiveIndex_Beta_Install.mdb"),
     "fr-CA": os.path.join(aidb_dir, "ArchiveIndex_Beta_Install_fr.mdb"),

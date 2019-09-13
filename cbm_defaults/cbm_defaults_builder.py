@@ -6,13 +6,7 @@ from accessdb import AccessDB
 class CBMDefaultsBuilder(object):
 
     def __init__(self, aidb_paths, cbmDefaults):
-        self.locales = [
-            {"id": 1, "code": "en-CA" },
-            {"id": 2, "code": "fr-CA" },
-            {"id": 3, "code": "es-MX" },
-            {"id": 4, "code": "ru-RU" },
-            {"id": 5, "code": "pl-PL" }
-        ]
+
         self.aidb_paths = aidb_paths
         self.cbmDefaults = cbmDefaults
 
