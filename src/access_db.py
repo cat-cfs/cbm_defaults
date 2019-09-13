@@ -1,20 +1,35 @@
-import pyodbc
 import logging
 import os
+
 from pyodbc import ProgrammingError
+import pyodbc
+
+
+def getConnectionString(path):
+    return "Driver={Microsoft Access Driver (*.mdb, *.accdb)};" \
+           f"User Id='admin';Dbq={path}"
+
+def query(path, query, params):
+    connection_string = getConnectionString(path)
+    with pyodbc.connect(connection_string, autocommit=False) as connection:
+        cursor = connection.cursor()
+        cursor.execute(query, params) if params else cursor.execute(query)
+        return cursor
 
 # Scott - Nov 2013
 # wrapper for ms access object allowing queries
 # and some other basic operations
-class AccessDB(object):
+class AccessDB:
 
     def __init__(self, path, log_enabled=True):
+        self.connection = None
         self.path = path
         self.log_enabled = log_enabled
         self.connection_string = self.getConnectionString(path)
 
     def __enter__(self):
-        self.connection = pyodbc.connect(self.connection_string, autocommit=False)
+        self.connection = pyodbc.connect(
+            self.connection_string, autocommit=False)
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -24,10 +39,8 @@ class AccessDB(object):
         if self.connection:
             self.connection.close()
 
-    def getConnectionString(self, path):
-        return "Driver={Microsoft Access Driver (*.mdb, *.accdb)};User Id='admin';Dbq=" + path    
 
-        
+
     def ExecuteQuery(self, query, params=None):
         if self.log_enabled:
             logging.info("{0}\n{1}".format(self.path, query))
@@ -60,7 +73,6 @@ class AccessDB(object):
                 return True
         return False
 
-
     def Query(self, query, params=None):
         if self.log_enabled:
             logging.info("{0}\n{1}".format(self.path, query))
@@ -75,7 +87,7 @@ class AccessDB(object):
         """
         result = self.Query("SELECT Max({0}.{1}) AS MaxID FROM {0};"
                             .format(table, IDcolumn)).fetchone()
-        
+
         if result is None or result[0] is None: #garbage
             return 0
         return result.MaxID

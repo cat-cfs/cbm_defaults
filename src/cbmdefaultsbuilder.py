@@ -1,5 +1,8 @@
-import os, csv, contextlib
+import os
+import csv
+import contextlib
 from accessdb import AccessDB
+
 class CBMDefaultsBuilder(object):
 
     def __init__(self, aidb_paths, cbmDefaults):
@@ -10,7 +13,7 @@ class CBMDefaultsBuilder(object):
             {"id": 4, "code": "ru-RU" },
             {"id": 5, "code": "pl-PL" }
         ]
-        self.aidb_paths = aidb_paths 
+        self.aidb_paths = aidb_paths
         self.cbmDefaults = cbmDefaults
 
     @contextlib.contextmanager
@@ -71,7 +74,7 @@ class CBMDefaultsBuilder(object):
                                         **row)
 
     def populate_locale(self):
-        for l in self.locales: 
+        for l in self.locales:
             self.cbmDefaults.add_record("locale",
                                         id=l["id"],
                                         code=l["code"])
@@ -80,8 +83,8 @@ class CBMDefaultsBuilder(object):
     def populatePools(self):
         for row in self.read_local_csv_file("pool.csv"):
             self.cbmDefaults.add_record("pool",
-                id = row["id"],
-                code = row["code"])
+                id=row["id"],
+                code=row["code"])
 
         for row in self.read_local_csv_file("dom_pool.csv"):
             self.cbmDefaults.add_record("dom_pool",
@@ -105,11 +108,11 @@ class CBMDefaultsBuilder(object):
                     break
                 self.cbmDefaults.add_record(
                     "decay_parameter",
-                    dom_pool_id=id, 
-                    base_decay_rate=row.OrganicMatterDecayRate, 
-                    reference_temp=row.ReferenceTemp, 
+                    dom_pool_id=id,
+                    base_decay_rate=row.OrganicMatterDecayRate,
+                    reference_temp=row.ReferenceTemp,
                     q10=row.Q10,
-                    prop_to_atmosphere=row.PropToAtmosphere, 
+                    prop_to_atmosphere=row.PropToAtmosphere,
                     max_rate=1)
                 id += 1
 
@@ -121,10 +124,10 @@ class CBMDefaultsBuilder(object):
             for row in aidb_en_ca.Query("SELECT * FROM tblAdminBoundaryDefault"):
                 self.cbmDefaults.add_record(
                     "stump_parameter",
-                    id=row.AdminBoundaryID, 
-                    sw_top_proportion=row.SoftwoodTopProportion, 
-                    sw_stump_proportion=row.SoftwoodStumpProportion, 
-                    hw_top_proportion=row.HardwoodTopProportion, 
+                    id=row.AdminBoundaryID,
+                    sw_top_proportion=row.SoftwoodTopProportion,
+                    sw_stump_proportion=row.SoftwoodStumpProportion,
+                    hw_top_proportion=row.HardwoodTopProportion,
                     hw_stump_proportion=row.HardwoodStumpProportion)
 
                 self.cbmDefaults.add_record(
@@ -150,7 +153,7 @@ class CBMDefaultsBuilder(object):
         with open(randomReturnIntervalPath, 'rb') as randomReturnIntervalCSVFile:
             reader = csv.DictReader(randomReturnIntervalCSVFile)
             result = {}
-            for row in reader: 
+            for row in reader:
                 result[int(row["eco_boundary_id"])] = row
 
             return result
@@ -164,24 +167,24 @@ class CBMDefaultsBuilder(object):
             for row in aidb.Query("SELECT * FROM tblEcoBoundaryDefault"):
                 self.cbmDefaults.add_record(
                     "turnover_parameter",
-                    id=id, 
-                    sw_foliage=row.SoftwoodFoliageFallRate, 
-                    hw_foliage=row.HardwoodFoliageFallRate, 
-                    stem_turnover=row.StemAnnualTurnOverRate, 
+                    id=id,
+                    sw_foliage=row.SoftwoodFoliageFallRate,
+                    hw_foliage=row.HardwoodFoliageFallRate,
+                    stem_turnover=row.StemAnnualTurnOverRate,
                     sw_branch=row.SoftwoodBranchTurnOverRate,
-                    hw_branch=row.HardwoodBranchTurnOverRate, 
-                    branch_snag_split=0.25, 
-                    stem_snag=row.SoftwoodStemSnagToDOM, 
+                    hw_branch=row.HardwoodBranchTurnOverRate,
+                    branch_snag_split=0.25,
+                    stem_snag=row.SoftwoodStemSnagToDOM,
                     branch_snag=row.SoftwoodBranchSnagToDOM,
-                    coarse_root=0.02, 
-                    fine_root=0.641, 
-                    coarse_ag_split=0.5, 
+                    coarse_root=0.02,
+                    fine_root=0.641,
+                    coarse_ag_split=0.5,
                     fine_ag_split=0.5)
 
                 randomReturnIntervalParam = randomReturnIntervalParams[row.EcoBoundaryID]
                 self.cbmDefaults.add_record(
                     "random_return_interval",
-                    id=id, 
+                    id=id,
                     a_Nu=randomReturnIntervalParam["a_Nu"],
                     b_Nu=randomReturnIntervalParam["b_Nu"],
                     a_Lambda=randomReturnIntervalParam["a_Lambda"],
@@ -190,7 +193,7 @@ class CBMDefaultsBuilder(object):
 
                 self.cbmDefaults.add_record(
                     "eco_boundary",
-                    id=row.EcoBoundaryID, 
+                    id=row.EcoBoundaryID,
                     turnover_parameter_id=id,
                     random_return_interval_id=id)
 
@@ -221,7 +224,7 @@ class CBMDefaultsBuilder(object):
 
 
     def populateBiomassToCarbonRate(self):
-        self.cbmDefaults.add_record("biomass_to_carbon_rate", 
+        self.cbmDefaults.add_record("biomass_to_carbon_rate",
                                     id=1, rate=0.5)
 
 
@@ -241,17 +244,17 @@ class CBMDefaultsBuilder(object):
 
                 self.cbmDefaults.add_record(
                     "spinup_parameter",
-                    id = spinupu_parameter_id, 
+                    id = spinupu_parameter_id,
                     return_interval = row.AverageAge,
-                    min_rotations = 10, 
+                    min_rotations = 10,
                     max_rotations = 30,
                     historic_mean_temperature=row.MeanAnnualTemp)
 
                 self.cbmDefaults.add_record(
                     "spatial_unit",
-                    id=row.SPUID, 
+                    id=row.SPUID,
                     admin_boundary_id=row.AdminBoundaryID,
-                    eco_boundary_id=row.EcoBoundaryID, 
+                    eco_boundary_id=row.EcoBoundaryID,
                     root_parameter_id=1,
                     spinup_parameter_id=spinupu_parameter_id,
                     mean_annual_temperature=row.MeanAnnualTemp)
@@ -259,7 +262,7 @@ class CBMDefaultsBuilder(object):
 
 
     def populateSpecies(self):
-    
+
         sqlForestType = """SELECT tblForestTypeDefault.ForestTypeID, tblForestTypeDefault.ForestTypeName
                            FROM tblForestTypeDefault
                            GROUP BY tblForestTypeDefault.ForestTypeID, tblForestTypeDefault.ForestTypeName;"""
@@ -329,7 +332,7 @@ class CBMDefaultsBuilder(object):
     def insertVolToBioFactor(self, id, row):
         self.cbmDefaults.add_record(
             "vol_to_bio_factor",
-            id=id, 
+            id=id,
             a=row.A,
             b=row.B,
             a_nonmerch=row.a_nonmerch,
@@ -404,7 +407,7 @@ class CBMDefaultsBuilder(object):
             self.cbmDefaults.add_record(
                 "land_class",
                 code=row["code"],
-                id=row["id"], 
+                id=row["id"],
                 is_forest=self.asBoolean(row["is_forest"]),
                 is_simulated=self.asBoolean(row["is_simulated"]),
                 transitional_period=row["transitional_period"],
@@ -425,7 +428,7 @@ class CBMDefaultsBuilder(object):
             unfccc_code_lookup[row["code"]] = row["id"]
 
         disturbanceTypeLandclassLookup = {}
-        for row in self.read_local_csv_file("disturbance_type_landclass.csv"): 
+        for row in self.read_local_csv_file("disturbance_type_landclass.csv"):
             disturbanceTypeLandclassLookup[int(row["DefaultDisturbanceTypeId"])] = unfccc_code_lookup[row["UNFCCC_CODE"]]
 
         distTypeQuery = """
@@ -475,17 +478,17 @@ class CBMDefaultsBuilder(object):
 
             for row in aidb.Query(dmQuery):
                 self.cbmDefaults.add_record(
-                    "disturbance_matrix", 
+                    "disturbance_matrix",
                     id = row.DMID)
 
-                dmValueQuery = """SELECT 
+                dmValueQuery = """SELECT
                     tblDMValuesLookup.DMID,
                     tblDMValuesLookup.DMRow,
                     tblDMValuesLookup.DMColumn,
                     tblDMValuesLookup.Proportion
                     FROM tblDMValuesLookup
                     WHERE tblDMValuesLookup.DMID=?;"""
-                    
+
                 for dmValueRow in aidb.Query(dmValueQuery, (row.DMID,)):
                     src = poolCrossWalk[dmValueRow.DMRow]
                     sink = poolCrossWalk[dmValueRow.DMColumn]
@@ -495,7 +498,7 @@ class CBMDefaultsBuilder(object):
                         "disturbance_matrix_value",
                         disturbance_matrix_id=row.DMID,
                         source_pool_id=src,
-                        sink_pool_id=sink, 
+                        sink_pool_id=sink,
                         proportion=dmValueRow.Proportion)
                 id += 1
 
@@ -504,7 +507,7 @@ class CBMDefaultsBuilder(object):
             with self.GetAIDB(locale["code"]) as aidb:
                 for row in aidb.Query(dmQuery):
                     self.cbmDefaults.add_record(
-                        "disturbance_matrix_tr", 
+                        "disturbance_matrix_tr",
                         id = tr_id,
                         disturbance_matrix_id = row.DMID,
                         locale_id = locale["id"],
@@ -519,7 +522,7 @@ class CBMDefaultsBuilder(object):
             GROUP BY tblDMAssociationDefault.DefaultDisturbanceTypeID, tblSPUDefault.SPUID, tblDMAssociationDefault.DMID, tblDMAssociationDefault.DefaultDisturbanceTypeID
             HAVING (((tblDMAssociationDefault.DefaultDisturbanceTypeID)<>1));
             """
-        
+
         with self.GetAIDB("en-CA") as aidb:
             for row in aidb.Query(dmEcoAssociationQuery):
                 self.cbmDefaults.add_record(
@@ -527,12 +530,12 @@ class CBMDefaultsBuilder(object):
                     spatial_unit_id=row.SPUID,
                     disturbance_type_id=row.DefaultDisturbanceTypeID,
                     disturbance_matrix_id=row.DMID)
-        
+
         dmSPUAssociationQuery = """SELECT tblDMAssociationSPUDefault.DefaultDisturbanceTypeID, tblDMAssociationSPUDefault.SPUID, tblDMAssociationSPUDefault.DMID
                 FROM tblDMAssociationSPUDefault
                 GROUP BY tblDMAssociationSPUDefault.DefaultDisturbanceTypeID, tblDMAssociationSPUDefault.SPUID, tblDMAssociationSPUDefault.DMID;
         """
-        
+
         with self.GetAIDB("en-CA") as aidb:
             for row in aidb.Query(dmSPUAssociationQuery):
                 self.cbmDefaults.add_record(
@@ -549,20 +552,20 @@ class CBMDefaultsBuilder(object):
         with self.GetAIDB("en-CA") as aidb:
             for distTypeId in distTypeIds:
                 self.cbmDefaults.add_record(
-                    "growth_multiplier_series", 
+                    "growth_multiplier_series",
                     id=growthMultId,
                     disturbance_type_id=distTypeId)
 
                 growthMultipliersQuery = """SELECT tblForestTypeDefault.ForestTypeID, tblGrowthMultiplierDefault.AnnualOrder, tblGrowthMultiplierDefault.GrowthMultiplier
-                            FROM (tblDisturbanceTypeDefault INNER JOIN tblGrowthMultiplierDefault ON tblDisturbanceTypeDefault.DistTypeID = tblGrowthMultiplierDefault.DefaultDisturbanceTypeID) 
-                            INNER JOIN tblForestTypeDefault ON 
+                            FROM (tblDisturbanceTypeDefault INNER JOIN tblGrowthMultiplierDefault ON tblDisturbanceTypeDefault.DistTypeID = tblGrowthMultiplierDefault.DefaultDisturbanceTypeID)
+                            INNER JOIN tblForestTypeDefault ON
                             IIF(tblGrowthMultiplierDefault.DefaultSpeciesTypeID=1,tblGrowthMultiplierDefault.DefaultSpeciesTypeID,tblGrowthMultiplierDefault.DefaultSpeciesTypeID+1) = tblForestTypeDefault.ForestTypeID
                             GROUP BY tblDisturbanceTypeDefault.DistTypeID, tblForestTypeDefault.ForestTypeID, tblGrowthMultiplierDefault.AnnualOrder, tblGrowthMultiplierDefault.GrowthMultiplier
                             HAVING (((tblDisturbanceTypeDefault.DistTypeID)=?));"""
 
                 for row in aidb.Query(growthMultipliersQuery, (distTypeId,)):
                     self.cbmDefaults.add_record(
-                        "growth_multiplier_value", 
+                        "growth_multiplier_value",
                         growth_multiplier_series_id=growthMultId,
                         forest_type_id=row.ForestTypeID,
                         time_step=row.AnnualOrder,
@@ -577,7 +580,7 @@ class CBMDefaultsBuilder(object):
         self.insert_csv_file("flux_indicator","flux_indicator.csv")
         self.insert_csv_file("flux_indicator_source","flux_indicator_source.csv")
         self.insert_csv_file("flux_indicator_sink","flux_indicator_sink.csv")
-        
+
         self.insert_csv_file("composite_flux_indicator_category", "composite_flux_indicator_category.csv")
         self.insert_csv_file("composite_flux_indicator_category_tr", "composite_flux_indicator_category_tr.csv")
         self.insert_csv_file("composite_flux_indicator","composite_flux_indicator.csv")
@@ -596,7 +599,7 @@ class CBMDefaultsBuilder(object):
             SELECT tblAfforestationPreTypeDefault.PreTypeID, tblAfforestationPreTypeDefault.Name
             FROM tblAfforestationPreTypeDefault;
         """
-        slow_bg_pool = [x for x in self.read_local_csv_file("pool.csv") 
+        slow_bg_pool = [x for x in self.read_local_csv_file("pool.csv")
                         if x["code"] == "BelowGroundSlowSoil"][0]["id"]
 
         with self.GetAIDB("en-CA") as aidb:

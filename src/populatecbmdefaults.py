@@ -1,8 +1,7 @@
-import os 
+import os
 from cbmdefaultsinterface import CBMDefaultsInterface
-from accessdb import AccessDB
 from cbmdefaultsbuilder import CBMDefaultsBuilder
-from loghelper import *
+from loghelper import start_logging
 
 start_logging("populate_cbm_defaults.log")
 
