@@ -1,3 +1,3 @@
 # cbm_defaults
 
-![01](diagram.png)
+![01](schema/diagram.png)
