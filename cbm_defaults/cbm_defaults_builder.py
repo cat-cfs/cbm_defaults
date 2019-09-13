@@ -16,10 +16,7 @@ class CBMDefaultsBuilder(object):
         self.aidb_paths = aidb_paths
         self.cbmDefaults = cbmDefaults
 
-    @contextlib.contextmanager
-    def GetAIDB(self, language="en-CA"):
-        with AccessDB(self.aidb_paths[language],False) as a:
-            yield a
+
 
     def run(self):
 
@@ -60,13 +57,7 @@ class CBMDefaultsBuilder(object):
             yield {unicode(key, 'utf-8'):unicode(value, 'utf-8') for key, value in row.iteritems()}
 
 
-    def read_local_csv_file(self, filename):
-        local_dir = os.path.dirname(os.path.realpath(__file__))
-        local_file = os.path.join(local_dir, filename)
-        with open(local_file, 'r') as local_csv_file:
-            reader = self.UnicodeDictReader(local_csv_file)
-            for row in reader:
-                yield row
+
 
     def insert_csv_file(self, table_name, csv_file_name):
         for row in self.read_local_csv_file(csv_file_name):

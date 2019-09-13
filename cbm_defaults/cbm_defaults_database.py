@@ -1,5 +1,8 @@
-import os, logging, sqlite3
-class CBMDefaultsInterface(object):
+import os
+import logging
+import sqlite3
+
+class CBMDefaultsDatabase(object):
 
     def __init__(self, sqlitePath, createNew=True):
         if createNew and os.path.exists(sqlitePath):
@@ -8,8 +11,8 @@ class CBMDefaultsInterface(object):
         self.conn.execute("PRAGMA foreign_keys = 1")
         self.cur = self.conn.cursor()
         self.sqlitePath = sqlitePath
-        self.tables = set([]) #purely for logging/user feedback
-    
+        self.tables = set([])  # purely for logging/user feedback
+
     def executeDDLFile(self, ddlPath):
         with open(ddlPath, 'r') as ddlfile:
             for ddl in [x for x in ddlfile.read().split(";") if x is not None]:
@@ -19,7 +22,7 @@ class CBMDefaultsInterface(object):
     def commitChanges(self):
         self.conn.commit()
         self.conn.close()
-       
+
     def add_record(self, table_name, **kwargs):
         if not table_name in self.tables:
             self.tables.add(table_name)
