@@ -2,9 +2,24 @@ import os
 import csv
 
 
-def read_local_csv_file(filename):
+def get_tables_dir():
+    """gets the directory to the csv tables packaged with cbm_defaults
+
+    Returns:
+        str: the directory containing the packaged csv tables.
+    """
     local_dir = os.path.dirname(os.path.realpath(__file__))
-    local_file = os.path.join(local_dir, filename)
+    return os.path.abspath(os.path.join("..", local_dir, "tables"))
+
+
+def read_local_csv_file(filename):
+    """yield rows from the specified csv stored in the csv tables dir
+    returned by :py:func:`get_tables_dir`
+
+    Args:
+        filename (str): name of the csv table to read
+    """
+    local_file = os.path.join(get_tables_dir(), filename)
     with open(local_file, 'r') as local_csv_file:
         reader = csv.DictReader(local_csv_file)
         for row in reader:

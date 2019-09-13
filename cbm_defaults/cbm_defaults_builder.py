@@ -1,19 +1,8 @@
 import os
 import csv
-import contextlib
-from accessdb import AccessDB
-
-class CBMDefaultsBuilder(object):
-
-    def __init__(self, aidb_paths, cbmDefaults):
-
-        self.aidb_paths = aidb_paths
-        self.cbmDefaults = cbmDefaults
 
 
-
-    def run(self):
-
+    def build_database():
         self.populate_locale()
         self.populatePools()
         self.populateDecayParameters()
@@ -33,24 +22,13 @@ class CBMDefaultsBuilder(object):
         self.populateFluxIndicators()
         self.populateAfforestation()
 
-    def asBoolean(self,str):
+    def asBoolean(str):
         if str.lower() in ["true", "yes", "1"]:
             return True
         elif str.lower() in ["false", "no", "0"]:
             return False
         else:
             raise TypeError("cannot parse {0} as boolean".format(str))
-
-
-    def UnicodeDictReader(self, utf8_data, **kwargs):
-        '''
-        https://stackoverflow.com/questions/5004687/python-csv-dictreader-with-utf-8-data
-        '''
-        csv_reader = csv.DictReader(utf8_data, **kwargs)
-        for row in csv_reader:
-            yield {unicode(key, 'utf-8'):unicode(value, 'utf-8') for key, value in row.iteritems()}
-
-
 
 
     def insert_csv_file(self, table_name, csv_file_name):
