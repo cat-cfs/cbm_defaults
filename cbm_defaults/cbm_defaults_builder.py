@@ -4,29 +4,29 @@ from cbm_defaults import cbm_defaults_database
 from cbm_defaults import local_csv_table
 
 
-def build_database(connection):
+def build_database(connection, locales):
 
-    self.populate_locale(connection)
-    self.populatePools()
-    self.populateDecayParameters()
-    self.populateAdminBoundaries()
-    self.populateEcoBoundaries()
-    self.populateRootParameter()
-    self.populateBiomassToCarbonRate()
-    self.populateSlowMixingRate()
-    self.populateSpatialUnits()
-    self.populateSpecies()
-    self.populateVolumeToBiomass()
-    self.populateLandClasses()
-    self.populateDisturbanceTypes()
-    self.populateDMValues()
-    self.populateDMAssociations()
-    self.PopulateGrowthMultipliers()
-    self.populateFluxIndicators()
-    self.populateAfforestation()
+    populate_locale(connection, locales)
+    populatePools(connection)
+    populateDecayParameters(connection)
+    populateAdminBoundaries(connection)
+    populateEcoBoundaries(connection)
+    populateRootParameter(connection)
+    populateBiomassToCarbonRate(connection)
+    populateSlowMixingRate(connection)
+    populateSpatialUnits(connection)
+    populateSpecies(connection)
+    populateVolumeToBiomass(connection)
+    populateLandClasses(connection)
+    populateDisturbanceTypes(connection)
+    populateDMValues(connection)
+    populateDMAssociations(connection)
+    PopulateGrowthMultipliers(connection)
+    populateFluxIndicators(connection)
+    populateAfforestation(connection)
 
 
-def asBoolean(value):
+def as_boolean(value):
     if value.lower() in ["true", "yes", "1"]:
         return True
     elif value.lower() in ["false", "no", "0"]:
@@ -56,14 +56,15 @@ def populatePools(connection):
             locale_id=row["locale_id"], name=row["name"])
 
 
-def populateDecayParameters():
+def populateDecayParameters(connection):
     dom_pool_id = 1
     with self.GetAIDB() as aidb:
         for row in aidb.Query(
             "SELECT * FROM tblDOMParametersDefault ORDER BY SoilPoolID"):
             if row.SoilPoolID > 10:
                 break
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "decay_parameter",
                 dom_pool_id=dom_pool_id,
                 base_decay_rate=row.OrganicMatterDecayRate,
@@ -74,12 +75,13 @@ def populateDecayParameters():
             dom_pool_id += 1
 
 
-def populateAdminBoundaries(self):
+def populateAdminBoundaries(connection):
 
     with self.GetAIDB("en-CA") as aidb_en_ca:
         stump_parameter_id = 1
         for row in aidb_en_ca.Query("SELECT * FROM tblAdminBoundaryDefault"):
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "stump_parameter",
                 id=row.AdminBoundaryID,
                 sw_top_proportion=row.SoftwoodTopProportion,
@@ -87,7 +89,8 @@ def populateAdminBoundaries(self):
                 hw_top_proportion=row.HardwoodTopProportion,
                 hw_stump_proportion=row.HardwoodStumpProportion)
 
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "admin_boundary",
                 id=row.AdminBoundaryID,
                 stump_parameter_id=stump_parameter_id)
@@ -97,34 +100,35 @@ def populateAdminBoundaries(self):
     for locale in self.locales:
         with self.GetAIDB(locale["code"]) as aidb:
             for row in aidb.Query("SELECT AdminBoundaryID, AdminBoundaryName FROM tblAdminBoundaryDefault"):
-                self.cbmDefaults.add_record(
+                cbm_defaults_database.add_record(
+                    connection,
                     "admin_boundary_tr",
                     admin_boundary_id=row.AdminBoundaryID,
                     locale_id=locale["id"],
                     name=row.AdminBoundaryName)
-                translation_id+=1
+                translation_id += 1
 
 
-def GetRandomReturnIntervalParameters(self):
-    randomReturnIntervalPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "uc_random_return_interval_parameters.csv")
-    with open(randomReturnIntervalPath, 'rb') as randomReturnIntervalCSVFile:
-        reader = csv.DictReader(randomReturnIntervalCSVFile)
-        result = {}
-        for row in reader:
-            result[int(row["eco_boundary_id"])] = row
+def get_random_return_interval_parameters():
+    result = {}
+    for row in local_csv_table.read_local_csv_file(
+            "uc_random_return_interval_parameters.csv"):
 
-        return result
+        result[int(row["eco_boundary_id"])] = row
+
+    return result
 
 
-def populateEcoBoundaries(self):
+def populateEcoBoundaries(connection):
 
-    randomReturnIntervalParams = self.GetRandomReturnIntervalParameters()
+    random_return_interval_params = get_random_return_interval_parameters()
     with self.GetAIDB("en-CA") as aidb:
-        id = 1
+        eco_association_id = 1
         for row in aidb.Query("SELECT * FROM tblEcoBoundaryDefault"):
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "turnover_parameter",
-                id=id,
+                id=eco_association_id,
                 sw_foliage=row.SoftwoodFoliageFallRate,
                 hw_foliage=row.HardwoodFoliageFallRate,
                 stem_turnover=row.StemAnnualTurnOverRate,
@@ -138,23 +142,25 @@ def populateEcoBoundaries(self):
                 coarse_ag_split=0.5,
                 fine_ag_split=0.5)
 
-            randomReturnIntervalParam = randomReturnIntervalParams[row.EcoBoundaryID]
-            self.cbmDefaults.add_record(
+            random_param = random_return_interval_params[row.EcoBoundaryID]
+            cbm_defaults_database.add_record(
+                connection,
                 "random_return_interval",
-                id=id,
-                a_Nu=randomReturnIntervalParam["a_Nu"],
-                b_Nu=randomReturnIntervalParam["b_Nu"],
-                a_Lambda=randomReturnIntervalParam["a_Lambda"],
-                b_Lambda=randomReturnIntervalParam["b_Lambda"]
+                id=eco_association_id,
+                a_Nu=random_param["a_Nu"],
+                b_Nu=random_param["b_Nu"],
+                a_Lambda=random_param["a_Lambda"],
+                b_Lambda=random_param["b_Lambda"]
             )
 
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "eco_boundary",
                 id=row.EcoBoundaryID,
-                turnover_parameter_id=id,
-                random_return_interval_id=id)
+                turnover_parameter_id=eco_association_id,
+                random_return_interval_id=eco_association_id)
 
-            id+=1
+            eco_association_id += 1
 
     translation_id = 1
     for locale in self.locales:
@@ -168,8 +174,9 @@ def populateEcoBoundaries(self):
                 translation_id += 1
 
 
-def populateRootParameter(self):
-    self.cbmDefaults.add_record(
+def populateRootParameter(connection):
+    cbm_defaults_database.add_record(
+        connection,
         "root_parameter",
         id=1,
         hw_a=1.576,
@@ -180,17 +187,17 @@ def populateRootParameter(self):
         frp_c=-0.06021195)
 
 
-def populateBiomassToCarbonRate(self):
-    self.cbmDefaults.add_record("biomass_to_carbon_rate",
-                                id=1, rate=0.5)
+def populateBiomassToCarbonRate(connection):
+    cbm_defaults_database.add_record(
+        connection, "biomass_to_carbon_rate", id=1, rate=0.5)
 
 
-def populateSlowMixingRate(self):
-    self.cbmDefaults.add_record("slow_mixing_rate",
-                                id=1, rate=0.006)
+def populateSlowMixingRate(connection):
+    cbm_defaults_database.add_record(
+        connection, "slow_mixing_rate", id=1, rate=0.006)
 
 
-def populateSpatialUnits(self):
+def populateSpatialUnits(connection):
     qry = """SELECT tblSPUDefault.SPUID, tblSPUDefault.AdminBoundaryID, tblSPUDefault.EcoBoundaryID, tblClimateDefault.MeanAnnualTemp, tblEcoBoundaryDefault.AverageAge
             FROM (tblSPUDefault INNER JOIN tblClimateDefault ON tblSPUDefault.SPUID = tblClimateDefault.DefaultSPUID) INNER JOIN tblEcoBoundaryDefault ON tblSPUDefault.EcoBoundaryID = tblEcoBoundaryDefault.EcoBoundaryID
             WHERE (((tblClimateDefault.Year)=1981));
@@ -199,15 +206,17 @@ def populateSpatialUnits(self):
     with self.GetAIDB("en-CA") as aidb:
         for row in aidb.Query(qry):
 
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "spinup_parameter",
                 id = spinupu_parameter_id,
-                return_interval = row.AverageAge,
-                min_rotations = 10,
-                max_rotations = 30,
+                return_interval=row.AverageAge,
+                min_rotations=10,
+                max_rotations=30,
                 historic_mean_temperature=row.MeanAnnualTemp)
 
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "spatial_unit",
                 id=row.SPUID,
                 admin_boundary_id=row.AdminBoundaryID,
@@ -215,10 +224,10 @@ def populateSpatialUnits(self):
                 root_parameter_id=1,
                 spinup_parameter_id=spinupu_parameter_id,
                 mean_annual_temperature=row.MeanAnnualTemp)
-            spinupu_parameter_id+=1
+            spinupu_parameter_id += 1
 
 
-def populateSpecies(self):
+def populateSpecies(connection):
 
     sqlForestType = """SELECT tblForestTypeDefault.ForestTypeID, tblForestTypeDefault.ForestTypeName
                         FROM tblForestTypeDefault
@@ -258,7 +267,8 @@ def populateSpecies(self):
         with self.GetAIDB(locale["code"]) as aidb:
 
             for row in aidb.Query(sqlForestType):
-                self.cbmDefaults.add_record(
+                cbm_defaults_database.add_record(
+                    connection,
                     "forest_type_tr",
                     id=forest_type_tr_id,
                     forest_type_id=row.ForestTypeID,
@@ -268,7 +278,8 @@ def populateSpecies(self):
                 forest_type_tr_id += 1
 
             for row in aidb.Query(sqlGenus):
-                self.cbmDefaults.add_record(
+                cbm_defaults_database.add_record(
+                    connection,
                     "genus_tr",
                     id=genus_tr_id,
                     genus_id=row.GenusID,
@@ -277,7 +288,8 @@ def populateSpecies(self):
                 genus_tr_id += 1
 
             for row in aidb.Query(sqlspecies):
-                self.cbmDefaults.add_record(
+                cbm_defaults_database.add_record(
+                    connection,
                     "species_tr",
                     id=species_tr_id,
                     species_id=row.SpeciesTypeID,
@@ -286,8 +298,9 @@ def populateSpecies(self):
                 species_tr_id += 1
 
 
-def insertVolToBioFactor(self, id, row):
-    self.cbmDefaults.add_record(
+def insertVolToBioFactor(connection, id, row):
+    cbm_defaults_database.add_record(
+        connection,
         "vol_to_bio_factor",
         id=id,
         a=row.A,
@@ -321,7 +334,7 @@ def insertVolToBioFactor(self, id, row):
         high_foliage_prop=row.high_foliage_prop )
 
 
-def populateVolumeToBiomass(self):
+def populateVolumeToBiomass(connection):
     sqlVolToBioSpecies = "SELECT * FROM tblBioTotalStemwoodSpeciesTypeDefault"
     sqlVolToBioGenus = "SELECT * FROM tblBioTotalStemwoodGenusDefault"
     sqlVolToBioForestType = "SELECT * FROM tblBioTotalStemwoodForestTypeDefault"
@@ -331,7 +344,8 @@ def populateVolumeToBiomass(self):
         for row in aidb.Query(sqlVolToBioSpecies):
             self.insertVolToBioFactor(voltoBioParameterid, row)
 
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "vol_to_bio_species",
                 spatial_unit_id=row.DefaultSPUID,
                 species_id=row.DefaultSpeciesTypeID,
@@ -341,7 +355,8 @@ def populateVolumeToBiomass(self):
         for row in aidb.Query(sqlVolToBioGenus):
             self.insertVolToBioFactor(voltoBioParameterid, row)
 
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "vol_to_bio_genus",
                 spatial_unit_id=row.DefaultSPUID,
                 genus_id=row.DefaultGenusID,
@@ -351,7 +366,8 @@ def populateVolumeToBiomass(self):
         for row in aidb.Query(sqlVolToBioForestType):
             self.insertVolToBioFactor(voltoBioParameterid, row)
 
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "vol_to_bio_forest_type",
                 spatial_unit_id=row.DefaultSPUID,
                 forest_type_id=row.DefaultForestTypeID,
@@ -361,7 +377,8 @@ def populateVolumeToBiomass(self):
 
 def populateLandClasses(self):
     for row in self.read_local_csv_file("landclass.csv"):
-        self.cbmDefaults.add_record(
+        cbm_defaults_database.add_record(
+            connection,
             "land_class",
             code=row["code"],
             id=row["id"],
@@ -371,7 +388,8 @@ def populateLandClasses(self):
             transition_id=row["transition_id"])
 
     for row in self.read_local_csv_file("landclass_translation.csv"):
-        self.cbmDefaults.add_record(
+        cbm_defaults_database.add_record(
+            connection,
             "land_class_tr",
             id=row["id"],
             land_class_id=row["landclass_id"],
@@ -379,7 +397,7 @@ def populateLandClasses(self):
             description=row["description"])
 
 
-def populateDisturbanceTypes(self):
+def populateDisturbanceTypes(connection):
     unfccc_code_lookup = {}
     for row in self.read_local_csv_file("landclass.csv"):
         unfccc_code_lookup[row["code"]] = row["id"]
@@ -404,7 +422,8 @@ def populateDisturbanceTypes(self):
         for row in aidb.Query(distTypeQuery):
             landclasstransion = disturbanceTypeLandclassLookup[row.DistTypeID] \
                 if row.DistTypeID in disturbanceTypeLandclassLookup else None
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "disturbance_type",
                 id=row.DistTypeID,
                 transition_land_class_id=landclasstransion)
@@ -413,7 +432,8 @@ def populateDisturbanceTypes(self):
     for locale in self.locales:
         with self.GetAIDB(locale["code"]) as aidb:
             for row in aidb.Query(distTypeQuery):
-                self.cbmDefaults.add_record(
+                cbm_defaults_database.add_record(
+                    connection,
                     "disturbance_type_tr",
                     id=tr_id,
                     disturbance_type_id=row.DistTypeID,
@@ -423,7 +443,7 @@ def populateDisturbanceTypes(self):
                 tr_id += 1
 
 
-def populateDMValues(self):
+def populateDMValues(connection):
     poolCrossWalk = {}
     for row in self.read_local_csv_file("pool_cross_walk.csv"):
         poolCrossWalk[int(row["cbm3_pool_code"])]=int(row["cbm3_5_pool_code"])
@@ -451,7 +471,8 @@ def populateDMValues(self):
                 sink = poolCrossWalk[dmValueRow.DMColumn]
                 if src == -1 or sink == -1:
                     continue
-                self.cbmDefaults.add_record(
+                cbm_defaults_database.add_record(
+                    connection,
                     "disturbance_matrix_value",
                     disturbance_matrix_id=row.DMID,
                     source_pool_id=src,
@@ -463,7 +484,8 @@ def populateDMValues(self):
     for locale in self.locales:
         with self.GetAIDB(locale["code"]) as aidb:
             for row in aidb.Query(dmQuery):
-                self.cbmDefaults.add_record(
+                cbm_defaults_database.add_record(
+                    connection,
                     "disturbance_matrix_tr",
                     id = tr_id,
                     disturbance_matrix_id = row.DMID,
@@ -473,7 +495,7 @@ def populateDMValues(self):
                 tr_id += 1
 
 
-def populateDMAssociations(self):
+def populateDMAssociations(connection):
     dmEcoAssociationQuery = """SELECT tblDMAssociationDefault.DefaultDisturbanceTypeID, tblSPUDefault.SPUID, tblDMAssociationDefault.DMID
         FROM tblDMAssociationDefault INNER JOIN tblSPUDefault ON tblDMAssociationDefault.DefaultEcoBoundaryID = tblSPUDefault.EcoBoundaryID
         GROUP BY tblDMAssociationDefault.DefaultDisturbanceTypeID, tblSPUDefault.SPUID, tblDMAssociationDefault.DMID, tblDMAssociationDefault.DefaultDisturbanceTypeID
@@ -482,7 +504,8 @@ def populateDMAssociations(self):
 
     with self.GetAIDB("en-CA") as aidb:
         for row in aidb.Query(dmEcoAssociationQuery):
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "disturbance_matrix_association",
                 spatial_unit_id=row.SPUID,
                 disturbance_type_id=row.DefaultDisturbanceTypeID,
@@ -495,20 +518,22 @@ def populateDMAssociations(self):
 
     with self.GetAIDB("en-CA") as aidb:
         for row in aidb.Query(dmSPUAssociationQuery):
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "disturbance_matrix_association",
                 spatial_unit_id=row.SPUID,
                 disturbance_type_id=row.DefaultDisturbanceTypeID,
                 disturbance_matrix_id=row.DMID)
 
 
-def PopulateGrowthMultipliers(self):
+def PopulateGrowthMultipliers(connection):
     #these are the default disturbance types that have growth multipliers attached
     distTypeIds = [12,13,14,15,16,17,18,19,20,21]
     growthMultId = 1
     with self.GetAIDB("en-CA") as aidb:
         for distTypeId in distTypeIds:
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "growth_multiplier_series",
                 id=growthMultId,
                 disturbance_type_id=distTypeId)
@@ -521,7 +546,8 @@ def PopulateGrowthMultipliers(self):
                         HAVING (((tblDisturbanceTypeDefault.DistTypeID)=?));"""
 
             for row in aidb.Query(growthMultipliersQuery, (distTypeId,)):
-                self.cbmDefaults.add_record(
+                cbm_defaults_database.add_record(
+                    connection,
                     "growth_multiplier_value",
                     growth_multiplier_series_id=growthMultId,
                     forest_type_id=row.ForestTypeID,
@@ -532,20 +558,22 @@ def PopulateGrowthMultipliers(self):
 
 
 
-def populateFluxIndicators(self):
-    self.insert_csv_file("flux_process", "flux_process.csv")
-    self.insert_csv_file("flux_indicator","flux_indicator.csv")
-    self.insert_csv_file("flux_indicator_source","flux_indicator_source.csv")
-    self.insert_csv_file("flux_indicator_sink","flux_indicator_sink.csv")
+def populateFluxIndicators(connection):
+    insert_csv = lambda name: cbm_defaults_database.insert_csv_file(
+        connection, name, f"{name}.csv")
 
-    self.insert_csv_file("composite_flux_indicator_category", "composite_flux_indicator_category.csv")
-    self.insert_csv_file("composite_flux_indicator_category_tr", "composite_flux_indicator_category_tr.csv")
-    self.insert_csv_file("composite_flux_indicator","composite_flux_indicator.csv")
-    self.insert_csv_file("composite_flux_indicator_tr", "composite_flux_indicator_tr.csv")
-    self.insert_csv_file("composite_flux_indicator_value","composite_flux_indicator_value.csv")
+    insert_csv("flux_process")
+    insert_csv("flux_indicator")
+    insert_csv("flux_indicator_source")
+    insert_csv("flux_indicator_sink")
+    insert_csv("composite_flux_indicator_category")
+    insert_csv("composite_flux_indicator_category_tr")
+    insert_csv("composite_flux_indicator")
+    insert_csv("composite_flux_indicator_tr")
+    insert_csv("composite_flux_indicator_value")
 
 
-def populateAfforestation(self):
+def populateAfforestation(connection):
     sql_pre_type_values = """
         SELECT tblSPUDefault.SPUID, tblSVLAttributesDefaultAfforestation.PreTypeID, tblSVLAttributesDefaultAfforestation.SSoilPoolC_BG
         FROM tblSVLAttributesDefaultAfforestation INNER JOIN tblSPUDefault ON (tblSVLAttributesDefaultAfforestation.EcoBoundaryID = tblSPUDefault.EcoBoundaryID) AND (tblSVLAttributesDefaultAfforestation.AdminBoundaryID = tblSPUDefault.AdminBoundaryID)
@@ -561,13 +589,15 @@ def populateAfforestation(self):
 
     with self.GetAIDB("en-CA") as aidb:
         for row in aidb.Query(sql_pre_types):
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "afforestation_pre_type",
                 id=row.PreTypeID)
 
         id = 1
         for row in aidb.Query(sql_pre_type_values):
-            self.cbmDefaults.add_record(
+            cbm_defaults_database.add_record(
+                connection,
                 "afforestation_initial_pool",
                 id=id,
                 spatial_unit_id=row.SPUID,
@@ -580,7 +610,8 @@ def populateAfforestation(self):
     for locale in self.locales:
         with self.GetAIDB(locale["code"]) as aidb:
             for row in aidb.Query(sql_pre_types):
-                self.cbmDefaults.add_record(
+                cbm_defaults_database.add_record(
+                    connection,
                     "afforestation_pre_type_tr",
                     id=id,
                     afforestation_pre_type_id=row.PreTypeID,
