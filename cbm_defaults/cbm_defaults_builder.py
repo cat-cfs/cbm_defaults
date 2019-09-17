@@ -298,45 +298,39 @@ def insertVolToBioFactor(connection, volume_to_biomass_factor_id, row):
         high_foliage_prop=row.high_foliage_prop)
 
 
-def populateVolumeToBiomass(connection):
-    sqlVolToBioSpecies = "SELECT * FROM tblBioTotalStemwoodSpeciesTypeDefault"
-    sqlVolToBioGenus = "SELECT * FROM tblBioTotalStemwoodGenusDefault"
-    sqlVolToBioForestType = "SELECT * FROM tblBioTotalStemwoodForestTypeDefault"
+def populateVolumeToBiomass(connection, archive_index):
 
-    voltoBioParameterid = 1
-    with self.GetAIDB("en-CA") as aidb:
-        for row in aidb.Query(sqlVolToBioSpecies):
-            self.insertVolToBioFactor(voltoBioParameterid, row)
+    vol_to_bio_parameter_id = 1
+    for row in archive_index.get_vol_to_bio_species():
+        insertVolToBioFactor(connection, vol_to_bio_parameter_id, row)
 
-            cbm_defaults_database.add_record(
-                connection,
-                "vol_to_bio_species",
-                spatial_unit_id=row.DefaultSPUID,
-                species_id=row.DefaultSpeciesTypeID,
-                vol_to_bio_factor_id=voltoBioParameterid)
-            voltoBioParameterid += 1
+        cbm_defaults_database.add_record(
+            connection, "vol_to_bio_species",
+            spatial_unit_id=row.DefaultSPUID,
+            species_id=row.DefaultSpeciesTypeID,
+            vol_to_bio_factor_id=vol_to_bio_parameter_id)
+        vol_to_bio_parameter_id += 1
 
-        for row in aidb.Query(sqlVolToBioGenus):
-            self.insertVolToBioFactor(voltoBioParameterid, row)
+    for row in archive_index.get_vol_to_bio_genus():
+        insertVolToBioFactor(connection, vol_to_bio_parameter_id, row)
 
-            cbm_defaults_database.add_record(
-                connection,
-                "vol_to_bio_genus",
-                spatial_unit_id=row.DefaultSPUID,
-                genus_id=row.DefaultGenusID,
-                vol_to_bio_factor_id=voltoBioParameterid)
-            voltoBioParameterid += 1
+        cbm_defaults_database.add_record(
+            connection, "vol_to_bio_genus",
+            spatial_unit_id=row.DefaultSPUID,
+            genus_id=row.DefaultGenusID,
+            vol_to_bio_factor_id=vol_to_bio_parameter_id)
+        vol_to_bio_parameter_id += 1
 
-        for row in aidb.Query(sqlVolToBioForestType):
-            self.insertVolToBioFactor(voltoBioParameterid, row)
+    for row in archive_index.get_vol_to_bio_forest_type():
+        insertVolToBioFactor(connection, vol_to_bio_parameter_id, row)
 
-            cbm_defaults_database.add_record(
-                connection,
-                "vol_to_bio_forest_type",
-                spatial_unit_id=row.DefaultSPUID,
-                forest_type_id=row.DefaultForestTypeID,
-                vol_to_bio_factor_id=voltoBioParameterid)
-            voltoBioParameterid += 1
+        cbm_defaults_database.add_record(
+            connection,
+            "vol_to_bio_forest_type",
+            spatial_unit_id=row.DefaultSPUID,
+            forest_type_id=row.DefaultForestTypeID,
+            vol_to_bio_factor_id=vol_to_bio_parameter_id)
+        vol_to_bio_parameter_id += 1
 
 
 def populateLandClasses(self):

@@ -72,3 +72,12 @@ class ArchiveIndex:
             tblSpeciesTypeDefault.ForestTypeID, tblSpeciesTypeDefault.GenusID
             FROM tblSpeciesTypeDefault;"""
         return self.query(sql_species, locale=locale)
+
+    def get_vol_to_bio_species(self):
+        return self.query("SELECT * FROM tblBioTotalStemwoodSpeciesTypeDefault")
+
+    def get_vol_to_bio_genus(self):
+        return self.query("SELECT * FROM tblBioTotalStemwoodGenusDefault")
+
+    def get_vol_to_bio_forest_type(self):
+        return self.query("SELECT * FROM tblBioTotalStemwoodForestTypeDefault")
