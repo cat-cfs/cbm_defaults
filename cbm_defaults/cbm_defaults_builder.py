@@ -1,6 +1,7 @@
 import os
 import csv
 from cbm_defaults import cbm_defaults_database
+from cbm_defaults import local_csv_table
 
 
 def build_database(connection):
@@ -24,6 +25,7 @@ def build_database(connection):
     self.populateFluxIndicators()
     self.populateAfforestation()
 
+
 def asBoolean(value):
     if value.lower() in ["true", "yes", "1"]:
         return True
@@ -33,34 +35,29 @@ def asBoolean(value):
         raise TypeError("cannot parse {0} as boolean".format(value))
 
 
-
 def populate_locale(connection, locales):
     for l in locales:
         cbm_defaults_database.add_record(
             connection, "locale", id=l["id"], code=l["code"])
 
 
-def populatePools(self):
-    for row in self.read_local_csv_file("pool.csv"):
-        self.cbmDefaults.add_record("pool",
-            id=row["id"],
-            code=row["code"])
+def populatePools(connection):
+    for row in local_csv_table.read_local_csv_file("pool.csv"):
+        cbm_defaults_database.add_record(
+            connection, "pool", id=row["id"], code=row["code"])
 
-    for row in self.read_local_csv_file("dom_pool.csv"):
-        self.cbmDefaults.add_record("dom_pool",
-                                    id=row["id"],
-                                    pool_id=row["pool_id"])
+    for row in local_csv_table.read_local_csv_file("dom_pool.csv"):
+        cbm_defaults_database.add_record(
+            connection, "dom_pool", id=row["id"], pool_id=row["pool_id"])
 
-    for row in self.read_local_csv_file("pool_tr.csv"):
-        self.cbmDefaults.add_record("pool_tr",
-                                    id = row["id"],
-                                    pool_id = row["pool_id"],
-                                    locale_id = row["locale_id"],
-                                    name = row["name"])
+    for row in local_csv_table.read_local_csv_file("pool_tr.csv"):
+        cbm_defaults_database.add_record(
+            connection, "pool_tr", id=row["id"], pool_id=row["pool_id"],
+            locale_id=row["locale_id"], name=row["name"])
 
 
-def populateDecayParameters(self):
-    id = 1
+def populateDecayParameters():
+    dom_pool_id = 1
     with self.GetAIDB() as aidb:
         for row in aidb.Query(
             "SELECT * FROM tblDOMParametersDefault ORDER BY SoilPoolID"):
@@ -68,13 +65,13 @@ def populateDecayParameters(self):
                 break
             self.cbmDefaults.add_record(
                 "decay_parameter",
-                dom_pool_id=id,
+                dom_pool_id=dom_pool_id,
                 base_decay_rate=row.OrganicMatterDecayRate,
                 reference_temp=row.ReferenceTemp,
                 q10=row.Q10,
                 prop_to_atmosphere=row.PropToAtmosphere,
                 max_rate=1)
-            id += 1
+            dom_pool_id += 1
 
 
 def populateAdminBoundaries(self):
