@@ -4,11 +4,11 @@ from cbm_defaults import cbm_defaults_database
 from cbm_defaults import local_csv_table
 
 
-def build_database(connection, locales):
+def build_database(connection, locales, archive_index):
 
     populate_locale(connection, locales)
     populatePools(connection)
-    populateDecayParameters(connection)
+    populateDecayParameters(connection, archive_index)
     populateAdminBoundaries(connection)
     populateEcoBoundaries(connection)
     populateRootParameter(connection)
@@ -56,57 +56,54 @@ def populatePools(connection):
             locale_id=row["locale_id"], name=row["name"])
 
 
-def populateDecayParameters(connection):
+def populateDecayParameters(connection, archive_index):
     dom_pool_id = 1
-    with self.GetAIDB() as aidb:
-        for row in aidb.Query(
-            "SELECT * FROM tblDOMParametersDefault ORDER BY SoilPoolID"):
-            if row.SoilPoolID > 10:
-                break
-            cbm_defaults_database.add_record(
-                connection,
-                "decay_parameter",
-                dom_pool_id=dom_pool_id,
-                base_decay_rate=row.OrganicMatterDecayRate,
-                reference_temp=row.ReferenceTemp,
-                q10=row.Q10,
-                prop_to_atmosphere=row.PropToAtmosphere,
-                max_rate=1)
-            dom_pool_id += 1
+
+    for row in archive_index.get_dom_parameters():
+        if row.SoilPoolID > 10:
+            break
+        cbm_defaults_database.add_record(
+            connection,
+            "decay_parameter",
+            dom_pool_id=dom_pool_id,
+            base_decay_rate=row.OrganicMatterDecayRate,
+            reference_temp=row.ReferenceTemp,
+            q10=row.Q10,
+            prop_to_atmosphere=row.PropToAtmosphere,
+            max_rate=1)
+        dom_pool_id += 1
 
 
-def populateAdminBoundaries(connection):
+def populateAdminBoundaries(connection, locales, archive_index):
 
-    with self.GetAIDB("en-CA") as aidb_en_ca:
-        stump_parameter_id = 1
-        for row in aidb_en_ca.Query("SELECT * FROM tblAdminBoundaryDefault"):
-            cbm_defaults_database.add_record(
-                connection,
-                "stump_parameter",
-                id=row.AdminBoundaryID,
-                sw_top_proportion=row.SoftwoodTopProportion,
-                sw_stump_proportion=row.SoftwoodStumpProportion,
-                hw_top_proportion=row.HardwoodTopProportion,
-                hw_stump_proportion=row.HardwoodStumpProportion)
+    stump_parameter_id = 1
+    for row in archive_index.get_admin_boundaries():
+        cbm_defaults_database.add_record(
+            connection,
+            "stump_parameter",
+            id=row.AdminBoundaryID,
+            sw_top_proportion=row.SoftwoodTopProportion,
+            sw_stump_proportion=row.SoftwoodStumpProportion,
+            hw_top_proportion=row.HardwoodTopProportion,
+            hw_stump_proportion=row.HardwoodStumpProportion)
 
-            cbm_defaults_database.add_record(
-                connection,
-                "admin_boundary",
-                id=row.AdminBoundaryID,
-                stump_parameter_id=stump_parameter_id)
-            stump_parameter_id+=1
+        cbm_defaults_database.add_record(
+            connection,
+            "admin_boundary",
+            id=row.AdminBoundaryID,
+            stump_parameter_id=stump_parameter_id)
+        stump_parameter_id += 1
 
     translation_id = 1
-    for locale in self.locales:
-        with self.GetAIDB(locale["code"]) as aidb:
-            for row in aidb.Query("SELECT AdminBoundaryID, AdminBoundaryName FROM tblAdminBoundaryDefault"):
-                cbm_defaults_database.add_record(
-                    connection,
-                    "admin_boundary_tr",
-                    admin_boundary_id=row.AdminBoundaryID,
-                    locale_id=locale["id"],
-                    name=row.AdminBoundaryName)
-                translation_id += 1
+    for locale in locales:
+        for row in archive_index.get_admin_boundaries(locale["code"]):
+            cbm_defaults_database.add_record(
+                connection,
+                "admin_boundary_tr",
+                admin_boundary_id=row.AdminBoundaryID,
+                locale_id=locale["id"],
+                name=row.AdminBoundaryName)
+            translation_id += 1
 
 
 def get_random_return_interval_parameters():
@@ -119,59 +116,56 @@ def get_random_return_interval_parameters():
     return result
 
 
-def populateEcoBoundaries(connection):
+def populateEcoBoundaries(connection, locales, archive_index):
 
     random_return_interval_params = get_random_return_interval_parameters()
-    with self.GetAIDB("en-CA") as aidb:
-        eco_association_id = 1
-        for row in aidb.Query("SELECT * FROM tblEcoBoundaryDefault"):
-            cbm_defaults_database.add_record(
-                connection,
-                "turnover_parameter",
-                id=eco_association_id,
-                sw_foliage=row.SoftwoodFoliageFallRate,
-                hw_foliage=row.HardwoodFoliageFallRate,
-                stem_turnover=row.StemAnnualTurnOverRate,
-                sw_branch=row.SoftwoodBranchTurnOverRate,
-                hw_branch=row.HardwoodBranchTurnOverRate,
-                branch_snag_split=0.25,
-                stem_snag=row.SoftwoodStemSnagToDOM,
-                branch_snag=row.SoftwoodBranchSnagToDOM,
-                coarse_root=0.02,
-                fine_root=0.641,
-                coarse_ag_split=0.5,
-                fine_ag_split=0.5)
+    eco_association_id = 1
+    for row in archive_index.get_eco_boundaries():
+        cbm_defaults_database.add_record(
+            connection,
+            "turnover_parameter",
+            id=eco_association_id,
+            sw_foliage=row.SoftwoodFoliageFallRate,
+            hw_foliage=row.HardwoodFoliageFallRate,
+            stem_turnover=row.StemAnnualTurnOverRate,
+            sw_branch=row.SoftwoodBranchTurnOverRate,
+            hw_branch=row.HardwoodBranchTurnOverRate,
+            branch_snag_split=0.25,
+            stem_snag=row.SoftwoodStemSnagToDOM,
+            branch_snag=row.SoftwoodBranchSnagToDOM,
+            coarse_root=0.02,
+            fine_root=0.641,
+            coarse_ag_split=0.5,
+            fine_ag_split=0.5)
 
-            random_param = random_return_interval_params[row.EcoBoundaryID]
-            cbm_defaults_database.add_record(
-                connection,
-                "random_return_interval",
-                id=eco_association_id,
-                a_Nu=random_param["a_Nu"],
-                b_Nu=random_param["b_Nu"],
-                a_Lambda=random_param["a_Lambda"],
-                b_Lambda=random_param["b_Lambda"]
-            )
+        random_param = random_return_interval_params[row.EcoBoundaryID]
+        cbm_defaults_database.add_record(
+            connection,
+            "random_return_interval",
+            id=eco_association_id,
+            a_Nu=random_param["a_Nu"],
+            b_Nu=random_param["b_Nu"],
+            a_Lambda=random_param["a_Lambda"],
+            b_Lambda=random_param["b_Lambda"]
+        )
 
-            cbm_defaults_database.add_record(
-                connection,
-                "eco_boundary",
-                id=row.EcoBoundaryID,
-                turnover_parameter_id=eco_association_id,
-                random_return_interval_id=eco_association_id)
+        cbm_defaults_database.add_record(
+            connection,
+            "eco_boundary",
+            id=row.EcoBoundaryID,
+            turnover_parameter_id=eco_association_id,
+            random_return_interval_id=eco_association_id)
 
-            eco_association_id += 1
+        eco_association_id += 1
 
     translation_id = 1
-    for locale in self.locales:
-        with self.GetAIDB(locale["code"]) as aidb:
-            for row in aidb.Query("SELECT EcoBoundaryID, EcoBoundaryName FROM tblEcoBoundaryDefault"):
-                self.cbmDefaults.add_record("eco_boundary_tr",
-                                            id=translation_id,
-                                            eco_boundary_id=row.EcoBoundaryID,
-                                            locale_id=locale["id"],
-                                            name=row.EcoBoundaryName)
-                translation_id += 1
+    for locale in locales:
+        for row in archive_index.get_eco_boundaries(locale["code"]):
+            cbm_defaults_database.add_record(
+                connection, "eco_boundary_tr", id=translation_id,
+                eco_boundary_id=row.EcoBoundaryID, locale_id=locale["id"],
+                name=row.EcoBoundaryName)
+            translation_id += 1
 
 
 def populateRootParameter(connection):
@@ -197,34 +191,24 @@ def populateSlowMixingRate(connection):
         connection, "slow_mixing_rate", id=1, rate=0.006)
 
 
-def populateSpatialUnits(connection):
-    qry = """SELECT tblSPUDefault.SPUID, tblSPUDefault.AdminBoundaryID, tblSPUDefault.EcoBoundaryID, tblClimateDefault.MeanAnnualTemp, tblEcoBoundaryDefault.AverageAge
-            FROM (tblSPUDefault INNER JOIN tblClimateDefault ON tblSPUDefault.SPUID = tblClimateDefault.DefaultSPUID) INNER JOIN tblEcoBoundaryDefault ON tblSPUDefault.EcoBoundaryID = tblEcoBoundaryDefault.EcoBoundaryID
-            WHERE (((tblClimateDefault.Year)=1981));
-        """
+def populateSpatialUnits(connection, archive_index):
+
     spinupu_parameter_id = 1
-    with self.GetAIDB("en-CA") as aidb:
-        for row in aidb.Query(qry):
+    for row in archive_index.get_spatial_units():
 
-            cbm_defaults_database.add_record(
-                connection,
-                "spinup_parameter",
-                id = spinupu_parameter_id,
-                return_interval=row.AverageAge,
-                min_rotations=10,
-                max_rotations=30,
-                historic_mean_temperature=row.MeanAnnualTemp)
+        cbm_defaults_database.add_record(
+            connection, "spinup_parameter", id=spinupu_parameter_id,
+            return_interval=row.AverageAge, min_rotations=10,
+            max_rotations=30, historic_mean_temperature=row.MeanAnnualTemp)
 
-            cbm_defaults_database.add_record(
-                connection,
-                "spatial_unit",
-                id=row.SPUID,
-                admin_boundary_id=row.AdminBoundaryID,
-                eco_boundary_id=row.EcoBoundaryID,
-                root_parameter_id=1,
-                spinup_parameter_id=spinupu_parameter_id,
-                mean_annual_temperature=row.MeanAnnualTemp)
-            spinupu_parameter_id += 1
+        cbm_defaults_database.add_record(
+            connection, "spatial_unit", id=row.SPUID,
+            admin_boundary_id=row.AdminBoundaryID,
+            eco_boundary_id=row.EcoBoundaryID,
+            root_parameter_id=1,
+            spinup_parameter_id=spinupu_parameter_id,
+            mean_annual_temperature=row.MeanAnnualTemp)
+        spinupu_parameter_id += 1
 
 
 def populateSpecies(connection):
@@ -260,9 +244,9 @@ def populateSpecies(connection):
                 forest_type_id = row.ForestTypeID,
                 genus_id = row.GenusID)
 
-    forest_type_tr_id=1
-    genus_tr_id=1
-    species_tr_id=1
+    forest_type_tr_id = 1
+    genus_tr_id = 1
+    species_tr_id = 1
     for locale in self.locales:
         with self.GetAIDB(locale["code"]) as aidb:
 
