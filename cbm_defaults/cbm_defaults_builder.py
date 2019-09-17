@@ -7,18 +7,18 @@ from cbm_defaults import local_csv_table
 def build_database(connection, locales, archive_index):
 
     populate_locale(connection, locales)
-    populatePools(connection)
+    populate_pools(connection)
     populateDecayParameters(connection, archive_index)
-    populateAdminBoundaries(connection)
-    populateEcoBoundaries(connection)
+    populateAdminBoundaries(connection, archive_index, locales)
+    populateEcoBoundaries(connection, archive_index, locales)
     populateRootParameter(connection)
     populateBiomassToCarbonRate(connection)
     populateSlowMixingRate(connection)
-    populateSpatialUnits(connection)
-    populateSpecies(connection)
-    populateVolumeToBiomass(connection)
-    populateLandClasses(connection)
-    populateDisturbanceTypes(connection)
+    populateSpatialUnits(connection, archive_index)
+    populateSpecies(connection, archive_index, locales)
+    populateVolumeToBiomass(connection, archive_index)
+    populateLandClasses(connection, locales)
+    populateDisturbanceTypes(connection, archive_index, locales)
     populateDMValues(connection)
     populateDMAssociations(connection)
     PopulateGrowthMultipliers(connection)
@@ -41,16 +41,16 @@ def populate_locale(connection, locales):
             connection, "locale", id=l["id"], code=l["code"])
 
 
-def populatePools(connection):
-    for row in local_csv_table.read_local_csv_file("pool.csv"):
+def populate_pools(connection):
+    for row in local_csv_table.read_csv_file("pool.csv"):
         cbm_defaults_database.add_record(
             connection, "pool", id=row["id"], code=row["code"])
 
-    for row in local_csv_table.read_local_csv_file("dom_pool.csv"):
+    for row in local_csv_table.read_csv_file("dom_pool.csv"):
         cbm_defaults_database.add_record(
             connection, "dom_pool", id=row["id"], pool_id=row["pool_id"])
 
-    for row in local_csv_table.read_local_csv_file("pool_tr.csv"):
+    for row in local_csv_table.read_csv_file("pool_tr.csv"):
         cbm_defaults_database.add_record(
             connection, "pool_tr", id=row["id"], pool_id=row["pool_id"],
             locale_id=row["locale_id"], name=row["name"])
@@ -75,7 +75,6 @@ def populateDecayParameters(connection, archive_index):
 
 
 def populateAdminBoundaries(connection, archive_index, locales):
-
     stump_parameter_id = 1
     for row in archive_index.get_admin_boundaries():
         cbm_defaults_database.add_record(
@@ -108,11 +107,9 @@ def populateAdminBoundaries(connection, archive_index, locales):
 
 def get_random_return_interval_parameters():
     result = {}
-    for row in local_csv_table.read_local_csv_file(
-            "uc_random_return_interval_parameters.csv"):
-
+    filename = "uc_random_return_interval_parameters.csv"
+    for row in local_csv_table.read_csv_file(filename):
         result[int(row["eco_boundary_id"])] = row
-
     return result
 
 
@@ -333,124 +330,98 @@ def populateVolumeToBiomass(connection, archive_index):
         vol_to_bio_parameter_id += 1
 
 
-def populateLandClasses(self):
-    for row in self.read_local_csv_file("landclass.csv"):
+def populateLandClasses(connection, locales):
+    for row in local_csv_table.read_csv_file("landclass.csv"):
         cbm_defaults_database.add_record(
             connection,
             "land_class",
             code=row["code"],
             id=row["id"],
-            is_forest=self.asBoolean(row["is_forest"]),
-            is_simulated=self.asBoolean(row["is_simulated"]),
+            is_forest=as_boolean(row["is_forest"]),
+            is_simulated=as_boolean(row["is_simulated"]),
             transitional_period=row["transitional_period"],
             transition_id=row["transition_id"])
 
-    for row in self.read_local_csv_file("landclass_translation.csv"):
-        cbm_defaults_database.add_record(
-            connection,
-            "land_class_tr",
-            id=row["id"],
-            land_class_id=row["landclass_id"],
-            locale_id=row["locale_id"],
-            description=row["description"])
+    for locale in locales:
 
-
-def populateDisturbanceTypes(connection):
-    unfccc_code_lookup = {}
-    for row in self.read_local_csv_file("landclass.csv"):
-        unfccc_code_lookup[row["code"]] = row["id"]
-
-    disturbanceTypeLandclassLookup = {}
-    for row in self.read_local_csv_file("disturbance_type_landclass.csv"):
-        disturbanceTypeLandclassLookup[int(row["DefaultDisturbanceTypeId"])] = unfccc_code_lookup[row["UNFCCC_CODE"]]
-
-    distTypeQuery = """
-        SELECT tblDisturbanceTypeDefault.DistTypeID,
-        tblDisturbanceTypeDefault.DistTypeName,
-        tblDisturbanceTypeDefault.Description
-        FROM tblDisturbanceTypeDefault LEFT JOIN (
-            SELECT tblDMAssociationDefault.DefaultDisturbanceTypeID
-            FROM tblDMAssociationDefault
-            GROUP BY tblDMAssociationDefault.DefaultDisturbanceTypeID) as dma
-            on tblDisturbanceTypeDefault.DistTypeID = dma.DefaultDisturbanceTypeID
-        WHERE dma.DefaultDisturbanceTypeID is not Null;"""
-
-    with self.GetAIDB("en-CA") as aidb:
-
-        for row in aidb.Query(distTypeQuery):
-            landclasstransion = disturbanceTypeLandclassLookup[row.DistTypeID] \
-                if row.DistTypeID in disturbanceTypeLandclassLookup else None
+        for row in local_csv_table.read_localized_csv_file(
+                "landclass.csv", locale):
             cbm_defaults_database.add_record(
                 connection,
-                "disturbance_type",
-                id=row.DistTypeID,
-                transition_land_class_id=landclasstransion)
-
-    tr_id= 1
-    for locale in self.locales:
-        with self.GetAIDB(locale["code"]) as aidb:
-            for row in aidb.Query(distTypeQuery):
-                cbm_defaults_database.add_record(
-                    connection,
-                    "disturbance_type_tr",
-                    id=tr_id,
-                    disturbance_type_id=row.DistTypeID,
-                    locale_id=locale["id"],
-                    name=row.DistTypeName,
-                    description=row.Description)
-                tr_id += 1
+                "land_class_tr",
+                id=row["id"],
+                land_class_id=row["landclass_id"],
+                locale_id=locale["id"],
+                description=row["description"])
 
 
-def populateDMValues(connection):
-    poolCrossWalk = {}
-    for row in self.read_local_csv_file("pool_cross_walk.csv"):
-        poolCrossWalk[int(row["cbm3_pool_code"])]=int(row["cbm3_5_pool_code"])
+def populateDisturbanceTypes(connection, archive_index, locales):
+    unfccc_code_lookup = {}
+    for row in local_csv_table.read_csv_file("landclass.csv"):
+        unfccc_code_lookup[row["code"]] = row["id"]
 
-    dmQuery = """SELECT tblDM.DMID, tblDM.Name, tblDM.Description FROM tblDM;"""
+    disturbance_type_land_class_lookup = {}
+    for row in local_csv_table.read_csv_file(
+            "disturbance_type_landclass.csv"):
+        disturbance_type = int(row["DefaultDisturbanceTypeId"])
+        unfccc_code = unfccc_code_lookup[row["UNFCCC_CODE"]]
+        disturbance_type_land_class_lookup[disturbance_type] = unfccc_code
 
-    with self.GetAIDB("en-CA") as aidb:
-        id = 1
-
-        for row in aidb.Query(dmQuery):
-            self.cbmDefaults.add_record(
-                "disturbance_matrix",
-                id = row.DMID)
-
-            dmValueQuery = """SELECT
-                tblDMValuesLookup.DMID,
-                tblDMValuesLookup.DMRow,
-                tblDMValuesLookup.DMColumn,
-                tblDMValuesLookup.Proportion
-                FROM tblDMValuesLookup
-                WHERE tblDMValuesLookup.DMID=?;"""
-
-            for dmValueRow in aidb.Query(dmValueQuery, (row.DMID,)):
-                src = poolCrossWalk[dmValueRow.DMRow]
-                sink = poolCrossWalk[dmValueRow.DMColumn]
-                if src == -1 or sink == -1:
-                    continue
-                cbm_defaults_database.add_record(
-                    connection,
-                    "disturbance_matrix_value",
-                    disturbance_matrix_id=row.DMID,
-                    source_pool_id=src,
-                    sink_pool_id=sink,
-                    proportion=dmValueRow.Proportion)
-            id += 1
+    for row in archive_index.get_disturbance_types():
+        landclasstransition = \
+            disturbance_type_land_class_lookup[row.DistTypeID] \
+            if row.DistTypeID in disturbance_type_land_class_lookup else None
+        cbm_defaults_database.add_record(
+            connection,
+            "disturbance_type",
+            id=row.DistTypeID,
+            transition_land_class_id=landclasstransition)
 
     tr_id = 1
-    for locale in self.locales:
-        with self.GetAIDB(locale["code"]) as aidb:
-            for row in aidb.Query(dmQuery):
-                cbm_defaults_database.add_record(
-                    connection,
-                    "disturbance_matrix_tr",
-                    id = tr_id,
-                    disturbance_matrix_id = row.DMID,
-                    locale_id = locale["id"],
-                    name = row.Name,
-                    description = row.Description)
-                tr_id += 1
+    for locale in locales:
+        for row in archive_index.get_disturbance_types(locale["code"]):
+            cbm_defaults_database.add_record(
+                connection,
+                "disturbance_type_tr",
+                id=tr_id,
+                disturbance_type_id=row.DistTypeID,
+                locale_id=locale["id"],
+                name=row.DistTypeName,
+                description=row.Description)
+            tr_id += 1
+
+
+def populateDMValues(connection, archive_index, locales):
+    pool_cross_walk = {}
+    for row in local_csv_table.read_csv_file("pool_cross_walk.csv"):
+        pool_cross_walk[int(row["cbm3_pool_code"])] = \
+            int(row["cbm3_5_pool_code"])
+
+    for row in archive_index.read_disturbance_matrix_names():
+        cbm_defaults_database.add_record(
+            connection, "disturbance_matrix", id=row.DMID)
+
+        for dm_value_row in archive_index.read_distubrance_matrix(row.DMID):
+            src = pool_cross_walk[dm_value_row.DMRow]
+            sink = pool_cross_walk[dm_value_row.DMColumn]
+            if src == -1 or sink == -1:
+                continue
+            cbm_defaults_database.add_record(
+                connection,
+                "disturbance_matrix_value",
+                disturbance_matrix_id=row.DMID,
+                source_pool_id=src,
+                sink_pool_id=sink,
+                proportion=dm_value_row.Proportion)
+
+    tr_id = 1
+    for locale in locales:
+        for row in archive_index.read_disturbance_matrix_names(locale["code"]):
+            cbm_defaults_database.add_record(
+                connection, "disturbance_matrix_tr", id=tr_id,
+                disturbance_matrix_id=row.DMID, locale_id=locale["id"],
+                name=row.Name, description=row.Description)
+            tr_id += 1
 
 
 def populateDMAssociations(connection):

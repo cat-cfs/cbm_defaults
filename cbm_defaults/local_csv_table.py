@@ -12,7 +12,7 @@ def get_tables_dir():
     return os.path.abspath(os.path.join("..", local_dir, "tables"))
 
 
-def read_local_csv_file(filename):
+def read_csv_file(filename):
     """yield rows from the specified csv stored in the csv tables dir
     returned by :py:func:`get_tables_dir`
 
@@ -24,3 +24,10 @@ def read_local_csv_file(filename):
         reader = csv.DictReader(local_csv_file)
         for row in reader:
             yield row
+
+
+def read_localized_csv_file(filename, locale):
+    filename_tokens = os.path.splitext(filename)
+    localized_file_path = f"{filename_tokens[0]}_{locale}_{filename_tokens[1]}"
+    for row in read_csv_file(localized_file_path):
+        yield row

@@ -81,3 +81,32 @@ class ArchiveIndex:
 
     def get_vol_to_bio_forest_type(self):
         return self.query("SELECT * FROM tblBioTotalStemwoodForestTypeDefault")
+
+    def get_disturbance_types(self, locale):
+        dist_type_query = """
+        SELECT tblDisturbanceTypeDefault.DistTypeID,
+        tblDisturbanceTypeDefault.DistTypeName,
+        tblDisturbanceTypeDefault.Description
+        FROM tblDisturbanceTypeDefault LEFT JOIN (
+            SELECT tblDMAssociationDefault.DefaultDisturbanceTypeID
+            FROM tblDMAssociationDefault
+            GROUP BY tblDMAssociationDefault.DefaultDisturbanceTypeID) as dma
+            on tblDisturbanceTypeDefault.DistTypeID =
+            dma.DefaultDisturbanceTypeID
+        WHERE dma.DefaultDisturbanceTypeID is not Null;"""
+        return self.query(dist_type_query, locale=locale)
+
+    def read_disturbance_matrix_names(self, locale):
+        dm_query = """
+            SELECT tblDM.DMID, tblDM.Name, tblDM.Description FROM tblDM;"""
+        return self.query(dm_query, locale=locale)
+
+    def read_distubrance_matrix(self, disturbance_matrix_id):
+        dm_value_query = """SELECT
+            tblDMValuesLookup.DMID,
+            tblDMValuesLookup.DMRow,
+            tblDMValuesLookup.DMColumn,
+            tblDMValuesLookup.Proportion
+            FROM tblDMValuesLookup
+            WHERE tblDMValuesLookup.DMID=?;"""
+        return self.query(dm_value_query, params=(disturbance_matrix_id,))
