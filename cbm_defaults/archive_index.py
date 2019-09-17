@@ -1,3 +1,4 @@
+from cbm_defaults import access_db
 
 
 class ArchiveIndex:
@@ -6,9 +7,14 @@ class ArchiveIndex:
         self.locales = locales
         self.default_locale = default_locale
         self.archive_index_data = archive_index_data
+        self.paths_by_locale = {
+            x["locale"]: x["path"] for x in archive_index_data}
 
-    def get_archive_index_database(locale=None):
-        pass
-
-    def query(sql, locale=None):
-        pass
+    def query(self, sql, params, locale=None):
+        path = None
+        if locale:
+            path = self.paths_by_locale[locale]
+        else:
+            path = self.paths_by_locale[self.default_locale]
+        with access_db.get_connection(path) as connection:
+            return access_db.query_db(connection, sql, params)
