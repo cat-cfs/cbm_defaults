@@ -21,10 +21,12 @@ class ArchiveIndex:
                 yield row
 
     def get_admin_boundaries(self, locale=None):
-        return self.query("SELECT * FROM tblAdminBoundaryDefault", locale)
+        return self.query(
+            "SELECT * FROM tblAdminBoundaryDefault", locale=locale)
 
     def get_eco_boundaries(self, locale=None):
-        return self.query("SELECT * FROM tblEcoBoundaryDefault", locale)
+        return self.query(
+            "SELECT * FROM tblEcoBoundaryDefault", locale=locale)
 
     def get_spatial_units(self):
         qry = """
@@ -43,3 +45,30 @@ class ArchiveIndex:
     def get_dom_parameters(self):
         return self.query(
             "SELECT * FROM tblDOMParametersDefault ORDER BY SoilPoolID")
+
+    def get_forest_types(self, locale=None):
+        sql_forest_type = """
+            SELECT
+            tblForestTypeDefault.ForestTypeID,
+            tblForestTypeDefault.ForestTypeName
+            FROM tblForestTypeDefault
+            GROUP BY tblForestTypeDefault.ForestTypeID,
+            tblForestTypeDefault.ForestTypeName;"""
+        return self.query(sql_forest_type, locale=locale)
+
+    def get_genus(self, locale=None):
+        sql_genus = """
+            SELECT tblGenusTypeDefault.GenusID,
+            tblGenusTypeDefault.GenusName
+            FROM tblGenusTypeDefault
+            GROUP BY tblGenusTypeDefault.GenusID,
+            tblGenusTypeDefault.GenusName;"""
+        return self.query(sql_genus, locale=locale)
+
+    def get_species(self, locale=None):
+        sql_species = """
+            SELECT tblSpeciesTypeDefault.SpeciesTypeID,
+            tblSpeciesTypeDefault.SpeciesTypeName,
+            tblSpeciesTypeDefault.ForestTypeID, tblSpeciesTypeDefault.GenusID
+            FROM tblSpeciesTypeDefault;"""
+        return self.query(sql_species, locale=locale)

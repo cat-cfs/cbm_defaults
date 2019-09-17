@@ -74,7 +74,7 @@ def populateDecayParameters(connection, archive_index):
         dom_pool_id += 1
 
 
-def populateAdminBoundaries(connection, locales, archive_index):
+def populateAdminBoundaries(connection, archive_index, locales):
 
     stump_parameter_id = 1
     for row in archive_index.get_admin_boundaries():
@@ -116,7 +116,7 @@ def get_random_return_interval_parameters():
     return result
 
 
-def populateEcoBoundaries(connection, locales, archive_index):
+def populateEcoBoundaries(connection, archive_index, locales):
 
     random_return_interval_params = get_random_return_interval_parameters()
     eco_association_id = 1
@@ -211,82 +211,62 @@ def populateSpatialUnits(connection, archive_index):
         spinupu_parameter_id += 1
 
 
-def populateSpecies(connection):
+def populateSpecies(connection, archive_index, locales):
 
-    sqlForestType = """SELECT tblForestTypeDefault.ForestTypeID, tblForestTypeDefault.ForestTypeName
-                        FROM tblForestTypeDefault
-                        GROUP BY tblForestTypeDefault.ForestTypeID, tblForestTypeDefault.ForestTypeName;"""
+    for row in archive_index.get_forest_types():
+        cbm_defaults_database.add_record(
+            connection, "forest_type", id=row.ForestTypeID)
 
-    sqlGenus = """SELECT tblGenusTypeDefault.GenusID, tblGenusTypeDefault.GenusName
-                    FROM tblGenusTypeDefault
-                    GROUP BY tblGenusTypeDefault.GenusID, tblGenusTypeDefault.GenusName;"""
+    for row in archive_index.get_genus():
+        cbm_defaults_database.add_record(
+            connection, "genus", id=row.GenusID)
 
-    sqlspecies = """SELECT tblSpeciesTypeDefault.SpeciesTypeID, tblSpeciesTypeDefault.SpeciesTypeName,
-                tblSpeciesTypeDefault.ForestTypeID, tblSpeciesTypeDefault.GenusID
-                FROM tblSpeciesTypeDefault;
-                """
-
-    with self.GetAIDB("en-CA") as aidb:
-        for row in aidb.Query(sqlForestType):
-            self.cbmDefaults.add_record(
-                "forest_type",
-                id=row.ForestTypeID)
-
-        for row in aidb.Query(sqlGenus):
-            self.cbmDefaults.add_record(
-                "genus",
-                id=row.GenusID)
-
-        for row in aidb.Query(sqlspecies):
-            self.cbmDefaults.add_record(
-                "species",
-                id = row.SpeciesTypeID,
-                forest_type_id = row.ForestTypeID,
-                genus_id = row.GenusID)
+    for row in archive_index.get_species():
+        cbm_defaults_database.add_record(
+            connection, "species", id=row.SpeciesTypeID,
+            forest_type_id=row.ForestTypeID, genus_id=row.GenusID)
 
     forest_type_tr_id = 1
     genus_tr_id = 1
     species_tr_id = 1
-    for locale in self.locales:
-        with self.GetAIDB(locale["code"]) as aidb:
+    for locale in locales:
+        for row in archive_index.get_forest_types(locale["code"]):
+            cbm_defaults_database.add_record(
+                connection,
+                "forest_type_tr",
+                id=forest_type_tr_id,
+                forest_type_id=row.ForestTypeID,
+                locale_id=locale["id"],
+                name=row.ForestTypeName)
 
-            for row in aidb.Query(sqlForestType):
-                cbm_defaults_database.add_record(
-                    connection,
-                    "forest_type_tr",
-                    id=forest_type_tr_id,
-                    forest_type_id=row.ForestTypeID,
-                    locale_id=locale["id"],
-                    name=row.ForestTypeName)
+            forest_type_tr_id += 1
 
-                forest_type_tr_id += 1
+        for row in archive_index.get_genus(locale["code"]):
+            cbm_defaults_database.add_record(
+                connection,
+                "genus_tr",
+                id=genus_tr_id,
+                genus_id=row.GenusID,
+                locale_id=locale["id"],
+                name=row.GenusName)
+            genus_tr_id += 1
 
-            for row in aidb.Query(sqlGenus):
-                cbm_defaults_database.add_record(
-                    connection,
-                    "genus_tr",
-                    id=genus_tr_id,
-                    genus_id=row.GenusID,
-                    locale_id=locale["id"],
-                    name=row.GenusName)
-                genus_tr_id += 1
-
-            for row in aidb.Query(sqlspecies):
-                cbm_defaults_database.add_record(
-                    connection,
-                    "species_tr",
-                    id=species_tr_id,
-                    species_id=row.SpeciesTypeID,
-                    locale_id=locale["id"],
-                    name=row.SpeciesTypeName)
-                species_tr_id += 1
+        for row in archive_index.get_species(locale["code"]):
+            cbm_defaults_database.add_record(
+                connection,
+                "species_tr",
+                id=species_tr_id,
+                species_id=row.SpeciesTypeID,
+                locale_id=locale["id"],
+                name=row.SpeciesTypeName)
+            species_tr_id += 1
 
 
-def insertVolToBioFactor(connection, id, row):
+def insertVolToBioFactor(connection, volume_to_biomass_factor_id, row):
     cbm_defaults_database.add_record(
         connection,
         "vol_to_bio_factor",
-        id=id,
+        id=volume_to_biomass_factor_id,
         a=row.A,
         b=row.B,
         a_nonmerch=row.a_nonmerch,
@@ -315,7 +295,7 @@ def insertVolToBioFactor(connection, id, row):
         low_branches_prop=row.low_branches_prop,
         high_branches_prop=row.high_branches_prop,
         low_foliage_prop=row.low_foliage_prop,
-        high_foliage_prop=row.high_foliage_prop )
+        high_foliage_prop=row.high_foliage_prop)
 
 
 def populateVolumeToBiomass(connection):
