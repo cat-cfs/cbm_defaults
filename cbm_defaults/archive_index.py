@@ -83,7 +83,7 @@ class ArchiveIndex:
     def get_vol_to_bio_forest_type(self):
         return self.query("SELECT * FROM tblBioTotalStemwoodForestTypeDefault")
 
-    def get_disturbance_types(self, locale):
+    def get_disturbance_types(self, locale=None):
         dist_type_query = """
         SELECT tblDisturbanceTypeDefault.DistTypeID,
         tblDisturbanceTypeDefault.DistTypeName,
@@ -97,7 +97,7 @@ class ArchiveIndex:
         WHERE dma.DefaultDisturbanceTypeID is not Null;"""
         return self.query(dist_type_query, locale=locale)
 
-    def get_disturbance_matrix_names(self, locale):
+    def get_disturbance_matrix_names(self, locale=None):
         dm_query = """
             SELECT tblDM.DMID, tblDM.Name, tblDM.Description FROM tblDM;"""
         return self.query(dm_query, locale=locale)
@@ -167,3 +167,29 @@ class ArchiveIndex:
         HAVING (((tblDisturbanceTypeDefault.DistTypeID)=?));"""
         return self.query(
             growth_multipliers_query, params=(disturbance_type_id,))
+
+    def get_afforestation_pre_type_values(self):
+        sql_pre_type_values = """
+            SELECT tblSPUDefault.SPUID,
+            tblSVLAttributesDefaultAfforestation.PreTypeID,
+            tblSVLAttributesDefaultAfforestation.SSoilPoolC_BG
+            FROM tblSVLAttributesDefaultAfforestation INNER JOIN
+            tblSPUDefault ON (
+                tblSVLAttributesDefaultAfforestation.EcoBoundaryID =
+                    tblSPUDefault.EcoBoundaryID
+                ) AND (
+                    tblSVLAttributesDefaultAfforestation.AdminBoundaryID =
+                        tblSPUDefault.AdminBoundaryID)
+            GROUP BY tblSPUDefault.SPUID,
+            tblSVLAttributesDefaultAfforestation.PreTypeID,
+            tblSVLAttributesDefaultAfforestation.SSoilPoolC_BG;
+        """
+        return self.query(sql_pre_type_values)
+
+    def get_afforestation_pre_types(self, locale=None):
+        sql_pre_types = """
+        SELECT tblAfforestationPreTypeDefault.PreTypeID,
+        tblAfforestationPreTypeDefault.Name
+        FROM tblAfforestationPreTypeDefault;
+        """
+        return self.query(sql_pre_types, locale)

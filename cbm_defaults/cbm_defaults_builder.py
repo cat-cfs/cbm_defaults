@@ -23,7 +23,7 @@ def build_database(connection, locales, archive_index):
     populateDMAssociations(connection, archive_index)
     PopulateGrowthMultipliers(connection, archive_index)
     populateFluxIndicators(connection)
-    populateAfforestation(connection)
+    populateAfforestation(connection, archive_index, locales)
 
 
 def as_boolean(value):
@@ -482,49 +482,39 @@ def populateFluxIndicators(connection):
     insert_csv("composite_flux_indicator_value")
 
 
-def populateAfforestation(connection):
-    sql_pre_type_values = """
-        SELECT tblSPUDefault.SPUID, tblSVLAttributesDefaultAfforestation.PreTypeID, tblSVLAttributesDefaultAfforestation.SSoilPoolC_BG
-        FROM tblSVLAttributesDefaultAfforestation INNER JOIN tblSPUDefault ON (tblSVLAttributesDefaultAfforestation.EcoBoundaryID = tblSPUDefault.EcoBoundaryID) AND (tblSVLAttributesDefaultAfforestation.AdminBoundaryID = tblSPUDefault.AdminBoundaryID)
-        GROUP BY tblSPUDefault.SPUID, tblSVLAttributesDefaultAfforestation.PreTypeID, tblSVLAttributesDefaultAfforestation.SSoilPoolC_BG;
-    """
+def populateAfforestation(connection, archive_index, locales):
 
-    sql_pre_types = """
-        SELECT tblAfforestationPreTypeDefault.PreTypeID, tblAfforestationPreTypeDefault.Name
-        FROM tblAfforestationPreTypeDefault;
-    """
+    # TODO use pool crosswalk to get the initial pools completely. The current
+    # assumption built into query is that only the slow bg pool has a value,
+    # and this may not be a safe assumption for all users.
+
     slow_bg_pool = [x for x in local_csv_table.read_csv_file("pool.csv")
                     if x["code"] == "BelowGroundSlowSoil"][0]["id"]
 
-    with self.GetAIDB("en-CA") as aidb:
-        for row in aidb.Query(sql_pre_types):
-            cbm_defaults_database.add_record(
-                connection,
-                "afforestation_pre_type",
-                id=row.PreTypeID)
+    for row in archive_index.get_afforestation_pre_types():
+        cbm_defaults_database.add_record(
+            connection, "afforestation_pre_type", id=row.PreTypeID)
 
-        afforestation_initial_pool_id = 1
-        for row in aidb.Query(sql_pre_type_values):
-            cbm_defaults_database.add_record(
-                connection,
-                "afforestation_initial_pool",
-                id=afforestation_initial_pool_id,
-                spatial_unit_id=row.SPUID,
-                afforestation_pre_type_id=row.PreTypeID,
-                pool_id=slow_bg_pool,
-                value=row.SSoilPoolC_BG)
-            afforestation_initial_pool_id += 1
+    afforestation_initial_pool_id = 1
+    for row in archive_index.get_afforestation_pre_type_values():
+        cbm_defaults_database.add_record(
+            connection,
+            "afforestation_initial_pool",
+            id=afforestation_initial_pool_id,
+            spatial_unit_id=row.SPUID,
+            afforestation_pre_type_id=row.PreTypeID,
+            pool_id=slow_bg_pool,
+            value=row.SSoilPoolC_BG)
+        afforestation_initial_pool_id += 1
 
     afforestation_pre_type_tr_id = 1
-    for locale in self.locales:
-        with self.GetAIDB(locale["code"]) as aidb:
-            for row in aidb.Query(sql_pre_types):
-                cbm_defaults_database.add_record(
-                    connection,
-                    "afforestation_pre_type_tr",
-                    id=afforestation_pre_type_tr_id,
-                    afforestation_pre_type_id=row.PreTypeID,
-                    locale_id=locale["id"],
-                    name=row.Name)
-                afforestation_pre_type_tr_id += 1
-
+    for locale in locales:
+        for row in archive_index.get_afforestation_pre_types(locale["code"]):
+            cbm_defaults_database.add_record(
+                connection,
+                "afforestation_pre_type_tr",
+                id=afforestation_pre_type_tr_id,
+                afforestation_pre_type_id=row.PreTypeID,
+                locale_id=locale["id"],
+                name=row.Name)
+            afforestation_pre_type_tr_id += 1
