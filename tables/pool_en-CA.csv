@@ -1,0 +1,27 @@
+pool_id,name
+1,1,Softwood Merchantable
+2,1,Softwood Foliage
+3,1,Softwood Other
+4,1,Softwood Coarse Roots
+5,1,Softwood Fine Roots
+6,1,Hardwood Merchantable
+7,1,Hardwood Foliage
+8,1,Hardwood Other
+9,1,Hardwood Coarse roots
+10,1,Hardwood Fine Roots
+11,1,Aboveground Very Fast DOM
+12,1,Belowground Very Fast DOM
+13,1,Aboveground Fast DOM
+14,1,Belowground Fast DOM
+15,1,Medium DOM
+16,1,Aboveground Slow DOM
+17,1,Belowground Slow DOM
+18,1,Softwood Stem Snag
+19,1,Softwood Branch Snag
+20,1,Hardwood Stem Snag
+21,1,Hardwood Branch Snag
+22,1,CO2
+23,1,CH4
+24,1,CO
+25,1,NO2
+26,1,Products
