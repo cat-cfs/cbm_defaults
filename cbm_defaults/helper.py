@@ -21,27 +21,28 @@ def as_boolean(value):
         raise TypeError("cannot parse {0} as boolean".format(value))
 
 
-def start_logging(fn=".\\script.log", fmode='w', use_console=True):
+def start_logging(file_name="script.log", file_mode='w', use_console=True):
     """set up logging to print to console window and to log file
 
     Args:
-        fn (str, optional): [description]. Defaults to ".\script.log".
-        fmode (str, optional): [description]. Defaults to 'w'.
+        file_name (str, optional): path of file to write log entries into.
+            Defaults to "./script.log".
+        file_mode (str, optional): [description]. Defaults to 'w'.
         use_console (bool, optional): [description]. Defaults to True.
     """
 
-    rootLogger = logging.getLogger()
+    logger = logging.getLogger("cbm_defaults_logger")
 
-    logFormatter = logging.Formatter(
+    log_formatter = logging.Formatter(
         '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
         datefmt='%m-%d %H:%M')
 
-    fileHandler = logging.FileHandler(fn, fmode)
-    fileHandler.setFormatter(logFormatter)
-    rootLogger.addHandler(fileHandler)
+    file_handler = logging.FileHandler(file_name, file_mode)
+    file_handler.setFormatter(log_formatter)
+    logger.addHandler(file_handler)
     if use_console:
-        consoleHandler = logging.StreamHandler()
-        consoleHandler.setFormatter(logFormatter)
-        rootLogger.addHandler(consoleHandler)
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(log_formatter)
+        logger.addHandler(console_handler)
 
-    rootLogger.setLevel(logging.INFO)
+    logger.setLevel(logging.INFO)
