@@ -1,5 +1,3 @@
-import os
-import csv
 from cbm_defaults import cbm_defaults_database
 from cbm_defaults import local_csv_table
 
@@ -36,9 +34,9 @@ def as_boolean(value):
 
 
 def populate_locale(connection, locales):
-    for l in locales:
+    for locale in locales:
         cbm_defaults_database.add_record(
-            connection, "locale", id=l["id"], code=l["code"])
+            connection, "locale", id=locale["id"], code=locale["code"])
 
 
 def populate_pools(connection):
