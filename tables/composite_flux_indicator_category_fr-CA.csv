@@ -1,0 +1,13 @@
+composite_flux_indicator_category_id,category_name,subcategory_name
+1,Changements aux réservoirs,Totales
+2,Changements aux réservoirs,Totaux de la biomasse
+3,Changements aux réservoirs,Totaux MOM
+4,Indicateurs d'écosystème,Productivité
+5,Indicateurs d'écosystème,Indicateurs d'écosystème
+6,Transferts d'écosystème,Écosystème à produits forestiers
+7,Transferts d'écosystème,Émission à l'atmosphère
+8,Émissions,Émissions par source
+9,Émissions,Émissions par gaz
+10,Émissions,Émissions de la biomasse par gaz
+11,Émissions,Émissions MOM par gaz
+12,Transferts issus des perturbation,Transferts issus des perturbation

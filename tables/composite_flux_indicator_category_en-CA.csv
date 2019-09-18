@@ -1,0 +1,13 @@
+composite_flux_indicator_category_id,category_name,subcategory_name
+1,Stock Changes,Total
+2,Stock Changes,Biomass Totals
+3,Stock Changes,DOM Totals
+4,Ecosystem Indicators,Productivity
+5,Ecosystem Indicators,Ecosystem Indicators
+6,Ecosystem Transfers,Ecosystem to Forest Products
+7,Ecosystem Transfers,Release to Atmostphere
+8,Emissions,Emissions By Source
+9,Emissions,Emissions By Gas
+10,Emissions,Biomass Emissions By Gas
+11,Emissions,DOM Emissions By Gas
+12,Disturbance Transfers,Disturbance Transfers

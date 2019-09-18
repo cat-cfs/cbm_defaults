@@ -1,0 +1,13 @@
+composite_flux_indicator_category_id,locale_id,category_name,subcategory_name
+1,Cambios en los reservorios,Total
+2,Cambios en los reservorios,Totales de biomasa
+3,Cambios en los reservorios,Totales de MOM
+4,Indicadores de ecosistema,Productividad
+5,Indicadores de ecosistema,Indicadores de ecosistema
+6,Transferencias de ecosistema,Del Ecosistema a productos forestales
+7,Transferencias de ecosistema,Liberar a la atmósfera
+8,Emisiones,Emisiones por fuente
+9,Emisiones,Emisiones por gas
+10,Emisiones,Emisiones de biomasa por gas
+11,Emisiones,Emisiones de MOM por gas
+12,Transferencias de perturbaciones,Transferencias de perturbaciones
