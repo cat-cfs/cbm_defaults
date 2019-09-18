@@ -75,9 +75,3 @@ def add_record(connection, table_name, **kwargs):
     params = [kwargs[k] for k in col_list]
     cursor = connection.cursor()
     cursor.execute(query, params)
-
-
-def insert_csv_file(sqlite_path, table_name, csv_file_name):
-    with get_connection(sqlite_path) as connection:
-        for row in local_csv_table.read_local_csv_file(csv_file_name):
-            add_record(connection, table_name, **row)

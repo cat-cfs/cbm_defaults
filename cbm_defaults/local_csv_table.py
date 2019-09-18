@@ -26,8 +26,6 @@ def read_csv_file(filename):
             yield row
 
 
-def read_localized_csv_file(filename, locale):
+def get_localized_csv_file_path(filename, locale):
     filename_tokens = os.path.splitext(filename)
-    localized_file_path = f"{filename_tokens[0]}_{locale}_{filename_tokens[1]}"
-    for row in read_csv_file(localized_file_path):
-        yield row
+    return f"{filename_tokens[0]}_{locale}_{filename_tokens[1]}"
