@@ -74,7 +74,8 @@ class ArchiveIndex:
         return self.query(sql_species, locale=locale)
 
     def get_vol_to_bio_species(self):
-        return self.query("SELECT * FROM tblBioTotalStemwoodSpeciesTypeDefault")
+        return self.query(
+            "SELECT * FROM tblBioTotalStemwoodSpeciesTypeDefault")
 
     def get_vol_to_bio_genus(self):
         return self.query("SELECT * FROM tblBioTotalStemwoodGenusDefault")
@@ -96,12 +97,12 @@ class ArchiveIndex:
         WHERE dma.DefaultDisturbanceTypeID is not Null;"""
         return self.query(dist_type_query, locale=locale)
 
-    def read_disturbance_matrix_names(self, locale):
+    def get_disturbance_matrix_names(self, locale):
         dm_query = """
             SELECT tblDM.DMID, tblDM.Name, tblDM.Description FROM tblDM;"""
         return self.query(dm_query, locale=locale)
 
-    def read_distubrance_matrix(self, disturbance_matrix_id):
+    def get_distubrance_matrix(self, disturbance_matrix_id):
         dm_value_query = """SELECT
             tblDMValuesLookup.DMID,
             tblDMValuesLookup.DMRow,
@@ -110,3 +111,59 @@ class ArchiveIndex:
             FROM tblDMValuesLookup
             WHERE tblDMValuesLookup.DMID=?;"""
         return self.query(dm_value_query, params=(disturbance_matrix_id,))
+
+    def get_ecoboundary_dm_associations(self):
+        ecoboundary_dm_association_query = """
+        SELECT tblDMAssociationDefault.DefaultDisturbanceTypeID,
+        tblSPUDefault.SPUID, tblDMAssociationDefault.DMID
+        FROM tblDMAssociationDefault INNER JOIN tblSPUDefault ON
+        tblDMAssociationDefault.DefaultEcoBoundaryID =
+        tblSPUDefault.EcoBoundaryID
+        GROUP BY tblDMAssociationDefault.DefaultDisturbanceTypeID,
+        tblSPUDefault.SPUID, tblDMAssociationDefault.DMID,
+        tblDMAssociationDefault.DefaultDisturbanceTypeID
+        HAVING tblDMAssociationDefault.DefaultDisturbanceTypeID<>1;
+        """
+        return self.query(ecoboundary_dm_association_query)
+
+    def get_spatial_unit_dm_associations(self):
+        spatial_unit_dm_association_query = """
+        SELECT tblDMAssociationSPUDefault.DefaultDisturbanceTypeID,
+        tblDMAssociationSPUDefault.SPUID, tblDMAssociationSPUDefault.DMID
+        FROM tblDMAssociationSPUDefault
+        GROUP BY tblDMAssociationSPUDefault.DefaultDisturbanceTypeID,
+        tblDMAssociationSPUDefault.SPUID, tblDMAssociationSPUDefault.DMID;
+        """
+        return self.query(spatial_unit_dm_association_query)
+
+    def get_growth_multiplier_disturbance(self):
+        growth_multiplier_disturbance_type_query = """
+        SELECT tblGrowthMultiplierDefault.DefaultDisturbanceTypeID
+        FROM tblGrowthMultiplierDefault
+        WHERE (((tblGrowthMultiplierDefault.GrowthMultiplier)<1))
+        GROUP BY tblGrowthMultiplierDefault.DefaultDisturbanceTypeID;"""
+        return self.query(growth_multiplier_disturbance_type_query)
+
+    def get_growth_multipliers(self, disturbance_type_id):
+        growth_multipliers_query = """
+        SELECT tblForestTypeDefault.ForestTypeID,
+        tblGrowthMultiplierDefault.AnnualOrder,
+        tblGrowthMultiplierDefault.GrowthMultiplier
+        FROM (
+            tblDisturbanceTypeDefault INNER JOIN
+                tblGrowthMultiplierDefault ON
+                tblDisturbanceTypeDefault.DistTypeID =
+                tblGrowthMultiplierDefault.DefaultDisturbanceTypeID
+            ) INNER JOIN tblForestTypeDefault ON
+                IIF(
+                    tblGrowthMultiplierDefault.DefaultSpeciesTypeID = 1,
+                    tblGrowthMultiplierDefault.DefaultSpeciesTypeID,
+                    tblGrowthMultiplierDefault.DefaultSpeciesTypeID + 1
+                ) = tblForestTypeDefault.ForestTypeID
+        GROUP BY tblDisturbanceTypeDefault.DistTypeID,
+        tblForestTypeDefault.ForestTypeID,
+        tblGrowthMultiplierDefault.AnnualOrder,
+        tblGrowthMultiplierDefault.GrowthMultiplier
+        HAVING (((tblDisturbanceTypeDefault.DistTypeID)=?));"""
+        return self.query(
+            growth_multipliers_query, params=(disturbance_type_id,))

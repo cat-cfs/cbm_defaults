@@ -19,9 +19,9 @@ def build_database(connection, locales, archive_index):
     populateVolumeToBiomass(connection, archive_index)
     populateLandClasses(connection, locales)
     populateDisturbanceTypes(connection, archive_index, locales)
-    populateDMValues(connection)
-    populateDMAssociations(connection)
-    PopulateGrowthMultipliers(connection)
+    populateDMValues(connection, archive_index, locales)
+    populateDMAssociations(connection, archive_index)
+    PopulateGrowthMultipliers(connection, archive_index)
     populateFluxIndicators(connection)
     populateAfforestation(connection)
 
@@ -397,11 +397,11 @@ def populateDMValues(connection, archive_index, locales):
         pool_cross_walk[int(row["cbm3_pool_code"])] = \
             int(row["cbm3_5_pool_code"])
 
-    for row in archive_index.read_disturbance_matrix_names():
+    for row in archive_index.get_disturbance_matrix_names():
         cbm_defaults_database.add_record(
             connection, "disturbance_matrix", id=row.DMID)
 
-        for dm_value_row in archive_index.read_distubrance_matrix(row.DMID):
+        for dm_value_row in archive_index.get_disturbance_matrix(row.DMID):
             src = pool_cross_walk[dm_value_row.DMRow]
             sink = pool_cross_walk[dm_value_row.DMColumn]
             if src == -1 or sink == -1:
@@ -416,7 +416,7 @@ def populateDMValues(connection, archive_index, locales):
 
     tr_id = 1
     for locale in locales:
-        for row in archive_index.read_disturbance_matrix_names(locale["code"]):
+        for row in archive_index.get_disturbance_matrix_names(locale["code"]):
             cbm_defaults_database.add_record(
                 connection, "disturbance_matrix_tr", id=tr_id,
                 disturbance_matrix_id=row.DMID, locale_id=locale["id"],
@@ -424,72 +424,52 @@ def populateDMValues(connection, archive_index, locales):
             tr_id += 1
 
 
-def populateDMAssociations(connection):
-    dmEcoAssociationQuery = """SELECT tblDMAssociationDefault.DefaultDisturbanceTypeID, tblSPUDefault.SPUID, tblDMAssociationDefault.DMID
-        FROM tblDMAssociationDefault INNER JOIN tblSPUDefault ON tblDMAssociationDefault.DefaultEcoBoundaryID = tblSPUDefault.EcoBoundaryID
-        GROUP BY tblDMAssociationDefault.DefaultDisturbanceTypeID, tblSPUDefault.SPUID, tblDMAssociationDefault.DMID, tblDMAssociationDefault.DefaultDisturbanceTypeID
-        HAVING (((tblDMAssociationDefault.DefaultDisturbanceTypeID)<>1));
-        """
+def populateDMAssociations(connection, archive_index):
 
-    with self.GetAIDB("en-CA") as aidb:
-        for row in aidb.Query(dmEcoAssociationQuery):
+    for row in archive_index.get_ecoboundary_dm_associations():
+        cbm_defaults_database.add_record(
+            connection,
+            "disturbance_matrix_association",
+            spatial_unit_id=row.SPUID,
+            disturbance_type_id=row.DefaultDisturbanceTypeID,
+            disturbance_matrix_id=row.DMID)
+
+    for row in archive_index.get_spatial_unit_dm_associations():
+        cbm_defaults_database.add_record(
+            connection,
+            "disturbance_matrix_association",
+            spatial_unit_id=row.SPUID,
+            disturbance_type_id=row.DefaultDisturbanceTypeID,
+            disturbance_matrix_id=row.DMID)
+
+
+def PopulateGrowthMultipliers(connection, archive_index):
+
+    growth_multiplier_id = 1
+    disturbance_types = [
+        x["DefaultDisturbanceTypeID"]
+        for x in archive_index.get_growth_multiplier_disturbance()]
+
+    for dist_type in disturbance_types:
+        cbm_defaults_database.add_record(
+            connection, "growth_multiplier_series", id=growth_multiplier_id,
+            disturbance_type_id=dist_type)
+
+        for row in archive_index.get_growth_multipliers(dist_type):
             cbm_defaults_database.add_record(
-                connection,
-                "disturbance_matrix_association",
-                spatial_unit_id=row.SPUID,
-                disturbance_type_id=row.DefaultDisturbanceTypeID,
-                disturbance_matrix_id=row.DMID)
+                connection, "growth_multiplier_value",
+                growth_multiplier_series_id=growth_multiplier_id,
+                forest_type_id=row.ForestTypeID, time_step=row.AnnualOrder,
+                value=row.GrowthMultiplier)
 
-    dmSPUAssociationQuery = """SELECT tblDMAssociationSPUDefault.DefaultDisturbanceTypeID, tblDMAssociationSPUDefault.SPUID, tblDMAssociationSPUDefault.DMID
-            FROM tblDMAssociationSPUDefault
-            GROUP BY tblDMAssociationSPUDefault.DefaultDisturbanceTypeID, tblDMAssociationSPUDefault.SPUID, tblDMAssociationSPUDefault.DMID;
-    """
-
-    with self.GetAIDB("en-CA") as aidb:
-        for row in aidb.Query(dmSPUAssociationQuery):
-            cbm_defaults_database.add_record(
-                connection,
-                "disturbance_matrix_association",
-                spatial_unit_id=row.SPUID,
-                disturbance_type_id=row.DefaultDisturbanceTypeID,
-                disturbance_matrix_id=row.DMID)
-
-
-def PopulateGrowthMultipliers(connection):
-    #these are the default disturbance types that have growth multipliers attached
-    distTypeIds = [12,13,14,15,16,17,18,19,20,21]
-    growthMultId = 1
-    with self.GetAIDB("en-CA") as aidb:
-        for distTypeId in distTypeIds:
-            cbm_defaults_database.add_record(
-                connection,
-                "growth_multiplier_series",
-                id=growthMultId,
-                disturbance_type_id=distTypeId)
-
-            growthMultipliersQuery = """SELECT tblForestTypeDefault.ForestTypeID, tblGrowthMultiplierDefault.AnnualOrder, tblGrowthMultiplierDefault.GrowthMultiplier
-                        FROM (tblDisturbanceTypeDefault INNER JOIN tblGrowthMultiplierDefault ON tblDisturbanceTypeDefault.DistTypeID = tblGrowthMultiplierDefault.DefaultDisturbanceTypeID)
-                        INNER JOIN tblForestTypeDefault ON
-                        IIF(tblGrowthMultiplierDefault.DefaultSpeciesTypeID=1,tblGrowthMultiplierDefault.DefaultSpeciesTypeID,tblGrowthMultiplierDefault.DefaultSpeciesTypeID+1) = tblForestTypeDefault.ForestTypeID
-                        GROUP BY tblDisturbanceTypeDefault.DistTypeID, tblForestTypeDefault.ForestTypeID, tblGrowthMultiplierDefault.AnnualOrder, tblGrowthMultiplierDefault.GrowthMultiplier
-                        HAVING (((tblDisturbanceTypeDefault.DistTypeID)=?));"""
-
-            for row in aidb.Query(growthMultipliersQuery, (distTypeId,)):
-                cbm_defaults_database.add_record(
-                    connection,
-                    "growth_multiplier_value",
-                    growth_multiplier_series_id=growthMultId,
-                    forest_type_id=row.ForestTypeID,
-                    time_step=row.AnnualOrder,
-                    value=row.GrowthMultiplier)
-
-            growthMultId += 1
-
+        growth_multiplier_id += 1
 
 
 def populateFluxIndicators(connection):
-    insert_csv = lambda name: cbm_defaults_database.insert_csv_file(
-        connection, name, f"{name}.csv")
+
+    def insert_csv(name):
+        cbm_defaults_database.insert_csv_file(
+            connection, name, f"{name}.csv")
 
     insert_csv("flux_process")
     insert_csv("flux_indicator")
@@ -513,7 +493,7 @@ def populateAfforestation(connection):
         SELECT tblAfforestationPreTypeDefault.PreTypeID, tblAfforestationPreTypeDefault.Name
         FROM tblAfforestationPreTypeDefault;
     """
-    slow_bg_pool = [x for x in self.read_local_csv_file("pool.csv")
+    slow_bg_pool = [x for x in local_csv_table.read_csv_file("pool.csv")
                     if x["code"] == "BelowGroundSlowSoil"][0]["id"]
 
     with self.GetAIDB("en-CA") as aidb:
@@ -523,28 +503,28 @@ def populateAfforestation(connection):
                 "afforestation_pre_type",
                 id=row.PreTypeID)
 
-        id = 1
+        afforestation_initial_pool_id = 1
         for row in aidb.Query(sql_pre_type_values):
             cbm_defaults_database.add_record(
                 connection,
                 "afforestation_initial_pool",
-                id=id,
+                id=afforestation_initial_pool_id,
                 spatial_unit_id=row.SPUID,
                 afforestation_pre_type_id=row.PreTypeID,
                 pool_id=slow_bg_pool,
                 value=row.SSoilPoolC_BG)
-            id+=1
+            afforestation_initial_pool_id += 1
 
-    id=1
+    afforestation_pre_type_tr_id = 1
     for locale in self.locales:
         with self.GetAIDB(locale["code"]) as aidb:
             for row in aidb.Query(sql_pre_types):
                 cbm_defaults_database.add_record(
                     connection,
                     "afforestation_pre_type_tr",
-                    id=id,
+                    id=afforestation_pre_type_tr_id,
                     afforestation_pre_type_id=row.PreTypeID,
                     locale_id=locale["id"],
                     name=row.Name)
-                id+=1
+                afforestation_pre_type_tr_id += 1
 
