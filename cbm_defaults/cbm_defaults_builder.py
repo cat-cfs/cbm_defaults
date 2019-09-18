@@ -1,38 +1,56 @@
+"""Methods to copy populate a cbm_defaults database using csv tables and
+the CBM-CFS3 archive index database format
+"""
 from cbm_defaults import cbm_defaults_database
 from cbm_defaults import local_csv_table
+from cbm_defaults import helper
 
 
 class CBMDefaultsBuilder:
+    """Class to populate a cbm_defaults format database
 
+    Args:
+        connection (sqlite3.Connection): a Sqlite database connection for the
+            database where parameters will be populated.
+        locales (list): list of dictionaries containing locale information.
+
+            example::
+
+                locales = [
+                    {"id": 1, "code": "en-CA"},
+                    {"id": 2, "code": "fr-CA"}]
+
+        archive_index (cbm_defaults.archive_index.ArchiveIndex): instance of
+            class used to fetch parameters from the CBM-CFS3 archive index
+            format.
+    """
     def __init__(self, connection, locales, archive_index):
+
         self.connection = connection
         self.locales = locales
         self.archive_index = archive_index
 
     def build_database(self):
-
+        """copies all default data into a cbm_defaults database
+        """
         self._populate_locale()
         self._populate_pools()
         self._populate_decay_parameters()
         self._populate_admin_boundaries()
-        self.populateEcoBoundaries()
-        self.populateRootParameter()
-        self.populateBiomassToCarbonRate()
-        self.populateSlowMixingRate()
-        self.populateSpatialUnits()
-        self.populateSpecies()
-        self.populateVolumeToBiomass()
-        self.populateLandClasses()
-        self.populateDisturbanceTypes()
-        self.populateDMValues()
-        self.populateDMAssociations()
-        self.PopulateGrowthMultipliers()
-        self.populateFluxIndicators()
-        self.populateAfforestation()
-
-
-
-
+        self._populate_eco_boundaries()
+        self._populate_root_parameter()
+        self._populate_biomass_to_carbon_rate()
+        self._populate_slow_mixing_rate()
+        self._populate_spatial_units()
+        self._populate_species()
+        self._populate_volume_to_biomass()
+        self._populate_land_classes()
+        self._populate_disturbance_types()
+        self._populate_disturbance_matrix_values()
+        self._populate_disturbance_matrix_associations()
+        self._populate_growth_multipliers()
+        self._populate_flux_indicators()
+        self._populate_afforestation()
 
     def _populate_locale(self):
         for locale in self.locales:
@@ -56,8 +74,9 @@ class CBMDefaultsBuilder:
                 "pool.csv", locale["code"])
             for row in local_csv_table.read_csv_file(localized_path):
                 cbm_defaults_database.add_record(
-                    self.connection, "pool_tr", id=pool_tr_id, pool_id=row["pool_id"],
-                    locale_id=locale["id"], name=row["name"])
+                    self.connection, "pool_tr", id=pool_tr_id,
+                    pool_id=row["pool_id"], locale_id=locale["id"],
+                    name=row["name"])
 
     def _populate_decay_parameters(self):
         dom_pool_id = 1
@@ -177,18 +196,15 @@ class CBMDefaultsBuilder:
             frp_b=0.354,
             frp_c=-0.06021195)
 
-    def _populateBiomassToCarbonRate(self):
+    def _populate_biomass_to_carbon_rate(self):
         cbm_defaults_database.add_record(
             self.connection, "biomass_to_carbon_rate", id=1, rate=0.5)
 
-
-    def populateSlowMixingRate(self):
+    def _populate_slow_mixing_rate(self):
         cbm_defaults_database.add_record(
             self.connection, "slow_mixing_rate", id=1, rate=0.006)
 
-
-    def populateSpatialUnits(self):
-
+    def _populate_spatial_units(self):
         spinupu_parameter_id = 1
         for row in self.archive_index.get_spatial_units():
 
@@ -206,8 +222,7 @@ class CBMDefaultsBuilder:
                 mean_annual_temperature=row.MeanAnnualTemp)
             spinupu_parameter_id += 1
 
-
-    def populateSpecies(self):
+    def _populate_species(self):
 
         for row in self.archive_index.get_forest_types():
             cbm_defaults_database.add_record(
@@ -257,8 +272,7 @@ class CBMDefaultsBuilder:
                     name=row.SpeciesTypeName)
                 species_tr_id += 1
 
-
-    def insertVolToBioFactor(self, volume_to_biomass_factor_id, row):
+    def _insert_vol_to_bio_factor(self, volume_to_biomass_factor_id, row):
         cbm_defaults_database.add_record(
             self.connection,
             "vol_to_bio_factor",
@@ -293,12 +307,11 @@ class CBMDefaultsBuilder:
             low_foliage_prop=row.low_foliage_prop,
             high_foliage_prop=row.high_foliage_prop)
 
-
-    def populateVolumeToBiomass(self):
+    def _populate_volume_to_biomass(self):
 
         vol_to_bio_parameter_id = 1
         for row in self.archive_index.get_vol_to_bio_species():
-            insertVolToBioFactor(self.connection, vol_to_bio_parameter_id, row)
+            self._insert_vol_to_bio_factor(vol_to_bio_parameter_id, row)
 
             cbm_defaults_database.add_record(
                 self.connection, "vol_to_bio_species",
@@ -308,7 +321,7 @@ class CBMDefaultsBuilder:
             vol_to_bio_parameter_id += 1
 
         for row in self.archive_index.get_vol_to_bio_genus():
-            insertVolToBioFactor(self.connection, vol_to_bio_parameter_id, row)
+            self._insert_vol_to_bio_factor(vol_to_bio_parameter_id, row)
 
             cbm_defaults_database.add_record(
                 self.connection, "vol_to_bio_genus",
@@ -318,7 +331,7 @@ class CBMDefaultsBuilder:
             vol_to_bio_parameter_id += 1
 
         for row in self.archive_index.get_vol_to_bio_forest_type():
-            insertVolToBioFactor(self.connection, vol_to_bio_parameter_id, row)
+            self._insert_vol_to_bio_factor(vol_to_bio_parameter_id, row)
 
             cbm_defaults_database.add_record(
                 self.connection,
@@ -328,16 +341,15 @@ class CBMDefaultsBuilder:
                 vol_to_bio_factor_id=vol_to_bio_parameter_id)
             vol_to_bio_parameter_id += 1
 
-
-    def populateLandClasses(self):
+    def _populate_land_classes(self):
         for row in local_csv_table.read_csv_file("landclass.csv"):
             cbm_defaults_database.add_record(
                 self.connection,
                 "land_class",
                 code=row["code"],
                 id=row["id"],
-                is_forest=as_boolean(row["is_forest"]),
-                is_simulated=as_boolean(row["is_simulated"]),
+                is_forest=helper.as_boolean(row["is_forest"]),
+                is_simulated=helper.as_boolean(row["is_simulated"]),
                 transitional_period=row["transitional_period"],
                 transition_id=row["transition_id"])
 
@@ -353,8 +365,7 @@ class CBMDefaultsBuilder:
                     locale_id=locale["id"],
                     description=row["description"])
 
-
-    def populateDisturbanceTypes(self):
+    def _populate_disturbance_types(self):
         unfccc_code_lookup = {}
         for row in local_csv_table.read_csv_file("landclass.csv"):
             unfccc_code_lookup[row["code"]] = row["id"]
@@ -369,7 +380,8 @@ class CBMDefaultsBuilder:
         for row in self.archive_index.get_disturbance_types():
             landclasstransition = \
                 disturbance_type_land_class_lookup[row.DistTypeID] \
-                if row.DistTypeID in disturbance_type_land_class_lookup else None
+                if row.DistTypeID in disturbance_type_land_class_lookup \
+                else None
             cbm_defaults_database.add_record(
                 self.connection,
                 "disturbance_type",
@@ -378,7 +390,8 @@ class CBMDefaultsBuilder:
 
         tr_id = 1
         for locale in self.locales:
-            for row in self.archive_index.get_disturbance_types(locale["code"]):
+            for row in self.archive_index.get_disturbance_types(
+                    locale["code"]):
                 cbm_defaults_database.add_record(
                     self.connection,
                     "disturbance_type_tr",
@@ -389,8 +402,7 @@ class CBMDefaultsBuilder:
                     description=row.Description)
                 tr_id += 1
 
-
-    def populateDMValues(self):
+    def _populate_disturbance_matrix_values(self):
         pool_cross_walk = {}
         for row in local_csv_table.read_csv_file("pool_cross_walk.csv"):
             pool_cross_walk[int(row["cbm3_pool_code"])] = \
@@ -400,7 +412,8 @@ class CBMDefaultsBuilder:
             cbm_defaults_database.add_record(
                 self.connection, "disturbance_matrix", id=row.DMID)
 
-            for dm_value_row in self.archive_index.get_disturbance_matrix(row.DMID):
+            for dm_value_row in self.archive_index.get_disturbance_matrix(
+                    row.DMID):
                 src = pool_cross_walk[dm_value_row.DMRow]
                 sink = pool_cross_walk[dm_value_row.DMColumn]
                 if src == -1 or sink == -1:
@@ -415,15 +428,15 @@ class CBMDefaultsBuilder:
 
         tr_id = 1
         for locale in self.locales:
-            for row in self.archive_index.get_disturbance_matrix_names(locale["code"]):
+            for row in self.archive_index.get_disturbance_matrix_names(
+                    locale["code"]):
                 cbm_defaults_database.add_record(
                     self.connection, "disturbance_matrix_tr", id=tr_id,
                     disturbance_matrix_id=row.DMID, locale_id=locale["id"],
                     name=row.Name, description=row.Description)
                 tr_id += 1
 
-
-    def populateDMAssociations(self):
+    def _populate_disturbance_matrix_associations(self):
 
         for row in self.archive_index.get_ecoboundary_dm_associations():
             cbm_defaults_database.add_record(
@@ -441,8 +454,7 @@ class CBMDefaultsBuilder:
                 disturbance_type_id=row.DefaultDisturbanceTypeID,
                 disturbance_matrix_id=row.DMID)
 
-
-    def PopulateGrowthMultipliers(self):
+    def _populate_growth_multipliers(self):
 
         growth_multiplier_id = 1
         disturbance_types = [
@@ -464,12 +476,12 @@ class CBMDefaultsBuilder:
 
             growth_multiplier_id += 1
 
-
-    def populateFluxIndicators(self):
+    def _populate_flux_indicators(self):
 
         def insert_csv_file(table_name, csv_file_name):
             for row in local_csv_table.read_csv_file(csv_file_name):
-                cbm_defaults_database.add_record(self.connection, table_name, **row)
+                cbm_defaults_database.add_record(
+                    self.connection, table_name, **row)
 
         def insert_csv(table_name):
             insert_csv_file(table_name, f"{table_name}.csv")
@@ -496,12 +508,11 @@ class CBMDefaultsBuilder:
         insert_localized_csv("composite_flux_indicator_category", self.locales)
         insert_localized_csv("composite_flux_indicator_category", self.locales)
 
+    def _populate_afforestation(self):
 
-    def populateAfforestation(self):
-
-        # TODO use pool crosswalk to get the initial pools completely. The current
-        # assumption built into query is that only the slow bg pool has a value,
-        # and this may not be a safe assumption for all users.
+        # TODO use pool crosswalk to get the initial pools completely. The
+        # current assumption built into query is that only the slow bg pool
+        # has a value, and this may not be a safe assumption for all users.
 
         slow_bg_pool = [x for x in local_csv_table.read_csv_file("pool.csv")
                         if x["code"] == "BelowGroundSlowSoil"][0]["id"]
@@ -524,7 +535,8 @@ class CBMDefaultsBuilder:
 
         afforestation_pre_type_tr_id = 1
         for locale in self.locales:
-            for row in self.archive_index.get_afforestation_pre_types(locale["code"]):
+            for row in self.archive_index.get_afforestation_pre_types(
+                    locale["code"]):
                 cbm_defaults_database.add_record(
                     self.connection,
                     "afforestation_pre_type_tr",
