@@ -1,8 +1,9 @@
+"""Methods for creating and adding data to a cbm_defaults database
+"""
 import os
 import contextlib
 import logging
 import sqlite3
-from cbm_defaults import local_csv_table
 
 
 def create_database(sqlite_path):
