@@ -29,9 +29,11 @@ def get_connection(sqlite_path):
     Args:
         sqlite_path (str): path to a sqlite database
     """
+    logging.info("opening %s", sqlite_path)
     with sqlite3.connect(sqlite_path) as conn:
         conn.execute("PRAGMA foreign_keys = 1")
         yield conn
+        logging.info("closing %s", sqlite_path)
 
 
 def execute_ddl_file(ddl_path, sqlite_path):
@@ -51,7 +53,6 @@ def execute_ddl_file(ddl_path, sqlite_path):
             x for x in ddl_file.read().split(";") if x is not None]
         cursor = conn.cursor()
         for ddl in ddl_statements:
-            logging.info("ddl: %s", ddl)
             cursor.execute(ddl)
 
 
@@ -74,4 +75,3 @@ def add_record(connection, table_name, **kwargs):
     params = [kwargs[k] for k in col_list]
     cursor = connection.cursor()
     cursor.execute(query, params)
-    connection.commit()

@@ -34,7 +34,7 @@ class CBMDefaultsBuilder:
     def build_database(self):
         """copies all default data into a cbm_defaults database
         """
-        for f in [
+        for func in [
                 self._populate_locale,
                 self._populate_pools,
                 self._populate_decay_parameters,
@@ -53,8 +53,8 @@ class CBMDefaultsBuilder:
                 self._populate_growth_multipliers,
                 self._populate_flux_indicators,
                 self._populate_afforestation]:
-            logging.info(f.__name__)
-            f()
+            logging.info(func.__name__.replace("_", " ").strip())
+            func()
 
     def _populate_locale(self):
         for locale in self.locales:
@@ -363,6 +363,7 @@ class CBMDefaultsBuilder:
                 transitional_period=row["transitional_period"],
                 transition_id=row["transition_id"])
 
+        land_class_tr_id = 1
         for locale in self.locales:
             localized_path = local_csv_table.get_localized_csv_file_path(
                 "landclass.csv", locale["code"])
@@ -370,10 +371,11 @@ class CBMDefaultsBuilder:
                 cbm_defaults_database.add_record(
                     self.connection,
                     "land_class_tr",
-                    id=row["id"],
+                    id=land_class_tr_id,
                     land_class_id=row["landclass_id"],
                     locale_id=locale["id"],
                     description=row["description"])
+                land_class_tr_id += 1
 
     def _populate_disturbance_types(self):
         unfccc_code_lookup = {}
@@ -450,7 +452,7 @@ class CBMDefaultsBuilder:
     def _populate_disturbance_matrix_associations(self):
 
         for row in self.archive_index.get_parameters(
-                "ecoboundary_dm_associations"):
+                "eco_boundary_dm_associations"):
             cbm_defaults_database.add_record(
                 self.connection,
                 "disturbance_matrix_association",
@@ -471,7 +473,7 @@ class CBMDefaultsBuilder:
 
         growth_multiplier_id = 1
         disturbance_types = [
-            x["DefaultDisturbanceTypeID"]
+            x.DefaultDisturbanceTypeID
             for x in self.archive_index.get_parameters(
                 "growth_multiplier_disturbance")]
 
@@ -506,11 +508,12 @@ class CBMDefaultsBuilder:
             for locale in locales:
                 path = local_csv_table.get_localized_csv_file_path(
                     f"{table_name}.csv", locale["code"])
-                args = {"id": translation_id, "locale_id": locale["id"]}
                 for row in local_csv_table.read_csv_file(path):
+                    args = {"id": translation_id, "locale_id": locale["id"]}
                     args.update(row)
                     cbm_defaults_database.add_record(
-                        self.connection, table_name, **args)
+                        self.connection, f"{table_name}_tr", **args)
+                    translation_id += 1
 
         insert_csv("flux_process")
         insert_csv("flux_indicator")
@@ -521,7 +524,7 @@ class CBMDefaultsBuilder:
         insert_csv("composite_flux_indicator_value")
 
         insert_localized_csv("composite_flux_indicator_category", self.locales)
-        insert_localized_csv("composite_flux_indicator_category", self.locales)
+        insert_localized_csv("composite_flux_indicator", self.locales)
 
     def _populate_afforestation(self):
 
