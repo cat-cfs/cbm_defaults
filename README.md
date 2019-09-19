@@ -2,7 +2,7 @@
 
 This package creates a streamlined parameters sqlite database based mostly on the CBM-CFS3 parameters stored in the archive index format (AIDB).  The purpose of the streamlined database is to act as a component in the development of next generation models based on CBM-CFS3.
 
-In addition to the default parameters in the AIDB this scrip will load several other [default tables](/tables) drawn from hardcoded values in the CBM-CFS3 source code among other places.
+In addition to the default parameters in the AIDB this script will load several other [default tables](/tables) drawn from hardcoded values in the CBM-CFS3 source code among other places.
 
 The database schema supports localization, and it can be configured to load localized strings, such as those found in the CBM-CFS3 model. 
 
