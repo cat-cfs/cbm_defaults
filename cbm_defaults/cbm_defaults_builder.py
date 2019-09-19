@@ -1,6 +1,7 @@
 """Methods to copy populate a cbm_defaults database using csv tables and
 the CBM-CFS3 archive index database format
 """
+import logging
 from cbm_defaults import cbm_defaults_database
 from cbm_defaults import local_csv_table
 from cbm_defaults import helper
@@ -33,24 +34,27 @@ class CBMDefaultsBuilder:
     def build_database(self):
         """copies all default data into a cbm_defaults database
         """
-        self._populate_locale()
-        self._populate_pools()
-        self._populate_decay_parameters()
-        self._populate_admin_boundaries()
-        self._populate_eco_boundaries()
-        self._populate_root_parameter()
-        self._populate_biomass_to_carbon_rate()
-        self._populate_slow_mixing_rate()
-        self._populate_spatial_units()
-        self._populate_species()
-        self._populate_volume_to_biomass()
-        self._populate_land_classes()
-        self._populate_disturbance_types()
-        self._populate_disturbance_matrix_values()
-        self._populate_disturbance_matrix_associations()
-        self._populate_growth_multipliers()
-        self._populate_flux_indicators()
-        self._populate_afforestation()
+        for f in [
+                self._populate_locale,
+                self._populate_pools,
+                self._populate_decay_parameters,
+                self._populate_admin_boundaries,
+                self._populate_eco_boundaries,
+                self._populate_root_parameter,
+                self._populate_biomass_to_carbon_rate,
+                self._populate_slow_mixing_rate,
+                self._populate_spatial_units,
+                self._populate_species,
+                self._populate_volume_to_biomass,
+                self._populate_land_classes,
+                self._populate_disturbance_types,
+                self._populate_disturbance_matrix_values,
+                self._populate_disturbance_matrix_associations,
+                self._populate_growth_multipliers,
+                self._populate_flux_indicators,
+                self._populate_afforestation]:
+            logging.info(f.__name__)
+            f()
 
     def _populate_locale(self):
         for locale in self.locales:
@@ -77,6 +81,7 @@ class CBMDefaultsBuilder:
                     self.connection, "pool_tr", id=pool_tr_id,
                     pool_id=row["pool_id"], locale_id=locale["id"],
                     name=row["name"])
+                pool_tr_id += 1
 
     def _populate_decay_parameters(self):
         dom_pool_id = 1
