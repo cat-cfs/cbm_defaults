@@ -31,7 +31,7 @@ def start_logging(file_name="script.log", file_mode='w', use_console=True):
         use_console (bool, optional): [description]. Defaults to True.
     """
 
-    logger = logging.getLogger("cbm_defaults_logger")
+    logger = logging.getLogger()
 
     log_formatter = logging.Formatter(
         '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',

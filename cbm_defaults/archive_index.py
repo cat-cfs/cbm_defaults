@@ -71,7 +71,8 @@ class ArchiveIndex:
             iterable: rows which are the result of the query
         """
         local_dir = os.path.dirname(os.path.realpath(__file__))
-        local_file = os.path.join(local_dir, f"{name}.sql")
+        local_file = os.path.join(
+            local_dir, "archive_index_queries", f"{name}.sql")
         with open(local_file, 'r') as sql_file:
             sql = sql_file.read()
         return self.query(sql, params, locale)

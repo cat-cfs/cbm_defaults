@@ -32,11 +32,9 @@ def get_connection(sqlite_path):
     with sqlite3.connect(sqlite_path) as conn:
         conn.execute("PRAGMA foreign_keys = 1")
         yield conn
-        conn.commit()
-        conn.close()
 
 
-def execute_ddl_files(ddl_path, sqlite_path):
+def execute_ddl_file(ddl_path, sqlite_path):
     """Execute the semicolon delimited sqlite data definition (DDL) statements
     in the specified *ddl_path* on the database at the specified sqlite_path.
 
@@ -76,3 +74,4 @@ def add_record(connection, table_name, **kwargs):
     params = [kwargs[k] for k in col_list]
     cursor = connection.cursor()
     cursor.execute(query, params)
+    connection.commit()
