@@ -81,7 +81,7 @@ class CBMDefaultsBuilder:
     def _populate_decay_parameters(self):
         dom_pool_id = 1
 
-        for row in self.archive_index.get_dom_parameters():
+        for row in self.archive_index.get_parameters("dom_parameters"):
             if row.SoilPoolID > 10:
                 break
             cbm_defaults_database.add_record(
@@ -97,7 +97,7 @@ class CBMDefaultsBuilder:
 
     def _populate_admin_boundaries(self):
         stump_parameter_id = 1
-        for row in self.archive_index.get_admin_boundaries():
+        for row in self.archive_index.get_parameters("admin_boundaries"):
             cbm_defaults_database.add_record(
                 self.connection,
                 "stump_parameter",
@@ -116,7 +116,8 @@ class CBMDefaultsBuilder:
 
         translation_id = 1
         for locale in self.locales:
-            for row in self.archive_index.get_admin_boundaries(locale["code"]):
+            for row in self.archive_index.get_parameters(
+                    "admin_boundaries", locale=locale["code"]):
                 cbm_defaults_database.add_record(
                     self.connection,
                     "admin_boundary_tr",
@@ -137,7 +138,7 @@ class CBMDefaultsBuilder:
         random_return_interval_params = \
             self._get_random_return_interval_parameters()
         eco_association_id = 1
-        for row in self.archive_index.get_eco_boundaries():
+        for row in self.archive_index.get_parameters("eco_boundaries"):
             cbm_defaults_database.add_record(
                 self.connection,
                 "turnover_parameter",
@@ -177,7 +178,8 @@ class CBMDefaultsBuilder:
 
         translation_id = 1
         for locale in self.locales:
-            for row in self.archive_index.get_eco_boundaries(locale["code"]):
+            for row in self.archive_index.get_parameters(
+                    "eco_boundaries", locale=locale["code"]):
                 cbm_defaults_database.add_record(
                     self.connection, "eco_boundary_tr", id=translation_id,
                     eco_boundary_id=row.EcoBoundaryID, locale_id=locale["id"],
@@ -206,7 +208,7 @@ class CBMDefaultsBuilder:
 
     def _populate_spatial_units(self):
         spinupu_parameter_id = 1
-        for row in self.archive_index.get_spatial_units():
+        for row in self.archive_index.get_parameters("spatial_units"):
 
             cbm_defaults_database.add_record(
                 self.connection, "spinup_parameter", id=spinupu_parameter_id,
@@ -224,15 +226,15 @@ class CBMDefaultsBuilder:
 
     def _populate_species(self):
 
-        for row in self.archive_index.get_forest_types():
+        for row in self.archive_index.get_parameters("forest_types"):
             cbm_defaults_database.add_record(
                 self.connection, "forest_type", id=row.ForestTypeID)
 
-        for row in self.archive_index.get_genus():
+        for row in self.archive_index.get_parameters("genus_types"):
             cbm_defaults_database.add_record(
                 self.connection, "genus", id=row.GenusID)
 
-        for row in self.archive_index.get_species():
+        for row in self.archive_index.get_parameters("species"):
             cbm_defaults_database.add_record(
                 self.connection, "species", id=row.SpeciesTypeID,
                 forest_type_id=row.ForestTypeID, genus_id=row.GenusID)
@@ -241,7 +243,8 @@ class CBMDefaultsBuilder:
         genus_tr_id = 1
         species_tr_id = 1
         for locale in self.locales:
-            for row in self.archive_index.get_forest_types(locale["code"]):
+            for row in self.archive_index.get_parameters(
+                    "forest_types", locale=locale["code"]):
                 cbm_defaults_database.add_record(
                     self.connection,
                     "forest_type_tr",
@@ -252,7 +255,8 @@ class CBMDefaultsBuilder:
 
                 forest_type_tr_id += 1
 
-            for row in self.archive_index.get_genus(locale["code"]):
+            for row in self.archive_index.get_parameters(
+                    "genus_types", locale=locale["code"]):
                 cbm_defaults_database.add_record(
                     self.connection,
                     "genus_tr",
@@ -262,7 +266,8 @@ class CBMDefaultsBuilder:
                     name=row.GenusName)
                 genus_tr_id += 1
 
-            for row in self.archive_index.get_species(locale["code"]):
+            for row in self.archive_index.get_parameters(
+                    "species", locale=locale["code"]):
                 cbm_defaults_database.add_record(
                     self.connection,
                     "species_tr",
@@ -310,7 +315,7 @@ class CBMDefaultsBuilder:
     def _populate_volume_to_biomass(self):
 
         vol_to_bio_parameter_id = 1
-        for row in self.archive_index.get_vol_to_bio_species():
+        for row in self.archive_index.get_parameters("vol_to_bio_species"):
             self._insert_vol_to_bio_factor(vol_to_bio_parameter_id, row)
 
             cbm_defaults_database.add_record(
@@ -320,7 +325,7 @@ class CBMDefaultsBuilder:
                 vol_to_bio_factor_id=vol_to_bio_parameter_id)
             vol_to_bio_parameter_id += 1
 
-        for row in self.archive_index.get_vol_to_bio_genus():
+        for row in self.archive_index.get_parameters("vol_to_bio_genus"):
             self._insert_vol_to_bio_factor(vol_to_bio_parameter_id, row)
 
             cbm_defaults_database.add_record(
@@ -330,7 +335,7 @@ class CBMDefaultsBuilder:
                 vol_to_bio_factor_id=vol_to_bio_parameter_id)
             vol_to_bio_parameter_id += 1
 
-        for row in self.archive_index.get_vol_to_bio_forest_type():
+        for row in self.archive_index.get_parameters("vol_to_bio_forest_type"):
             self._insert_vol_to_bio_factor(vol_to_bio_parameter_id, row)
 
             cbm_defaults_database.add_record(
@@ -377,7 +382,7 @@ class CBMDefaultsBuilder:
             unfccc_code = unfccc_code_lookup[row["UNFCCC_CODE"]]
             disturbance_type_land_class_lookup[disturbance_type] = unfccc_code
 
-        for row in self.archive_index.get_disturbance_types():
+        for row in self.archive_index.get_parameters("disturbance_types"):
             landclasstransition = \
                 disturbance_type_land_class_lookup[row.DistTypeID] \
                 if row.DistTypeID in disturbance_type_land_class_lookup \
@@ -390,8 +395,8 @@ class CBMDefaultsBuilder:
 
         tr_id = 1
         for locale in self.locales:
-            for row in self.archive_index.get_disturbance_types(
-                    locale["code"]):
+            for row in self.archive_index.get_parameters(
+                    "disturbance_types", locale=locale["code"]):
                 cbm_defaults_database.add_record(
                     self.connection,
                     "disturbance_type_tr",
@@ -408,12 +413,13 @@ class CBMDefaultsBuilder:
             pool_cross_walk[int(row["cbm3_pool_code"])] = \
                 int(row["cbm3_5_pool_code"])
 
-        for row in self.archive_index.get_disturbance_matrix_names():
+        for row in self.archive_index.get_parameters(
+                "disturbance_matrix_names"):
             cbm_defaults_database.add_record(
                 self.connection, "disturbance_matrix", id=row.DMID)
 
-            for dm_value_row in self.archive_index.get_disturbance_matrix(
-                    row.DMID):
+            for dm_value_row in self.archive_index.get_parameters(
+                    "disturbance_matrix", params=(row.DMID,)):
                 src = pool_cross_walk[dm_value_row.DMRow]
                 sink = pool_cross_walk[dm_value_row.DMColumn]
                 if src == -1 or sink == -1:
@@ -428,8 +434,8 @@ class CBMDefaultsBuilder:
 
         tr_id = 1
         for locale in self.locales:
-            for row in self.archive_index.get_disturbance_matrix_names(
-                    locale["code"]):
+            for row in self.archive_index.get_parameters(
+                    "disturbance_matrix_names", locale=locale["code"]):
                 cbm_defaults_database.add_record(
                     self.connection, "disturbance_matrix_tr", id=tr_id,
                     disturbance_matrix_id=row.DMID, locale_id=locale["id"],
@@ -438,7 +444,8 @@ class CBMDefaultsBuilder:
 
     def _populate_disturbance_matrix_associations(self):
 
-        for row in self.archive_index.get_ecoboundary_dm_associations():
+        for row in self.archive_index.get_parameters(
+                "ecoboundary_dm_associations"):
             cbm_defaults_database.add_record(
                 self.connection,
                 "disturbance_matrix_association",
@@ -446,7 +453,8 @@ class CBMDefaultsBuilder:
                 disturbance_type_id=row.DefaultDisturbanceTypeID,
                 disturbance_matrix_id=row.DMID)
 
-        for row in self.archive_index.get_spatial_unit_dm_associations():
+        for row in self.archive_index.get_parameters(
+                "spatial_unit_dm_associations"):
             cbm_defaults_database.add_record(
                 self.connection,
                 "disturbance_matrix_association",
@@ -459,7 +467,8 @@ class CBMDefaultsBuilder:
         growth_multiplier_id = 1
         disturbance_types = [
             x["DefaultDisturbanceTypeID"]
-            for x in self.archive_index.get_growth_multiplier_disturbance()]
+            for x in self.archive_index.get_parameters(
+                "growth_multiplier_disturbance")]
 
         for dist_type in disturbance_types:
             cbm_defaults_database.add_record(
@@ -467,7 +476,8 @@ class CBMDefaultsBuilder:
                 id=growth_multiplier_id,
                 disturbance_type_id=dist_type)
 
-            for row in self.archive_index.get_growth_multipliers(dist_type):
+            for row in self.archive_index.get_parameters(
+                    "growth_multipliers", params=(dist_type,)):
                 cbm_defaults_database.add_record(
                     self.connection, "growth_multiplier_value",
                     growth_multiplier_series_id=growth_multiplier_id,
@@ -517,12 +527,14 @@ class CBMDefaultsBuilder:
         slow_bg_pool = [x for x in local_csv_table.read_csv_file("pool.csv")
                         if x["code"] == "BelowGroundSlowSoil"][0]["id"]
 
-        for row in self.archive_index.get_afforestation_pre_types():
+        for row in self.archive_index.get_parameters(
+                "afforestation_pre_types"):
             cbm_defaults_database.add_record(
                 self.connection, "afforestation_pre_type", id=row.PreTypeID)
 
         afforestation_initial_pool_id = 1
-        for row in self.archive_index.get_afforestation_pre_type_values():
+        for row in self.archive_index.get_parameters(
+                "afforestation_pre_type_values"):
             cbm_defaults_database.add_record(
                 self.connection,
                 "afforestation_initial_pool",
@@ -535,8 +547,8 @@ class CBMDefaultsBuilder:
 
         afforestation_pre_type_tr_id = 1
         for locale in self.locales:
-            for row in self.archive_index.get_afforestation_pre_types(
-                    locale["code"]):
+            for row in self.archive_index.get_parameters(
+                    "afforestation_pre_types", locale=locale["code"]):
                 cbm_defaults_database.add_record(
                     self.connection,
                     "afforestation_pre_type_tr",
