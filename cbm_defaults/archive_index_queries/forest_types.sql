@@ -1,0 +1,6 @@
+SELECT
+tblForestTypeDefault.ForestTypeID,
+tblForestTypeDefault.ForestTypeName
+FROM tblForestTypeDefault
+GROUP BY tblForestTypeDefault.ForestTypeID,
+tblForestTypeDefault.ForestTypeName;

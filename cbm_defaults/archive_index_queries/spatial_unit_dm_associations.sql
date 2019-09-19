@@ -1,0 +1,5 @@
+SELECT tblDMAssociationSPUDefault.DefaultDisturbanceTypeID,
+tblDMAssociationSPUDefault.SPUID, tblDMAssociationSPUDefault.DMID
+FROM tblDMAssociationSPUDefault
+GROUP BY tblDMAssociationSPUDefault.DefaultDisturbanceTypeID,
+tblDMAssociationSPUDefault.SPUID, tblDMAssociationSPUDefault.DMID;

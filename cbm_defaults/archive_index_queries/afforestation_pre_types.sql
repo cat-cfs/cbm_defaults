@@ -1,0 +1,3 @@
+SELECT tblAfforestationPreTypeDefault.PreTypeID,
+tblAfforestationPreTypeDefault.Name
+FROM tblAfforestationPreTypeDefault;
