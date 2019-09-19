@@ -1,7 +1,7 @@
 """Functions for querying the MS-Access database format
 """
-import pyodbc
 import contextlib
+import pyodbc
 
 
 def get_connection_string(path):
@@ -31,6 +31,16 @@ def get_connection(path):
 
 
 def query_db(connection, query, params):
+    """Run the specified query with parameters on the specified connection
+
+    Args:
+        connection (object): a connection to an ms access database
+        query (str): ms access query
+        params (iterable): query parameters
+
+    Returns:
+        cursor: the iterable cursor with the query result
+    """
     cursor = connection.cursor()
     _ = cursor.execute(query, params) if params else cursor.execute(query)
     return cursor
