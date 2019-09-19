@@ -1,0 +1,25 @@
+landclass_id,description
+0,"Powierzchnia leśna, pozostająca powierzchnią leśną"
+1,Zachowana ziemia uprawna
+2,Zachowana łąka
+3,Zachowane bagna
+4,Zachowane osady
+5,Inne zachowane
+6,Ziemia uprawna przekształcona w teren leśny
+7,Łąka przekształcona w teren leśny
+8,Bagna przekształcone w teren leśny
+9,Osady przekształcone w teren leśny
+10,Inne przekształcone w teren leśny
+11,Teren leśny przekształcony w ziemię uprawną
+12,Teren leśny przekształcony w łąkę
+13,Teren leśny przekształcony w bagna
+14,Teren leśny przekształcony w osady
+15,Teren leśny przekształcony w inne
+16,Niezagospodarowany teren leśny
+17,Niezagospodarowany teren leśny przekształcony w ziemię uprawną
+18,Niezagospodarowany teren leśny przekształcony w łąkę
+19,Niezagospodarowany teren leśny przekształcony w bagna
+20,Niezagospodarowany teren leśny przekształcony w osady
+21,Niezagospodarowany teren leśny przekształcony w inne
+22,Niezagospodarowany las przekształcony w las zagospodarowany
+23,Peatland
