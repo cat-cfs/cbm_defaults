@@ -13,7 +13,10 @@ def run(config_path):
     """build the cbm_defaults database
 
     Args:
-        config_path (str): path to a json formatted config file
+        config_path (str): path to a json formatted config file.
+                           Alternatively, a dictionary object
+                           containing the info the json would
+                           have contained.
 
             example of format::
 
@@ -35,8 +38,11 @@ def run(config_path):
 
     """
     logging.info("initialization")
-    with open(config_path, 'r') as config_file:
-        config = json.load(config_file)
+
+    if isinstance(config_path, dict): config = config_path
+    else:
+        with open(config_path, 'r') as config_file:
+            config = json.load(config_file)
 
     for item in config["archive_index_data"]:
         item["path"] = os.path.abspath(item["path"])
