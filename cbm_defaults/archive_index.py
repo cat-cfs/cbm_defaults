@@ -59,11 +59,11 @@ class ArchiveIndex:
                 yield row
 
     def get_parameters(self, name, params=None, locale=None):
-        """Get parameters using one of the archive index queries included in
-        this submodule.
+        """Load data from the Archive Index Database using an SQL query file 
+        included in this submodule, under 'archive_index_queries'.
 
         Args:
-            name (str): name of the query to run
+            name (str): name of the file containing the query to run
             params (iterable, optional): query parameters. Defaults to None.
             locale (str, optional): locale code. Defaults to None.
 
