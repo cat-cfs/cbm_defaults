@@ -1,21 +1,24 @@
-"""Methods to copy populate a cbm_defaults database using csv tables and
-the CBM-CFS3 archive index database format
 """
+Methods to copy populate a cbm_defaults database using csv tables and
+the CBM-CFS3 archive index database format.
+"""
+
+# Modules #
 import logging
 from cbm_defaults import cbm_defaults_database
 from cbm_defaults import local_csv_table
 from cbm_defaults import helper
 
-
+###############################################################################
 class CBMDefaultsBuilder:
-    """Class to populate a cbm_defaults format database
+    """Class to populate a cbm_defaults format database.
 
     Args:
         connection (sqlite3.Connection): a Sqlite database connection for the
             database where parameters will be populated.
         locales (list): list of dictionaries containing locale information.
 
-            example::
+            Example::
 
                 locales = [
                     {"id": 1, "code": "en-CA"},
@@ -25,34 +28,39 @@ class CBMDefaultsBuilder:
             class used to fetch parameters from the CBM-CFS3 archive index
             format.
     """
-    def __init__(self, connection, locales, archive_index):
 
+    def __init__(self, connection, locales, archive_index):
         self.connection = connection
         self.locales = locales
         self.archive_index = archive_index
 
     def build_database(self):
-        """copies all default data into a cbm_defaults database
-        """
-        for func in [
-                self._populate_locale,
-                self._populate_pools,
-                self._populate_decay_parameters,
-                self._populate_admin_boundaries,
-                self._populate_eco_boundaries,
-                self._populate_root_parameter,
-                self._populate_biomass_to_carbon_rate,
-                self._populate_slow_mixing_rate,
-                self._populate_spatial_units,
-                self._populate_species,
-                self._populate_volume_to_biomass,
-                self._populate_land_classes,
-                self._populate_disturbance_types,
-                self._populate_disturbance_matrix_values,
-                self._populate_disturbance_matrix_associations,
-                self._populate_growth_multipliers,
-                self._populate_flux_indicators,
-                self._populate_afforestation]:
+        """Populate a cbm_defaults database with data.
+        In effect, run every method of this class one after another.
+        Some tables will be filled with values coming from an
+        MS Access AIDB, other values are unvarying and simply
+        hardcoded in this class."""
+        all_functions = [
+            self._populate_locale,
+            self._populate_pools,
+            self._populate_decay_parameters,
+            self._populate_admin_boundaries,
+            self._populate_eco_boundaries,
+            self._populate_root_parameter,
+            self._populate_biomass_to_carbon_rate,
+            self._populate_slow_mixing_rate,
+            self._populate_spatial_units,
+            self._populate_species,
+            self._populate_volume_to_biomass,
+            self._populate_land_classes,
+            self._populate_disturbance_types,
+            self._populate_disturbance_matrix_values,
+            self._populate_disturbance_matrix_associations,
+            self._populate_growth_multipliers,
+            self._populate_flux_indicators,
+            self._populate_afforestation
+        ]
+        for func in all_functions:
             logging.info(func.__name__.replace("_", " ").strip())
             func()
 
@@ -221,7 +229,8 @@ class CBMDefaultsBuilder:
                 max_rotations=30, historic_mean_temperature=row.MeanAnnualTemp)
 
             cbm_defaults_database.add_record(
-                self.connection, "spatial_unit", id=row.SPUID,
+                self.connection, "spatial_unit",
+                id=row.SPUID,
                 admin_boundary_id=row.AdminBoundaryID,
                 eco_boundary_id=row.EcoBoundaryID,
                 root_parameter_id=1,

@@ -1,9 +1,12 @@
-"""Fetch parameters from CBM-CFS3 archive index databases
 """
+Fetch parameters from CBM-CFS3 archive index databases.
+"""
+
+# Modules #
 import os
 from cbm_defaults import access_db
 
-
+###############################################################################
 class ArchiveIndex:
     """Class used to fetch localized terms and parameter from the CBM-CFS3
     archive index database format.
@@ -31,8 +34,8 @@ class ArchiveIndex:
                         {"locale": "fr-CA",
                          "path": "/ArchiveIndex_Beta_Install_fr.mdb"}]
     """
-    def __init__(self, locales, default_locale, archive_index_data):
 
+    def __init__(self, locales, default_locale, archive_index_data):
         self.locales = locales
         self.default_locale = default_locale
         self.archive_index_data = archive_index_data
@@ -40,7 +43,7 @@ class ArchiveIndex:
             x["locale"]: x["path"] for x in archive_index_data}
 
     def query(self, sql, params=None, locale=None):
-        """Query the archive index
+        """Query the archive index database.
 
         Args:
             sql (str): an MS-ACCESS query
@@ -59,7 +62,7 @@ class ArchiveIndex:
                 yield row
 
     def get_parameters(self, name, params=None, locale=None):
-        """Load data from the Archive Index Database using an SQL query file 
+        """Load data from the Archive Index Database using an SQL query file
         included in this submodule, under 'archive_index_queries'.
 
         Args:
