@@ -147,6 +147,16 @@ class CBMDefaultsBuilder:
                 translation_id += 1
 
     def _get_random_return_interval_parameters(self):
+        """
+        Returns a dictionary that looks like this:
+
+            {4: OrderedDict([('eco_boundary_id', '4'), ('a_Nu', '0.583344739'),
+                             ('b_Nu', '0.628337479'), ('a_Lambda', '0.583344739'),
+                             ('b_Lambda', '-0.371662521')]),
+             5: OrderedDict([('eco_boundary_id', '5'), ('a_Nu', '0.507816626'),
+                             ('b_Nu', '0.625411633'), ('a_Lambda', '0.507816626'),
+                             ('b_Lambda', '-0.374588367')]), ...
+        """
         result = {}
         filename = "uc_random_return_interval_parameters.csv"
         for row in local_csv_table.read_csv_file(filename):
@@ -154,48 +164,50 @@ class CBMDefaultsBuilder:
         return result
 
     def _populate_eco_boundaries(self):
-
+        # Load a CSV file into a dictionary #
         random_return_interval_params = \
             self._get_random_return_interval_parameters()
+        # Initialize parameters #
         eco_association_id = 1
+        # Main loop #
         for row in self.archive_index.get_parameters("eco_boundaries"):
+            # Populate turnover_parameter table #
             cbm_defaults_database.add_record(
-                self.connection,
-                "turnover_parameter",
-                id=eco_association_id,
-                sw_foliage=row.SoftwoodFoliageFallRate,
-                hw_foliage=row.HardwoodFoliageFallRate,
-                stem_turnover=row.StemAnnualTurnOverRate,
-                sw_branch=row.SoftwoodBranchTurnOverRate,
-                hw_branch=row.HardwoodBranchTurnOverRate,
-                branch_snag_split=0.25,
-                stem_snag=row.SoftwoodStemSnagToDOM,
-                branch_snag=row.SoftwoodBranchSnagToDOM,
-                coarse_root=0.02,
-                fine_root=0.641,
-                coarse_ag_split=0.5,
-                fine_ag_split=0.5)
-
+                self.connection, "turnover_parameter",
+                id                = eco_association_id,
+                sw_foliage        = row.SoftwoodFoliageFallRate,
+                hw_foliage        = row.HardwoodFoliageFallRate,
+                stem_turnover     = row.StemAnnualTurnOverRate,
+                sw_branch         = row.SoftwoodBranchTurnOverRate,
+                hw_branch         = row.HardwoodBranchTurnOverRate,
+                branch_snag_split = 0.25,
+                stem_snag         = row.SoftwoodStemSnagToDOM,
+                branch_snag       = row.SoftwoodBranchSnagToDOM,
+                coarse_root       = 0.02,
+                fine_root         = 0.641,
+                coarse_ag_split   = 0.5,
+                fine_ag_split     = 0.5)
+            # Retrieve random parameters #
             random_param = random_return_interval_params[row.EcoBoundaryID]
+            # Populate random_return_interval table #
             cbm_defaults_database.add_record(
-                self.connection,
-                "random_return_interval",
-                id=eco_association_id,
-                a_Nu=random_param["a_Nu"],
-                b_Nu=random_param["b_Nu"],
-                a_Lambda=random_param["a_Lambda"],
-                b_Lambda=random_param["b_Lambda"]
+                self.connection, "random_return_interval",
+                id       = eco_association_id,
+                a_Nu     = random_param["a_Nu"],
+                b_Nu     = random_param["b_Nu"],
+                a_Lambda = random_param["a_Lambda"],
+                b_Lambda = random_param["b_Lambda"]
             )
-
+            # Populate eco_boundaries table #
             cbm_defaults_database.add_record(
                 self.connection,
                 "eco_boundary",
                 id=row.EcoBoundaryID,
                 turnover_parameter_id=eco_association_id,
                 random_return_interval_id=eco_association_id)
-
+            # Increment manually #
             eco_association_id += 1
-
+        # Translation and different locales #
         translation_id = 1
         for locale in self.locales:
             for row in self.archive_index.get_parameters(
