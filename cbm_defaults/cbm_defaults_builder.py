@@ -118,7 +118,7 @@ class CBMDefaultsBuilder:
             # Stump parameters #
             cbm_defaults_database.add_record(
                 self.connection, "stump_parameter",
-                id                  = row.AdminBoundaryID,
+                id                  = stump_parameter_id,
                 sw_top_proportion   = row.SoftwoodTopProportion,
                 sw_stump_proportion = row.SoftwoodStumpProportion,
                 hw_top_proportion   = row.HardwoodTopProportion,
