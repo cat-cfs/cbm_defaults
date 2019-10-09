@@ -171,7 +171,7 @@ class CBMDefaultsBuilder:
         eco_association_id = 1
         # Main loop #
         for row in self.archive_index.get_parameters("eco_boundaries"):
-            # Populate turnover_parameter table #
+            # Populate the turnover_parameter table #
             cbm_defaults_database.add_record(
                 self.connection, "turnover_parameter",
                 id                = eco_association_id,
@@ -189,7 +189,7 @@ class CBMDefaultsBuilder:
                 fine_ag_split     = 0.5)
             # Retrieve random parameters #
             random_param = random_return_interval_params[row.EcoBoundaryID]
-            # Populate random_return_interval table #
+            # Populate the random_return_interval table #
             cbm_defaults_database.add_record(
                 self.connection, "random_return_interval",
                 id       = eco_association_id,
@@ -198,13 +198,12 @@ class CBMDefaultsBuilder:
                 a_Lambda = random_param["a_Lambda"],
                 b_Lambda = random_param["b_Lambda"]
             )
-            # Populate eco_boundaries table #
+            # Populate the eco_boundaries table #
             cbm_defaults_database.add_record(
-                self.connection,
-                "eco_boundary",
-                id=row.EcoBoundaryID,
-                turnover_parameter_id=eco_association_id,
-                random_return_interval_id=eco_association_id)
+                self.connection, "eco_boundary",
+                id                        = row.EcoBoundaryID,
+                turnover_parameter_id     = eco_association_id,
+                random_return_interval_id = eco_association_id)
             # Increment manually #
             eco_association_id += 1
         # Translation and different locales #
@@ -213,9 +212,10 @@ class CBMDefaultsBuilder:
             for row in self.archive_index.get_parameters(
                     "eco_boundaries", locale=locale["code"]):
                 cbm_defaults_database.add_record(
-                    self.connection, "eco_boundary_tr", id=translation_id,
-                    eco_boundary_id=row.EcoBoundaryID, locale_id=locale["id"],
-                    name=row.EcoBoundaryName)
+                    self.connection, "eco_boundary_tr",
+                    id              = translation_id,
+                    eco_boundary_id = row.EcoBoundaryID, locale_id=locale["id"],
+                    name            = row.EcoBoundaryName)
                 translation_id += 1
 
     def _populate_root_parameter(self):
