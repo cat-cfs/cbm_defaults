@@ -27,12 +27,16 @@ class CBMDefaultsBuilder:
         archive_index (cbm_defaults.archive_index.ArchiveIndex): instance of
             class used to fetch parameters from the CBM-CFS3 archive index
             format.
+        uncertainty_parameters (bool, Optional): if set to True, uncertainty
+            parameters will be included in the resulting database.
     """
 
-    def __init__(self, connection, locales, archive_index):
+    def __init__(self, connection, locales, archive_index,
+                 uncertainty_parameters=False):
         self.connection = connection
         self.locales = locales
         self.archive_index = archive_index
+        self.uncertainty_parameters = uncertainty_parameters
 
     def build_database(self):
         """Populate a cbm_defaults database with data.
@@ -166,7 +170,8 @@ class CBMDefaultsBuilder:
     def _populate_eco_boundaries(self):
         # Load a CSV file into a dictionary #
         random_return_interval_params = \
-            self._get_random_return_interval_parameters()
+            self._get_random_return_interval_parameters() \
+            if self.uncertainty_parameters else None
         # Initialize parameters #
         eco_association_id = 1
         # Main loop #
@@ -187,23 +192,34 @@ class CBMDefaultsBuilder:
                 fine_root         = 0.641,
                 coarse_ag_split   = 0.5,
                 fine_ag_split     = 0.5)
-            # Retrieve random parameters #
-            random_param = random_return_interval_params[row.EcoBoundaryID]
+
+            random_return_interval_id = eco_association_id \
+                if self.uncertainty_parameters else 1
             # Populate the random_return_interval table #
-            cbm_defaults_database.add_record(
-                self.connection, "random_return_interval",
-                id       = eco_association_id,
-                a_Nu     = random_param["a_Nu"],
-                b_Nu     = random_param["b_Nu"],
-                a_Lambda = random_param["a_Lambda"],
-                b_Lambda = random_param["b_Lambda"]
-            )
+            if self.uncertainty_parameters:
+                # Retrieve random parameters #
+                random_param = random_return_interval_params[row.EcoBoundaryID]
+                cbm_defaults_database.add_record(
+                    self.connection, "random_return_interval",
+                    id       = random_return_interval_id,
+                    a_Nu     = random_param["a_Nu"],
+                    b_Nu     = random_param["b_Nu"],
+                    a_Lambda = random_param["a_Lambda"],
+                    b_Lambda = random_param["b_Lambda"])
+            else:
+                cbm_defaults_database.add_record(
+                    self.connection, "random_return_interval",
+                    id       = random_return_interval_id,
+                    a_Nu     = 0,
+                    b_Nu     = 0,
+                    a_Lambda = 0,
+                    b_Lambda = 0)
             # Populate the eco_boundaries table #
             cbm_defaults_database.add_record(
                 self.connection, "eco_boundary",
                 id                        = row.EcoBoundaryID,
                 turnover_parameter_id     = eco_association_id,
-                random_return_interval_id = eco_association_id)
+                random_return_interval_id = random_return_interval_id)
             # Increment manually #
             eco_association_id += 1
         # Translation and different locales #
