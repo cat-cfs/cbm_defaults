@@ -574,12 +574,32 @@ class CBMDefaultsBuilder:
 
     def _populate_afforestation(self):
 
-        # TODO use pool crosswalk to get the initial pools completely. The
-        # current assumption built into query is that only the slow bg pool
-        # has a value, and this may not be a safe assumption for all users.
+        pool_to_column_mapping = [
+            ("SW_FoliageBiomassCarbon", "SoftwoodFoliage"),
+            ("SW_MerchantableBiomassCarbon", "SoftwoodMerch"),
+            ("SW_OtherBiomassCarbon", "SoftwoodOther"),
+            ("SW_CoarseRootBiomassCarbon", "SoftwoodCoarseRoots"),
+            ("SW_FineRootBiomassCarbon", "SoftwoodFineRoots"),
+            ("HW_FoliageBiomassCarbon", "HardwoodFoliage"),
+            ("HW_MerchantableBiomassCarbon", "HardwoodMerch"),
+            ("HW_OtherBiomassCarbon", "HardwoodOther"),
+            ("HW_CoarseRootBiomassCarbon", "HardwoodCoarseRoots"),
+            ("HW_FineRootBiomassCarbon", "HardwoodFineRoots"),
+            ("VFSoilPoolC_AG", "AboveGroundVeryFastSoil"),
+            ("VFSoilPoolC_BG", "BelowGroundVeryFastSoil"),
+            ("FSoilPoolC_AG", "AboveGroundFastSoil"),
+            ("FSoilPoolC_BG", "BelowGroundFastSoil"),
+            ("MSoilPoolC", "MediumSoil"),
+            ("SSoilPoolC_AG", "AboveGroundSlowSoil"),
+            ("SSoilPoolC_BG", "BelowGroundSlowSoil"),
+            ("StemSnagPoolC_SW", "SoftwoodStemSnag"),
+            ("BranchSnagPoolC_SW", "SoftwoodBranchSnag"),
+            ("StemSnagPoolC_HW", "HardwoodStemSnag"),
+            ("BranchSnagPoolC_HW", "HardwoodBranchSnag")]
 
-        slow_bg_pool = [x for x in local_csv_table.read_csv_file("pool.csv")
-                        if x["code"] == "BelowGroundSlowSoil"][0]["id"]
+        pool_id_map = {
+            x["code"]: x["id"]
+            for x in local_csv_table.read_csv_file("pool.csv")}
 
         for row in self.archive_index.get_parameters(
                 "afforestation_pre_types"):
@@ -589,14 +609,17 @@ class CBMDefaultsBuilder:
         afforestation_initial_pool_id = 1
         for row in self.archive_index.get_parameters(
                 "afforestation_pre_type_values"):
-            cbm_defaults_database.add_record(
-                self.connection,
-                "afforestation_initial_pool",
-                id=afforestation_initial_pool_id,
-                spatial_unit_id=row.SPUID,
-                afforestation_pre_type_id=row.PreTypeID,
-                pool_id=slow_bg_pool,
-                value=row.SSoilPoolC_BG)
+            for pool_column, pool_name in pool_to_column_mapping:
+                pool_value = getattr(row, pool_column)
+                if pool_value > 0:
+                    cbm_defaults_database.add_record(
+                        self.connection,
+                        "afforestation_initial_pool",
+                        id=afforestation_initial_pool_id,
+                        spatial_unit_id=row.SPUID,
+                        afforestation_pre_type_id=row.PreTypeID,
+                        pool_id=pool_id_map[pool_name],
+                        value=pool_value)
             afforestation_initial_pool_id += 1
 
         afforestation_pre_type_tr_id = 1
