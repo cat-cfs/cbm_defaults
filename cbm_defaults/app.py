@@ -68,7 +68,7 @@ def run(config):
     # Run every method of the default builder on the empty database #
     with cbm_defaults_database.get_connection(output_path) as connection:
         builder = CBMDefaultsBuilder(
-            connection, config["locales"], archive_index)
+            connection, _config["locales"], archive_index)
         logging.info("running")
         builder.build_database()
         connection.commit()

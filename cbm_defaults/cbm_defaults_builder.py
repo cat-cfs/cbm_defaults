@@ -172,6 +172,15 @@ class CBMDefaultsBuilder:
         random_return_interval_params = \
             self._get_random_return_interval_parameters() \
             if self.uncertainty_parameters else None
+
+        if not self.uncertainty_parameters:
+            cbm_defaults_database.add_record(
+                self.connection, "random_return_interval",
+                id       = 1,
+                a_Nu     = 0,
+                b_Nu     = 0,
+                a_Lambda = 0,
+                b_Lambda = 0)
         # Initialize parameters #
         eco_association_id = 1
         # Main loop #
@@ -206,14 +215,7 @@ class CBMDefaultsBuilder:
                     b_Nu     = random_param["b_Nu"],
                     a_Lambda = random_param["a_Lambda"],
                     b_Lambda = random_param["b_Lambda"])
-            else:
-                cbm_defaults_database.add_record(
-                    self.connection, "random_return_interval",
-                    id       = random_return_interval_id,
-                    a_Nu     = 0,
-                    b_Nu     = 0,
-                    a_Lambda = 0,
-                    b_Lambda = 0)
+
             # Populate the eco_boundaries table #
             cbm_defaults_database.add_record(
                 self.connection, "eco_boundary",
