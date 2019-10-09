@@ -109,28 +109,35 @@ class CBMDefaultsBuilder:
             dom_pool_id += 1
 
     def _populate_admin_boundaries(self):
+        """TODO: Could optimize this function by avoiding the repetition
+           of exactly identical stump parameters."""
+        # Initialize parameters #
         stump_parameter_id = 1
+        # Main loop #
         for row in self.archive_index.get_parameters("admin_boundaries"):
+            # Stump parameters #
             cbm_defaults_database.add_record(
-                self.connection,
-                "stump_parameter",
-                id=row.AdminBoundaryID,
-                sw_top_proportion=row.SoftwoodTopProportion,
-                sw_stump_proportion=row.SoftwoodStumpProportion,
-                hw_top_proportion=row.HardwoodTopProportion,
-                hw_stump_proportion=row.HardwoodStumpProportion)
-
+                self.connection, "stump_parameter",
+                id                  = row.AdminBoundaryID,
+                sw_top_proportion   = row.SoftwoodTopProportion,
+                sw_stump_proportion = row.SoftwoodStumpProportion,
+                hw_top_proportion   = row.HardwoodTopProportion,
+                hw_stump_proportion = row.HardwoodStumpProportion
+            )
+            # Admin boundaries #
             cbm_defaults_database.add_record(
-                self.connection,
-                "admin_boundary",
-                id=row.AdminBoundaryID,
-                stump_parameter_id=stump_parameter_id)
+                self.connection, "admin_boundary",
+                id                 = row.AdminBoundaryID,
+                stump_parameter_id = stump_parameter_id
+            )
+            # Increment manually #
             stump_parameter_id += 1
-
+        # Translation and different locales #
         translation_id = 1
         for locale in self.locales:
-            for row in self.archive_index.get_parameters(
-                    "admin_boundaries", locale=locale["code"]):
+            rows = self.archive_index.get_parameters(
+                 "admin_boundaries", locale=locale["code"])
+            for row in rows:
                 cbm_defaults_database.add_record(
                     self.connection,
                     "admin_boundary_tr",
