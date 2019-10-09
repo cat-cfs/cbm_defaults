@@ -10,15 +10,16 @@ from cbm_defaults.archive_index import ArchiveIndex
 from cbm_defaults.cbm_defaults_builder import CBMDefaultsBuilder
 from cbm_defaults import cbm_defaults_database
 
+
 ###############################################################################
-def run(config_path):
+def run(config):
     """Build the cbm_defaults database.
 
     Args:
-        config_path (str): path to a json formatted config file.
-                           Alternatively, a dictionary object
-                           containing the info the json would
-                           have contained.
+        config (str): path to a json formatted config file.
+                      Alternatively, a dictionary object
+                      containing the info the json config file
+                      would have contained.
 
         Example of format:
 
@@ -40,32 +41,34 @@ def run(config_path):
     """
     logging.info("initialization")
 
-    if isinstance(config_path, dict): config = config_path
+    if isinstance(config, dict):
+        _config = config
     else:
-        with open(config_path, 'r') as config_file:
-            config = json.load(config_file)
+        with open(config, 'r') as config_file:
+            _config = json.load(config_file)
 
-    for item in config["archive_index_data"]:
+    for item in _config["archive_index_data"]:
         item["path"] = os.path.abspath(item["path"])
         logging.info("using archive index database %s", item["path"])
 
     archive_index = ArchiveIndex(
-        config["locales"], config["default_locale"],
-        config["archive_index_data"])
+        _config["locales"], _config["default_locale"],
+        _config["archive_index_data"])
 
     # Create an empty SQLite database #
-    output_path = os.path.abspath(config["output_path"])
+    output_path = os.path.abspath(_config["output_path"])
     logging.info("created database file: %s", output_path)
     cbm_defaults_database.create_database(output_path)
 
     # Run the DDL file on it to create all tables #
-    schema_path = os.path.abspath(config["schema_path"])
+    schema_path = os.path.abspath(_config["schema_path"])
     logging.info("running DDL statements %s", schema_path)
     cbm_defaults_database.execute_ddl_file(schema_path, output_path)
 
     # Run every method of the default builder on the empty database #
     with cbm_defaults_database.get_connection(output_path) as connection:
-        builder = CBMDefaultsBuilder(connection, config["locales"], archive_index)
+        builder = CBMDefaultsBuilder(
+            connection, config["locales"], archive_index)
         logging.info("running")
         builder.build_database()
         connection.commit()
