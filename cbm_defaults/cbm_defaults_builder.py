@@ -37,6 +37,7 @@ class CBMDefaultsBuilder:
         self.locales = locales
         self.archive_index = archive_index
         self.uncertainty_parameters = uncertainty_parameters
+        self._get_multi_year_disturbance_info()
 
     def build_database(self):
         """Populate a cbm_defaults database with data.
@@ -423,6 +424,15 @@ class CBMDefaultsBuilder:
                     description=row["description"])
                 land_class_tr_id += 1
 
+    def _get_multi_year_disturbance_info(self):
+        """queries for disturbance types involved with "multi year
+        disturbances", which is a legacy CBM3 feature not carried forward 
+        to the resulting database.  
+        """
+        rows = list(self.archive_index.get_parameters("multi_year_disturbances"))
+        self.multi_year_disturbance_type_ids = set([row.DefaultDisturbanceTypeID for row in rows])
+        self.multi_year_dmids = set([row.DMID for row in rows])
+
     def _populate_disturbance_types(self):
         unfccc_code_lookup = {}
         for row in local_csv_table.read_csv_file("landclass.csv"):
@@ -436,6 +446,8 @@ class CBMDefaultsBuilder:
             disturbance_type_land_class_lookup[disturbance_type] = unfccc_code
 
         for row in self.archive_index.get_parameters("disturbance_types"):
+            if row.DistTypeID in self.multi_year_disturbance_type_ids:
+                continue
             landclasstransition = \
                 disturbance_type_land_class_lookup[row.DistTypeID] \
                 if row.DistTypeID in disturbance_type_land_class_lookup \
@@ -450,6 +462,8 @@ class CBMDefaultsBuilder:
         for locale in self.locales:
             for row in self.archive_index.get_parameters(
                     "disturbance_types", locale=locale["code"]):
+                if row.DistTypeID in self.multi_year_disturbance_type_ids:
+                    continue    
                 cbm_defaults_database.add_record(
                     self.connection,
                     "disturbance_type_tr",
@@ -468,6 +482,8 @@ class CBMDefaultsBuilder:
 
         for row in self.archive_index.get_parameters(
                 "disturbance_matrix_names"):
+            if row.DMID in self.multi_year_dmids:
+                continue
             cbm_defaults_database.add_record(
                 self.connection, "disturbance_matrix", id=row.DMID)
 
@@ -489,6 +505,8 @@ class CBMDefaultsBuilder:
         for locale in self.locales:
             for row in self.archive_index.get_parameters(
                     "disturbance_matrix_names", locale=locale["code"]):
+                if row.DMID in self.multi_year_dmids:
+                    continue
                 cbm_defaults_database.add_record(
                     self.connection, "disturbance_matrix_tr", id=tr_id,
                     disturbance_matrix_id=row.DMID, locale_id=locale["id"],
@@ -499,6 +517,8 @@ class CBMDefaultsBuilder:
 
         for row in self.archive_index.get_parameters(
                 "eco_boundary_dm_associations"):
+            if row.DMID in self.multi_year_dmids:
+                continue
             cbm_defaults_database.add_record(
                 self.connection,
                 "disturbance_matrix_association",
@@ -508,6 +528,8 @@ class CBMDefaultsBuilder:
 
         for row in self.archive_index.get_parameters(
                 "spatial_unit_dm_associations"):
+            if row.DMID in self.multi_year_dmids:
+                continue
             cbm_defaults_database.add_record(
                 self.connection,
                 "disturbance_matrix_association",
@@ -521,7 +543,9 @@ class CBMDefaultsBuilder:
         disturbance_types = [
             x.DefaultDisturbanceTypeID
             for x in self.archive_index.get_parameters(
-                "growth_multiplier_disturbance")]
+                "growth_multiplier_disturbance")
+            if x.DefaultDisturbanceTypeID 
+                not in self.multi_year_disturbance_type_ids]
 
         for dist_type in disturbance_types:
             cbm_defaults_database.add_record(

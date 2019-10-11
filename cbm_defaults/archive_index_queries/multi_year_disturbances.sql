@@ -1,6 +1,6 @@
-SELECT tblDMAssociationDefault.DefaultDisturbanceTypeID
+SELECT tblDMAssociationDefault.DefaultDisturbanceTypeID, tblDMAssociationDefault.DMID
 FROM tblDisturbanceTypeDefault INNER JOIN tblDMAssociationDefault ON 
 tblDisturbanceTypeDefault.DistTypeID = tblDMAssociationDefault.DefaultDisturbanceTypeID
 WHERE tblDMAssociationDefault.AnnualOrder > 1
-GROUP BY tblDMAssociationDefault.DefaultDisturbanceTypeID
-ORDER BY tblDMAssociationDefault.DefaultDisturbanceTypeID;
+GROUP BY tblDMAssociationDefault.DefaultDisturbanceTypeID, tblDMAssociationDefault.DMID
+ORDER BY tblDMAssociationDefault.DefaultDisturbanceTypeID, tblDMAssociationDefault.DMID;

@@ -6,4 +6,4 @@ tblSPUDefault.EcoBoundaryID
 GROUP BY tblDMAssociationDefault.DefaultDisturbanceTypeID,
 tblSPUDefault.SPUID, tblDMAssociationDefault.DMID,
 tblDMAssociationDefault.DefaultDisturbanceTypeID
-HAVING tblDMAssociationDefault.DefaultDisturbanceTypeID<>1;
+HAVING tblDMAssociationDefault.DefaultDisturbanceTypeID <> 1;
