@@ -388,8 +388,7 @@ class CBMDefaultsBuilder:
         for row in self.archive_index.get_parameters("vol_to_bio_forest_type"):
             self._insert_vol_to_bio_factor(vol_to_bio_parameter_id, row)
             cbm_defaults_database.add_record(
-                self.connection,
-                "vol_to_bio_forest_type",
+                self.connection, "vol_to_bio_forest_type",
                 spatial_unit_id      = row.DefaultSPUID,
                 forest_type_id       = row.DefaultForestTypeID,
                 vol_to_bio_factor_id = vol_to_bio_parameter_id)
@@ -494,24 +493,22 @@ class CBMDefaultsBuilder:
                 tr_id += 1
 
     def _populate_disturbance_matrix_associations(self):
-
+        # Eco boundary (tblDMAssociationDefault join tblSPUDefault) #
         for row in self.archive_index.get_parameters(
                 "eco_boundary_dm_associations"):
             cbm_defaults_database.add_record(
-                self.connection,
-                "disturbance_matrix_association",
-                spatial_unit_id=row.SPUID,
-                disturbance_type_id=row.DefaultDisturbanceTypeID,
-                disturbance_matrix_id=row.DMID)
-
+                self.connection, "disturbance_matrix_association",
+                spatial_unit_id       = row.SPUID,
+                disturbance_type_id   = row.DefaultDisturbanceTypeID,
+                disturbance_matrix_id = row.DMID)
+        # Spatial units (tblDMAssociationSPUDefault) #
         for row in self.archive_index.get_parameters(
                 "spatial_unit_dm_associations"):
             cbm_defaults_database.add_record(
-                self.connection,
-                "disturbance_matrix_association",
-                spatial_unit_id=row.SPUID,
-                disturbance_type_id=row.DefaultDisturbanceTypeID,
-                disturbance_matrix_id=row.DMID)
+                self.connection, "disturbance_matrix_association",
+                spatial_unit_id       = row.SPUID,
+                disturbance_type_id   = row.DefaultDisturbanceTypeID,
+                disturbance_matrix_id = row.DMID)
 
     def _populate_growth_multipliers(self):
 
