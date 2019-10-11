@@ -31,7 +31,7 @@ def get_connection(path):
 
 
 def query_db(connection, query, params):
-    """Run the specified query with parameters on the specified connection
+    """Run the specified query with parameters on the specified connection.
 
     Args:
         connection (object): a connection to an ms access database
@@ -41,6 +41,13 @@ def query_db(connection, query, params):
     Returns:
         cursor: the iterable cursor with the query result
     """
+    # Make a new cursor #
     cursor = connection.cursor()
-    _ = cursor.execute(query, params) if params else cursor.execute(query)
+    # Documented issue with pyodbc #
+    # See stackoverflow.com/questions/20240130 #
+    if params:
+        params = tuple(float(x) if type(x) is int else x for x in params)
+    # Execute #
+    cursor.execute(query, params) if params else cursor.execute(query)
+    # Return #
     return cursor

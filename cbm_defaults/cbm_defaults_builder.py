@@ -365,37 +365,34 @@ class CBMDefaultsBuilder:
             high_foliage_prop=row.high_foliage_prop)
 
     def _populate_volume_to_biomass(self):
-
+        # Initialize #
         vol_to_bio_parameter_id = 1
+        # Species (tblBioTotalStemwoodSpeciesTypeDefault) #
         for row in self.archive_index.get_parameters("vol_to_bio_species"):
             self._insert_vol_to_bio_factor(vol_to_bio_parameter_id, row)
-
             cbm_defaults_database.add_record(
                 self.connection, "vol_to_bio_species",
-                spatial_unit_id=row.DefaultSPUID,
-                species_id=row.DefaultSpeciesTypeID,
-                vol_to_bio_factor_id=vol_to_bio_parameter_id)
+                spatial_unit_id      = row.DefaultSPUID,
+                species_id           = row.DefaultSpeciesTypeID,
+                vol_to_bio_factor_id = vol_to_bio_parameter_id)
             vol_to_bio_parameter_id += 1
-
+        # Genus (tblBioTotalStemwoodGenusDefault) #
         for row in self.archive_index.get_parameters("vol_to_bio_genus"):
             self._insert_vol_to_bio_factor(vol_to_bio_parameter_id, row)
-
             cbm_defaults_database.add_record(
                 self.connection, "vol_to_bio_genus",
-                spatial_unit_id=row.DefaultSPUID,
-                genus_id=row.DefaultGenusID,
-                vol_to_bio_factor_id=vol_to_bio_parameter_id)
+                spatial_unit_id      = row.DefaultSPUID,
+                genus_id             = row.DefaultGenusID,
+                vol_to_bio_factor_id = vol_to_bio_parameter_id)
             vol_to_bio_parameter_id += 1
-
+        # Forest type (tblBioTotalStemwoodForestTypeDefault) #
         for row in self.archive_index.get_parameters("vol_to_bio_forest_type"):
             self._insert_vol_to_bio_factor(vol_to_bio_parameter_id, row)
-
             cbm_defaults_database.add_record(
-                self.connection,
-                "vol_to_bio_forest_type",
-                spatial_unit_id=row.DefaultSPUID,
-                forest_type_id=row.DefaultForestTypeID,
-                vol_to_bio_factor_id=vol_to_bio_parameter_id)
+                self.connection, "vol_to_bio_forest_type",
+                spatial_unit_id      = row.DefaultSPUID,
+                forest_type_id       = row.DefaultForestTypeID,
+                vol_to_bio_factor_id = vol_to_bio_parameter_id)
             vol_to_bio_parameter_id += 1
 
     def _populate_land_classes(self):
@@ -514,28 +511,26 @@ class CBMDefaultsBuilder:
                 tr_id += 1
 
     def _populate_disturbance_matrix_associations(self):
-
+        # Eco boundary (tblDMAssociationDefault join tblSPUDefault) #
         for row in self.archive_index.get_parameters(
                 "eco_boundary_dm_associations"):
             if row.DMID in self.multi_year_dmids:
                 continue
             cbm_defaults_database.add_record(
-                self.connection,
-                "disturbance_matrix_association",
-                spatial_unit_id=row.SPUID,
-                disturbance_type_id=row.DefaultDisturbanceTypeID,
-                disturbance_matrix_id=row.DMID)
-
+                self.connection, "disturbance_matrix_association",
+                spatial_unit_id       = row.SPUID,
+                disturbance_type_id   = row.DefaultDisturbanceTypeID,
+                disturbance_matrix_id = row.DMID)
+        # Spatial units (tblDMAssociationSPUDefault) #
         for row in self.archive_index.get_parameters(
                 "spatial_unit_dm_associations"):
             if row.DMID in self.multi_year_dmids:
                 continue
             cbm_defaults_database.add_record(
-                self.connection,
-                "disturbance_matrix_association",
-                spatial_unit_id=row.SPUID,
-                disturbance_type_id=row.DefaultDisturbanceTypeID,
-                disturbance_matrix_id=row.DMID)
+                self.connection, "disturbance_matrix_association",
+                spatial_unit_id       = row.SPUID,
+                disturbance_type_id   = row.DefaultDisturbanceTypeID,
+                disturbance_matrix_id = row.DMID)
 
     def _populate_growth_multipliers(self):
 
