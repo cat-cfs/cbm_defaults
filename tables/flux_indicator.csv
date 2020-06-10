@@ -33,7 +33,7 @@ id,name,flux_process_id
 32,DisturbanceCoarseToAir,3
 33,DisturbanceFineToAir,3
 34,DisturbanceDOMCO2Emission,3
-35,DisturbanceDOMCH4Emssion,3
+35,DisturbanceDOMCH4Emission,3
 36,DisturbanceDOMCOEmission,3
 37,DisturbanceMerchLitterInput,3
 38,DisturbanceFolLitterInput,3
