@@ -1,9 +1,8 @@
-        SELECT tblSPUDefault.SPUID, tblSPUDefault.AdminBoundaryID,
-        tblSPUDefault.EcoBoundaryID, tblClimateDefault.MeanAnnualTemp,
-        tblEcoBoundaryDefault.AverageAge
-        FROM (
-            tblSPUDefault INNER JOIN tblClimateDefault ON
-                tblSPUDefault.SPUID = tblClimateDefault.DefaultSPUID
-            ) INNER JOIN tblEcoBoundaryDefault ON
-            tblSPUDefault.EcoBoundaryID = tblEcoBoundaryDefault.EcoBoundaryID
-        WHERE tblClimateDefault.Year=1981;
+SELECT 
+tblSPUDefault.SPUID,
+tblSPUDefault.EcoBoundaryID,
+tblSPUDefault.AdminBoundaryID,
+tblEcoBoundaryDefault.AverageAge
+FROM tblEcoBoundaryDefault INNER JOIN
+tblSPUDefault ON tblEcoBoundaryDefault.EcoBoundaryID =
+    tblSPUDefault.EcoBoundaryID;
