@@ -258,13 +258,30 @@ class CBMDefaultsBuilder:
             self.connection, "slow_mixing_rate", id=1, rate=0.006)
 
     def _populate_spatial_units(self):
-        spinupu_parameter_id = 1
-        for row in self.archive_index.get_parameters("spatial_units"):
+        spinup_parameter_id = 1
+        climate = self.archive_index.get_parameters_df("climate")
+        if not set(climate.Year.unique()) == {1980, 1981}:
+            raise ValueError(
+                "Expected only years 1980, 1981 in tblClimateDefault. "
+                "Climate timeseries are not currently supported in "
+                "cbm_defaults/database format")
 
+        historical_climate = {
+            int(r.DefaultSPUID) : float(r.MeanAnnualTemp)
+            for r in climate[climate.Year==1980].itertuples()
+        }
+        current_climate = {
+            int(r.DefaultSPUID) : float(r.MeanAnnualTemp)
+            for r in climate[climate.Year==1981].itertuples()
+        }
+        spatial_units = self.archive_index.get_parameters_df("spatial_units")
+
+        for row in spatial_units.itertuples():
             cbm_defaults_database.add_record(
-                self.connection, "spinup_parameter", id=spinupu_parameter_id,
+                self.connection, "spinup_parameter", id=spinup_parameter_id,
                 return_interval=row.AverageAge, min_rotations=10,
-                max_rotations=30, historic_mean_temperature=row.MeanAnnualTemp)
+                max_rotations=30,
+                historic_mean_temperature=historical_climate[int(row.SPUID)])
 
             cbm_defaults_database.add_record(
                 self.connection, "spatial_unit",
@@ -272,9 +289,9 @@ class CBMDefaultsBuilder:
                 admin_boundary_id=row.AdminBoundaryID,
                 eco_boundary_id=row.EcoBoundaryID,
                 root_parameter_id=1,
-                spinup_parameter_id=spinupu_parameter_id,
-                mean_annual_temperature=row.MeanAnnualTemp)
-            spinupu_parameter_id += 1
+                spinup_parameter_id=spinup_parameter_id,
+                mean_annual_temperature=current_climate[int(row.SPUID)])
+            spinup_parameter_id += 1
 
     def _populate_species(self):
 
