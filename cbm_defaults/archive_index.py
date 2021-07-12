@@ -4,6 +4,7 @@ Fetch parameters from CBM-CFS3 archive index databases.
 
 # Modules #
 import os
+import pandas as pd
 from cbm_defaults import access_db
 
 ###############################################################################
@@ -42,6 +43,14 @@ class ArchiveIndex:
         self.paths_by_locale = {
             x["locale"]: x["path"] for x in archive_index_data}
 
+    def _get_path(self, locale):
+        path = None
+        if locale:
+            path = self.paths_by_locale[locale]
+        else:
+            path = self.paths_by_locale[self.default_locale]
+        return path
+        
     def query(self, sql, params=None, locale=None):
         """Query the archive index database.
 
@@ -52,14 +61,17 @@ class ArchiveIndex:
             locale (str, optional): Locale code (ex. "en-CA"). If unspecified
                 the class arg "default_locale" is used. Defaults to None.
         """
-        path = None
-        if locale:
-            path = self.paths_by_locale[locale]
-        else:
-            path = self.paths_by_locale[self.default_locale]
+        path = self._get_path(locale)
         with access_db.get_connection(path) as connection:
             for row in access_db.query_db(connection, sql, params):
                 yield row
+
+    def _read_sql_file(self, name):
+        local_dir = os.path.dirname(os.path.realpath(__file__))
+        local_file = os.path.join(
+            local_dir, "archive_index_queries", f"{name}.sql")
+        with open(local_file, 'r') as sql_file:
+            return sql_file.read()
 
     def get_parameters(self, name, params=None, locale=None):
         """Load data from the Archive Index Database using an SQL query file
@@ -73,9 +85,22 @@ class ArchiveIndex:
         Returns:
             iterable: rows which are the result of the query
         """
-        local_dir = os.path.dirname(os.path.realpath(__file__))
-        local_file = os.path.join(
-            local_dir, "archive_index_queries", f"{name}.sql")
-        with open(local_file, 'r') as sql_file:
-            sql = sql_file.read()
+        sql = self._read_sql_file(name)
         return self.query(sql, params, locale)
+
+    def get_parameters_df(self, name, params=None, locale=None):
+        """Load data from the Archive Index Database using an SQL query file
+        included in this submodule, under 'archive_index_queries'.
+
+        Args:
+            name (str): name of the file containing the query to run
+            params (iterable, optional): query parameters. Defaults to None.
+            locale (str, optional): locale code. Defaults to None.
+
+        Returns:
+            pd.DataFrame: a dataframe storing the query result
+        """
+        sql = self._read_sql_file(name)
+        path = self._get_path(locale)
+        with access_db.get_connection(path) as connection: 
+            return pd.read_sql(sql, connection, params=params)
