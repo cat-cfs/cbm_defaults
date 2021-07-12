@@ -24,7 +24,8 @@ def main():
             based on a combination of CBM-CFS3 archive index databases, and
             built in csv tables""")
         parser.add_argument(
-            "--config_path", help="path to a json formatted config file")
+            "--config_path", required=True,
+            help="path to a json formatted config file")
         args = parser.parse_args()
 
         logging.info("startup")
