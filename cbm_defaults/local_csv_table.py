@@ -12,7 +12,7 @@ def get_tables_dir():
         str: the directory containing the packaged csv tables.
     """
     local_dir = os.path.dirname(os.path.realpath(__file__))
-    return os.path.abspath(os.path.join(local_dir, "..", "tables"))
+    return os.path.abspath(os.path.join(local_dir, "tables"))
 
 
 def read_csv_file(filename):
