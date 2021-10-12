@@ -1,0 +1,25 @@
+landclass_id,description
+0,suelo forestal mantenido suelo forestal
+1,Suelo de cultivo mantenido
+2,Pastizales mantenidos
+3,Humedales mantenidos
+4,Poblados mantenidos
+5,Otros mantenidos
+6,Suelo de cultivo convertido en suelo forestal
+7,Pastizal convertido en suelo forestal
+8,Humedal convertido en suelo forestal
+9,Poblado convertido en suelo forestal
+10,Otro convertido en suelo forestal
+11,Suelo forestal convertido en suelo de cultivo
+12,Suelo forestal convertido en pastizal
+13,Suelo forestal convertido en humedal
+14,Suelo forestal convertido en poblado
+15,Suelo forestal convertido en otros
+16,Suelo forestal no explotado
+17,Suelo forestal no explotado convertido a suelo de cultivo
+18,Suelo forestal no explotado convertido en pastizal
+19,Suelo forestal no explotado convertido en humedal
+20,Suelo forestal no explotado convertido en poblado
+21,Suelo forestal no explotado en otros
+22,Suelo forestal no explotado convertido en bosque explotado
+23,Peatland

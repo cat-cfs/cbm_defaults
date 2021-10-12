@@ -1,0 +1,13 @@
+composite_flux_indicator_category_id,category_name,subcategory_name
+1,Zmiany zasobów,Całkowity
+2,Zmiany zasobów,Podsumowanie biomasy do produktów leśnych
+3,Zmiany zasobów,Podsumowanie rozpuszczonej martwej materii organicznej (DOM)
+4,Wskaźniki ekosystemowe,Produktywność
+5,Wskaźniki ekosystemowe,Wskaźniki ekosystemu
+6,Transfery ekosystemowe,Ekosystem do produktów leśnych
+7,Transfery ekosystemowe,Uwolnione do atmosfery
+8,Emisje,Emisje według źródła
+9,Emisje,Emisje według gazu
+10,Emisje,Emisje biomasy według gazu
+11,Emisje,Emisje rozpuszczonej martwej materii organicznej (DOM) według gazu
+12,Transfery zakłóceń,Transfery zakłóceń

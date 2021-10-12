@@ -1,0 +1,27 @@
+pool_id,locale_id,name
+1,3,Coníferas comerciables
+2,3,Follaje de coníferas
+3,3,Otras coníferas
+4,3,Raíces gruesas de coníferas
+5,3,Raíces finas de coníferas
+6,3,Caducifolios comerciables
+7,3,Follaje de caducifolios
+8,3,Otro de caducifolios
+9,3,Raíces gruesas de caducifolios
+10,3,Raíces finas de caducifolios
+11,3,MOM muy rápida superficial
+12,3,MOM muy rápida subterránea
+13,3,MOM rápida superficial
+14,3,MOM rápida subterránea
+15,3,MOM regular
+16,3,MOM superficial lenta
+17,3,MOM subterránea lenta
+18,3,Troncos muertos de coníferas
+19,3,Ramas muertas de coníferas
+20,3,Troncos muertos de caducifolios
+21,3,Ramas muertas de caducifolios
+22,3,CO2
+23,3,CH4
+24,3,CO
+25,3,NO2
+26,3,Productos

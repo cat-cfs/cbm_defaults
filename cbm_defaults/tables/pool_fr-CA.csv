@@ -1,0 +1,27 @@
+pool_id,locale_id,name
+1,2,Résineux marchand
+2,2,Résineux feuillage
+3,2,Résineux autre
+4,2,Résineux grosses racines
+5,2,Résineux radicelles
+6,2,Feuillu marchand
+7,2,Feuillu feuillage
+8,2,Feuillu autre
+9,2,Feuillu grosses racines
+10,2,Feuillu radicelles
+11,2,MOM aérienne très rapide
+12,2,MOM souterraine très rapide
+13,2,MOM aérienne rapide
+14,2,MOM souterraine rapide
+15,2,MOM médium
+16,2,MOM aérienne lente
+17,2,MOM souterraine lente
+18,2,Chicot de tige de résineux
+19,2,Chicot de branche de résineux
+20,2,Chicot de tige de feuillu
+21,2,Chicot de branche de feuillu
+22,2,CO2
+23,2,CH4
+24,2,CO
+25,2,NO2
+26,2,Produits
