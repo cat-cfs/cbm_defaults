@@ -1,1 +1,0 @@
-select species.id, species_tr.name from species inner join species_tr on species.id == species_tr.species_id inner join locale on species_tr.locale_id == locale.id where locale.code ="en-CA"
