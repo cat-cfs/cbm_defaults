@@ -9,9 +9,9 @@ import logging
 from cbm_defaults.archive_index import ArchiveIndex
 from cbm_defaults.cbm_defaults_builder import CBMDefaultsBuilder
 from cbm_defaults import cbm_defaults_database
+from cbm_defaults import schema
 
 
-###############################################################################
 def run(config):
     """Build the cbm_defaults database.
 
@@ -25,7 +25,6 @@ def run(config):
 
             {
                 "output_path": "cbm_defaults.db",
-                "schema_path": "schema/cbmDefaults.ddl",
                 "default_locale": "en-CA",
                 "locales": [
                     {"id": 1, "code": "en-CA"},
@@ -38,6 +37,7 @@ def run(config):
                     "path": "ArchiveIndex_Beta_Install_fr.mdb"},
                 ]
             }
+
     """
     logging.info("initialization")
 
@@ -61,7 +61,7 @@ def run(config):
     cbm_defaults_database.create_database(output_path)
 
     # Run the DDL file on it to create all tables #
-    schema_path = os.path.abspath(_config["schema_path"])
+    schema_path = schema.get_ddl_path()
     logging.info("running DDL statements %s", schema_path)
     cbm_defaults_database.execute_ddl_file(schema_path, output_path)
 
