@@ -13,7 +13,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="cbm_defaults",
-    version="1.0.0",
+    version="1.1.0",
     description="CBM-CFS3 archive-index database to sqlite utility",
     keywords=["cbm-cfs3"],
     long_description=long_description,
@@ -29,7 +29,8 @@ setup(
     package_data={
         "cbm_defaults": [
             "schema/cbmDefaults.ddl",
-            "tables/*.csv"
+            "tables/*.csv",
+            "archive_index_queries/*.sql"
         ]
     },
     entry_points={
