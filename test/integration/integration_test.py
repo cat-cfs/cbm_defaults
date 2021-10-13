@@ -3,7 +3,6 @@ from tempfile import TemporaryDirectory
 import unittest
 from cbm3_archive_index import import_parameters
 from cbm_defaults import app
-from cbm_defaults import schema
 
 
 class IntegrationTest(unittest.TestCase):
@@ -21,7 +20,6 @@ class IntegrationTest(unittest.TestCase):
             app.run(
                 {
                     "output_path": os.path.join(temp_dir, "cbm_defaults.db"),
-                    "schema_path": schema.get_ddl_path(),
                     "default_locale": "en-CA",
                     "locales": [
                         {"id": i_locale, "code": locale}
