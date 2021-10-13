@@ -196,8 +196,10 @@ class CBMDefaultsBuilder:
                 sw_branch         = row.SoftwoodBranchTurnOverRate,
                 hw_branch         = row.HardwoodBranchTurnOverRate,
                 branch_snag_split = 0.25,
-                stem_snag         = row.SoftwoodStemSnagToDOM,
-                branch_snag       = row.SoftwoodBranchSnagToDOM,
+                sw_stem_snag      = row.SoftwoodStemSnagToDOM,
+                sw_branch_snag    = row.SoftwoodBranchSnagToDOM,
+                hw_stem_snag      = row.HardwoodStemSnagToDOM,
+                hw_branch_snag    = row.HardwoodBranchSnagToDOM,
                 coarse_root       = 0.02,
                 fine_root         = 0.641,
                 coarse_ag_split   = 0.5,
@@ -440,8 +442,8 @@ class CBMDefaultsBuilder:
 
     def _get_multi_year_disturbance_info(self):
         """queries for disturbance types involved with "multi year
-        disturbances", which is a legacy CBM3 feature not carried forward 
-        to the resulting database.  
+        disturbances", which is a legacy CBM3 feature not carried forward
+        to the resulting database.
         """
         rows = list(self.archive_index.get_parameters("multi_year_disturbances"))
         self.multi_year_disturbance_type_ids = set([row.DefaultDisturbanceTypeID for row in rows])
@@ -477,7 +479,7 @@ class CBMDefaultsBuilder:
             for row in self.archive_index.get_parameters(
                     "disturbance_types", locale=locale["code"]):
                 if row.DistTypeID in self.multi_year_disturbance_type_ids:
-                    continue    
+                    continue
                 cbm_defaults_database.add_record(
                     self.connection,
                     "disturbance_type_tr",
@@ -556,7 +558,7 @@ class CBMDefaultsBuilder:
             x.DefaultDisturbanceTypeID
             for x in self.archive_index.get_parameters(
                 "growth_multiplier_disturbance")
-            if x.DefaultDisturbanceTypeID 
+            if x.DefaultDisturbanceTypeID
                 not in self.multi_year_disturbance_type_ids]
 
         for dist_type in disturbance_types:
