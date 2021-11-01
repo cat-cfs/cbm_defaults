@@ -4,6 +4,8 @@
 *.sln
 *.pyproj
 *.pyc
+/build
+/*.egg-info
 
 # IDE files #
 /.idea
