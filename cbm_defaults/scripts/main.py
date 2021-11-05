@@ -3,9 +3,10 @@
 import os
 import argparse
 import datetime
-import logging
 from cbm_defaults import helper
 from cbm_defaults import app
+
+logger = helper.get_logger()
 
 
 def main():
@@ -28,13 +29,13 @@ def main():
             help="path to a json formatted config file")
         args = parser.parse_args()
 
-        logging.info("startup")
+        logger.info("startup")
         config = os.path.abspath(args.config_path)
         app.run(config)
-        logging.info("finished")
+        logger.info("finished")
 
     except:
-        logging.exception("")
+        logger.exception("")
 
 
 if __name__ == '__main__':

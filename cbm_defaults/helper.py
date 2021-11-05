@@ -46,3 +46,7 @@ def start_logging(file_name="script.log", file_mode='w', use_console=True):
         logger.addHandler(console_handler)
 
     logger.setLevel(logging.INFO)
+
+
+def get_logger():
+    return logging.getLogger("cbm_defaults")

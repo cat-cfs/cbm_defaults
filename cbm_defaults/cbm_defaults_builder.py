@@ -4,10 +4,12 @@ the CBM-CFS3 archive index database format.
 """
 
 # Modules #
-import logging
 from cbm_defaults import cbm_defaults_database
 from cbm_defaults import local_csv_table
 from cbm_defaults import helper
+
+logger = helper.get_logger()
+
 
 ###############################################################################
 class CBMDefaultsBuilder:
@@ -66,7 +68,7 @@ class CBMDefaultsBuilder:
             self._populate_afforestation
         ]
         for func in all_functions:
-            logging.info(func.__name__.replace("_", " ").strip())
+            logger.info(func.__name__.replace("_", " ").strip())
             func()
 
     def _populate_locale(self):

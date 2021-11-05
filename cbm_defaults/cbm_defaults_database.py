@@ -4,8 +4,11 @@ Methods for creating and adding data to a cbm_defaults database
 
 import os
 import contextlib
-import logging
 import sqlite3
+from cbm_defaults import helper
+
+logger = helper.get_logger()
+
 
 ###############################################################################
 def create_database(sqlite_path):
@@ -31,11 +34,11 @@ def get_connection(sqlite_path):
     Args:
         sqlite_path (str): path to a sqlite database
     """
-    logging.info("opening %s", sqlite_path)
+    logger.info("opening %s", sqlite_path)
     with sqlite3.connect(sqlite_path) as conn:
         conn.execute("PRAGMA foreign_keys = 1")
         yield conn
-        logging.info("closing %s", sqlite_path)
+        logger.info("closing %s", sqlite_path)
 
 
 def execute_ddl_file(ddl_path, sqlite_path):

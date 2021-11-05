@@ -2,7 +2,9 @@
 """
 import os
 import csv
-import logging
+from cbm_defaults import helper
+
+logger = helper.get_logger()
 
 
 def get_tables_dir():
@@ -23,7 +25,7 @@ def read_csv_file(filename):
         filename (str): name of the csv table to read
     """
     local_file = os.path.join(get_tables_dir(), filename)
-    logging.info("reading: %s", local_file)
+    logger.info("reading: %s", local_file)
     with open(local_file, 'r', encoding='utf8') as local_csv_file:
         reader = csv.DictReader(local_csv_file)
         for row in reader:
