@@ -13,3 +13,5 @@
 /cov_html
 /.coverage
 /.vs
+debug.py
+dist/
