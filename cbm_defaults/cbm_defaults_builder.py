@@ -532,10 +532,25 @@ class CBMDefaultsBuilder:
                 tr_id += 1
 
     def _populate_disturbance_matrix_associations(self):
+        spatial_unit_dm_associations = list(
+            self.archive_index.get_parameters(
+                "spatial_unit_dm_associations"))
+        spatial_unit_dm_association_keys = set(
+            [
+                (row.SPUID, row.DefaultDisturbanceTypeID)
+                for row in spatial_unit_dm_associations
+            ])
         # Eco boundary (tblDMAssociationDefault join tblSPUDefault) #
         for row in self.archive_index.get_parameters(
                 "eco_boundary_dm_associations"):
             if row.DMID in self.multi_year_dmids:
+                continue
+            if (
+                (row.SPUID, row.DefaultDisturbanceTypeID)
+                in spatial_unit_dm_association_keys
+            ):
+                # defer the insert to the next loop, meaning the
+                # spatial_unit_dm_associations are prioritized
                 continue
             cbm_defaults_database.add_record(
                 self.connection, "disturbance_matrix_association",
@@ -543,8 +558,7 @@ class CBMDefaultsBuilder:
                 disturbance_type_id   = row.DefaultDisturbanceTypeID,
                 disturbance_matrix_id = row.DMID)
         # Spatial units (tblDMAssociationSPUDefault) #
-        for row in self.archive_index.get_parameters(
-                "spatial_unit_dm_associations"):
+        for row in spatial_unit_dm_associations:
             if row.DMID in self.multi_year_dmids:
                 continue
             cbm_defaults_database.add_record(
