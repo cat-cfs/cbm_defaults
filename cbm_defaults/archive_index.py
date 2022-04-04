@@ -7,6 +7,7 @@ import os
 import pandas as pd
 from cbm_defaults import access_db
 
+
 ###############################################################################
 class ArchiveIndex:
     """Class used to fetch localized terms and parameter from the CBM-CFS3
@@ -50,7 +51,7 @@ class ArchiveIndex:
         else:
             path = self.paths_by_locale[self.default_locale]
         return path
-        
+
     def query(self, sql, params=None, locale=None):
         """Query the archive index database.
 
@@ -102,5 +103,5 @@ class ArchiveIndex:
         """
         sql = self._read_sql_file(name)
         path = self._get_path(locale)
-        with access_db.get_connection(path) as connection: 
+        with access_db.get_connection(path) as connection:
             return pd.read_sql(sql, connection, params=params)
