@@ -26,7 +26,7 @@ def read_csv_file(filename):
     """
     local_file = os.path.join(get_tables_dir(), filename)
     logger.info("reading: %s", local_file)
-    with open(local_file, 'r', encoding='utf8') as local_csv_file:
+    with open(local_file, "r", encoding="utf8") as local_csv_file:
         reader = csv.DictReader(local_csv_file)
         for row in reader:
             yield row

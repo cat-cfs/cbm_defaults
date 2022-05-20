@@ -42,7 +42,8 @@ class ArchiveIndex:
         self.default_locale = default_locale
         self.archive_index_data = archive_index_data
         self.paths_by_locale = {
-            x["locale"]: x["path"] for x in archive_index_data}
+            x["locale"]: x["path"] for x in archive_index_data
+        }
 
     def _get_path(self, locale):
         path = None
@@ -70,8 +71,9 @@ class ArchiveIndex:
     def _read_sql_file(self, name):
         local_dir = os.path.dirname(os.path.realpath(__file__))
         local_file = os.path.join(
-            local_dir, "archive_index_queries", f"{name}.sql")
-        with open(local_file, 'r') as sql_file:
+            local_dir, "archive_index_queries", f"{name}.sql"
+        )
+        with open(local_file, "r") as sql_file:
             return sql_file.read()
 
     def get_parameters(self, name, params=None, locale=None):

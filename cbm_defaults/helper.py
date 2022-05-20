@@ -21,7 +21,7 @@ def as_boolean(value):
         raise TypeError("cannot parse {0} as boolean".format(value))
 
 
-def start_logging(file_name="script.log", file_mode='w', use_console=True):
+def start_logging(file_name="script.log", file_mode="w", use_console=True):
     """set up logging to print to console window and to log file
 
     Args:
@@ -34,8 +34,9 @@ def start_logging(file_name="script.log", file_mode='w', use_console=True):
     logger = logging.getLogger()
 
     log_formatter = logging.Formatter(
-        '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-        datefmt='%m-%d %H:%M')
+        "%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
+        datefmt="%m-%d %H:%M",
+    )
 
     file_handler = logging.FileHandler(file_name, file_mode)
     file_handler.setFormatter(log_formatter)

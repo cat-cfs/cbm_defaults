@@ -6,7 +6,6 @@ from cbm_defaults import app
 
 
 class IntegrationTest(unittest.TestCase):
-
     def test_integration(self):
         with TemporaryDirectory() as temp_dir:
 
@@ -14,8 +13,11 @@ class IntegrationTest(unittest.TestCase):
             for locale in locales:
                 aidb_path = os.path.join(temp_dir, f"{locale}.mdb")
                 import_parameters.import_aidb_parameters(
-                    aidb_path=aidb_path, parameters_dir=None, mode="write",
-                    locale="en-CA")
+                    aidb_path=aidb_path,
+                    parameters_dir=None,
+                    mode="write",
+                    locale="en-CA",
+                )
 
             app.run(
                 {
@@ -28,6 +30,9 @@ class IntegrationTest(unittest.TestCase):
                     "archive_index_data": [
                         {
                             "locale": locale,
-                            "path": os.path.join(temp_dir, f"{locale}.mdb")
-                        } for locale in locales]
-                })
+                            "path": os.path.join(temp_dir, f"{locale}.mdb"),
+                        }
+                        for locale in locales
+                    ],
+                }
+            )

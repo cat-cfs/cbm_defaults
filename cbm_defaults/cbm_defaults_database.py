@@ -21,8 +21,7 @@ def create_database(sqlite_path):
         ValueError: the specified path already exists
     """
     if os.path.exists(sqlite_path):
-        raise ValueError(
-            f"specified path already exists {sqlite_path}")
+        raise ValueError(f"specified path already exists {sqlite_path}")
     with get_connection(sqlite_path) as _:
         return
 
@@ -51,11 +50,11 @@ def execute_ddl_file(ddl_path, sqlite_path):
         sqlite_path (str): path to a sqlite database on which the statements
             will be run.
     """
-    with get_connection(sqlite_path) as conn, \
-            open(ddl_path, 'r') as ddl_file:
+    with get_connection(sqlite_path) as conn, open(ddl_path, "r") as ddl_file:
 
         ddl_statements = [
-            x for x in ddl_file.read().split(";") if x is not None]
+            x for x in ddl_file.read().split(";") if x is not None
+        ]
         cursor = conn.cursor()
         for ddl in ddl_statements:
             cursor.execute(ddl)
@@ -71,12 +70,11 @@ def add_record(connection, table_name, **kwargs):
     """
     col_list = kwargs.keys()
 
-    query = "INSERT INTO {table_name} ({col_list}) VALUES ({values})" \
-        .format(
-            table_name=table_name,
-            col_list=",".join(col_list),
-            values=",".join(["?"]*len(col_list))
-        )
+    query = "INSERT INTO {table_name} ({col_list}) VALUES ({values})".format(
+        table_name=table_name,
+        col_list=",".join(col_list),
+        values=",".join(["?"] * len(col_list)),
+    )
     params = [kwargs[k] for k in col_list]
     cursor = connection.cursor()
     cursor.execute(query, params)

@@ -17,16 +17,21 @@ def main():
         logpath = os.path.join(
             "{0}_{1}.log".format(
                 "cbm_defaults",
-                datetime.datetime.now().strftime("%Y-%m-%d %H_%M_%S")))
-        helper.start_logging(logpath, 'w+')
+                datetime.datetime.now().strftime("%Y-%m-%d %H_%M_%S"),
+            )
+        )
+        helper.start_logging(logpath, "w+")
 
         parser = argparse.ArgumentParser(
             description="""script to create cbm_defaults formatted database
             based on a combination of CBM-CFS3 archive index databases, and
-            built in csv tables""")
+            built in csv tables"""
+        )
         parser.add_argument(
-            "--config_path", required=True,
-            help="path to a json formatted config file")
+            "--config_path",
+            required=True,
+            help="path to a json formatted config file",
+        )
         args = parser.parse_args()
 
         logger.info("startup")
@@ -38,5 +43,5 @@ def main():
         logger.exception("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

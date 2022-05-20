@@ -4,6 +4,7 @@ import contextlib
 import pyodbc
 import sqlalchemy as sa
 
+
 def get_engine(path):
     connection_string = (
         r"DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};"
@@ -11,10 +12,10 @@ def get_engine(path):
         r"ExtendedAnsiSQL=1;"
     )
     connection_url = sa.engine.URL.create(
-        "access+pyodbc",
-        query={"odbc_connect": connection_string}
+        "access+pyodbc", query={"odbc_connect": connection_string}
     )
     return sa.create_engine(connection_url)
+
 
 def get_connection_string(path):
     """Gets a connection string that can be used to connect to access
@@ -26,8 +27,10 @@ def get_connection_string(path):
     Returns:
         str: a connection string for the specified database
     """
-    return "Driver={Microsoft Access Driver (*.mdb, *.accdb)};" \
-           f"User Id='admin';Dbq={path}"
+    return (
+        "Driver={Microsoft Access Driver (*.mdb, *.accdb)};"
+        f"User Id='admin';Dbq={path}"
+    )
 
 
 @contextlib.contextmanager

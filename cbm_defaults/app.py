@@ -46,7 +46,7 @@ def run(config):
     if isinstance(config, dict):
         _config = config
     else:
-        with open(config, 'r') as config_file:
+        with open(config, "r") as config_file:
             _config = json.load(config_file)
 
     for item in _config["archive_index_data"]:
@@ -54,8 +54,10 @@ def run(config):
         logger.info("using archive index database %s", item["path"])
 
     archive_index = ArchiveIndex(
-        _config["locales"], _config["default_locale"],
-        _config["archive_index_data"])
+        _config["locales"],
+        _config["default_locale"],
+        _config["archive_index_data"],
+    )
 
     # Create an empty SQLite database #
     output_path = os.path.abspath(_config["output_path"])
@@ -70,7 +72,8 @@ def run(config):
     # Run every method of the default builder on the empty database #
     with cbm_defaults_database.get_connection(output_path) as connection:
         builder = CBMDefaultsBuilder(
-            connection, _config["locales"], archive_index)
+            connection, _config["locales"], archive_index
+        )
         logger.info("running")
         builder.build_database()
         connection.commit()
