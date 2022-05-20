@@ -5,6 +5,7 @@ import pyodbc
 import sqlalchemy as sa
 
 
+@contextlib.contextmanager
 def get_engine(path):
     connection_string = (
         r"DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};"
@@ -14,7 +15,9 @@ def get_engine(path):
     connection_url = sa.engine.URL.create(
         "access+pyodbc", query={"odbc_connect": connection_string}
     )
-    return sa.create_engine(connection_url)
+    engine = sa.create_engine(connection_url)
+    yield engine
+    engine.dispose()
 
 
 def get_connection_string(path):

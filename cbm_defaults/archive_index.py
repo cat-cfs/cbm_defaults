@@ -105,4 +105,5 @@ class ArchiveIndex:
         """
         sql = self._read_sql_file(name)
         path = self._get_path(locale)
-        return pd.read_sql(sql, access_db.get_engine(path), params=params)
+        with access_db.get_engine(path) as engine:
+            return pd.read_sql(sql, engine, params=params)
