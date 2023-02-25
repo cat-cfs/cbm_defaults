@@ -11,6 +11,31 @@ from cbm_defaults import helper
 logger = helper.get_logger()
 
 
+AFFORESTATION_COLUMN_TO_POOL_MAPPING = [
+    ("SW_FoliageBiomassCarbon", "SoftwoodFoliage"),
+    ("SW_MerchantableBiomassCarbon", "SoftwoodMerch"),
+    ("SW_OtherBiomassCarbon", "SoftwoodOther"),
+    ("SW_CoarseRootBiomassCarbon", "SoftwoodCoarseRoots"),
+    ("SW_FineRootBiomassCarbon", "SoftwoodFineRoots"),
+    ("HW_FoliageBiomassCarbon", "HardwoodFoliage"),
+    ("HW_MerchantableBiomassCarbon", "HardwoodMerch"),
+    ("HW_OtherBiomassCarbon", "HardwoodOther"),
+    ("HW_CoarseRootBiomassCarbon", "HardwoodCoarseRoots"),
+    ("HW_FineRootBiomassCarbon", "HardwoodFineRoots"),
+    ("VFSoilPoolC_AG", "AboveGroundVeryFastSoil"),
+    ("VFSoilPoolC_BG", "BelowGroundVeryFastSoil"),
+    ("FSoilPoolC_AG", "AboveGroundFastSoil"),
+    ("FSoilPoolC_BG", "BelowGroundFastSoil"),
+    ("MSoilPoolC", "MediumSoil"),
+    ("SSoilPoolC_AG", "AboveGroundSlowSoil"),
+    ("SSoilPoolC_BG", "BelowGroundSlowSoil"),
+    ("StemSnagPoolC_SW", "SoftwoodStemSnag"),
+    ("BranchSnagPoolC_SW", "SoftwoodBranchSnag"),
+    ("StemSnagPoolC_HW", "HardwoodStemSnag"),
+    ("BranchSnagPoolC_HW", "HardwoodBranchSnag"),
+]
+
+
 ###############################################################################
 class CBMDefaultsBuilder:
     """Class to populate a cbm_defaults format database.
@@ -173,10 +198,10 @@ class CBMDefaultsBuilder:
         Returns a dictionary that looks like this:
 
             {4: OrderedDict([('eco_boundary_id', '4'), ('a_Nu', '0.583344739'),
-                             ('b_Nu', '0.628337479'), ('a_Lambda', '0.583344739'),
+                             ('b_Nu', '0.628337479'), ('a_Lambda', '0.583344'),
                              ('b_Lambda', '-0.371662521')]),
              5: OrderedDict([('eco_boundary_id', '5'), ('a_Nu', '0.507816626'),
-                             ('b_Nu', '0.625411633'), ('a_Lambda', '0.507816626'),
+                             ('b_Nu', '0.625411633'), ('a_Lambda', '0.507816'),
                              ('b_Lambda', '-0.374588367')]), ...
         """
         result = {}
@@ -338,7 +363,6 @@ class CBMDefaultsBuilder:
             spinup_parameter_id += 1
 
     def _populate_species(self):
-
         for row in self.archive_index.get_parameters("forest_types"):
             cbm_defaults_database.add_record(
                 self.connection, "forest_type", id=row.ForestTypeID
@@ -656,7 +680,6 @@ class CBMDefaultsBuilder:
             )
 
     def _populate_growth_multipliers(self):
-
         growth_multiplier_id = 1
         disturbance_types = [
             x.DefaultDisturbanceTypeID
@@ -725,31 +748,6 @@ class CBMDefaultsBuilder:
         insert_localized_csv("composite_flux_indicator", self.locales)
 
     def _populate_afforestation(self):
-
-        pool_to_column_mapping = [
-            ("SW_FoliageBiomassCarbon", "SoftwoodFoliage"),
-            ("SW_MerchantableBiomassCarbon", "SoftwoodMerch"),
-            ("SW_OtherBiomassCarbon", "SoftwoodOther"),
-            ("SW_CoarseRootBiomassCarbon", "SoftwoodCoarseRoots"),
-            ("SW_FineRootBiomassCarbon", "SoftwoodFineRoots"),
-            ("HW_FoliageBiomassCarbon", "HardwoodFoliage"),
-            ("HW_MerchantableBiomassCarbon", "HardwoodMerch"),
-            ("HW_OtherBiomassCarbon", "HardwoodOther"),
-            ("HW_CoarseRootBiomassCarbon", "HardwoodCoarseRoots"),
-            ("HW_FineRootBiomassCarbon", "HardwoodFineRoots"),
-            ("VFSoilPoolC_AG", "AboveGroundVeryFastSoil"),
-            ("VFSoilPoolC_BG", "BelowGroundVeryFastSoil"),
-            ("FSoilPoolC_AG", "AboveGroundFastSoil"),
-            ("FSoilPoolC_BG", "BelowGroundFastSoil"),
-            ("MSoilPoolC", "MediumSoil"),
-            ("SSoilPoolC_AG", "AboveGroundSlowSoil"),
-            ("SSoilPoolC_BG", "BelowGroundSlowSoil"),
-            ("StemSnagPoolC_SW", "SoftwoodStemSnag"),
-            ("BranchSnagPoolC_SW", "SoftwoodBranchSnag"),
-            ("StemSnagPoolC_HW", "HardwoodStemSnag"),
-            ("BranchSnagPoolC_HW", "HardwoodBranchSnag"),
-        ]
-
         pool_id_map = {
             x["code"]: x["id"]
             for x in local_csv_table.read_csv_file("pool.csv")
@@ -766,7 +764,7 @@ class CBMDefaultsBuilder:
         for row in self.archive_index.get_parameters(
             "afforestation_pre_type_values"
         ):
-            for pool_column, pool_name in pool_to_column_mapping:
+            for pool_column, pool_name in AFFORESTATION_COLUMN_TO_POOL_MAPPING:
                 pool_value = getattr(row, pool_column)
                 if pool_value > 0:
                     cbm_defaults_database.add_record(
