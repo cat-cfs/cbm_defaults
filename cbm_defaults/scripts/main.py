@@ -39,7 +39,7 @@ def main():
         app.run(config)
         logger.info("finished")
 
-    except:
+    except:  # noqa E722
         logger.exception("")
 
 

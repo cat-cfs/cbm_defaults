@@ -8,7 +8,6 @@ from cbm_defaults import app
 class IntegrationTest(unittest.TestCase):
     def test_integration(self):
         with TemporaryDirectory() as temp_dir:
-
             locales = ["en-CA", "fr-CA", "es-MX", "ru-RU"]
             for locale in locales:
                 aidb_path = os.path.join(temp_dir, f"{locale}.mdb")

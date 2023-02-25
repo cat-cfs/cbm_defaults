@@ -51,7 +51,6 @@ def execute_ddl_file(ddl_path, sqlite_path):
             will be run.
     """
     with get_connection(sqlite_path) as conn, open(ddl_path, "r") as ddl_file:
-
         ddl_statements = [
             x for x in ddl_file.read().split(";") if x is not None
         ]
