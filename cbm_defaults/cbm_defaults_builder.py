@@ -778,7 +778,7 @@ class CBMDefaultsBuilder:
                         pool_id=pool_id_map[pool_name],
                         value=pool_value,
                     )
-                afforestation_initial_pool_id += 1
+                    afforestation_initial_pool_id += 1
 
         afforestation_pre_type_tr_id = 1
         for locale in self.locales:
