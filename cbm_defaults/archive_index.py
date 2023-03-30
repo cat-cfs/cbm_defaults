@@ -6,6 +6,7 @@ Fetch parameters from CBM-CFS3 archive index databases.
 import os
 import pandas as pd
 from cbm_defaults import access_db
+from sqlalchemy import text
 
 
 ###############################################################################
@@ -106,4 +107,5 @@ class ArchiveIndex:
         sql = self._read_sql_file(name)
         path = self._get_path(locale)
         with access_db.get_engine(path) as engine:
-            return pd.read_sql(sql, engine, params=params)
+            with engine.begin() as con:
+                return pd.read_sql(text(sql), con, params=params)
