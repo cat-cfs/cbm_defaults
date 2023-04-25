@@ -560,13 +560,13 @@ class CBMDefaultsBuilder:
             "disturbance_type_land_type.csv"
         ):
             disturbance_type_land_type_lookup[
-                row["DefaultDisturbanceTypeId"]
-            ] = row["land_type_id"]
+                int(row["DefaultDisturbanceTypeId"])
+            ] = int(row["land_type_id"])
 
         for row in self.archive_index.get_parameters("disturbance_types"):
             if row.DistTypeID in self.multi_year_disturbance_type_ids:
                 continue
-            landclasstransition = (
+            land_type_id = (
                 disturbance_type_land_type_lookup[row.DistTypeID]
                 if row.DistTypeID in disturbance_type_land_type_lookup
                 else None
@@ -575,7 +575,7 @@ class CBMDefaultsBuilder:
                 self.connection,
                 "disturbance_type",
                 id=row.DistTypeID,
-                land_type_id=landclasstransition,
+                land_type_id=land_type_id,
             )
 
         tr_id = 1
