@@ -22,4 +22,7 @@ landclass_id,description
 20,Forêt non aménagée convertie en zones de peuplement
 21,Forêt non aménagée convertie à d'autres utilisations
 22,Forêt non aménagée convertie en forêt aménagée
-23,Peatland
+23,Terres humides dont la vocation n'a pas changé
+24,Terres humides converties en forêt
+25,Forêt convertie en terres humides
+26,Forêt non aménagée convertie en terres humides
