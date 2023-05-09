@@ -85,6 +85,7 @@ class CBMDefaultsBuilder:
             self._populate_spatial_units,
             self._populate_species,
             self._populate_volume_to_biomass,
+            self._populate_land_types,
             self._populate_land_classes,
             self._populate_disturbance_types,
             self._populate_disturbance_matrix_values,
@@ -499,6 +500,15 @@ class CBMDefaultsBuilder:
             )
             vol_to_bio_parameter_id += 1
 
+    def _populate_land_types(self):
+        for row in local_csv_table.read_csv_file("landtype.csv"):
+            cbm_defaults_database.add_record(
+                self.connection,
+                "land_type",
+                id=row["id"],
+                land_type=row["land_type"]
+            )
+
     def _populate_land_classes(self):
         for row in local_csv_table.read_csv_file("landclass.csv"):
             cbm_defaults_database.add_record(
@@ -510,6 +520,8 @@ class CBMDefaultsBuilder:
                 is_simulated=helper.as_boolean(row["is_simulated"]),
                 transitional_period=row["transitional_period"],
                 transition_id=row["transition_id"],
+                land_type_id_1=row["land_type_id_1"],
+                land_type_id_2=row["land_type_id_2"]
             )
 
         land_class_tr_id = 1
@@ -542,31 +554,28 @@ class CBMDefaultsBuilder:
         self.multi_year_dmids = set([row.DMID for row in rows])
 
     def _populate_disturbance_types(self):
-        unfccc_code_lookup = {}
-        for row in local_csv_table.read_csv_file("landclass.csv"):
-            unfccc_code_lookup[row["code"]] = row["id"]
 
-        disturbance_type_land_class_lookup = {}
+        disturbance_type_land_type_lookup = {}
         for row in local_csv_table.read_csv_file(
-            "disturbance_type_landclass.csv"
+            "disturbance_type_land_type.csv"
         ):
-            disturbance_type = int(row["DefaultDisturbanceTypeId"])
-            unfccc_code = unfccc_code_lookup[row["UNFCCC_CODE"]]
-            disturbance_type_land_class_lookup[disturbance_type] = unfccc_code
+            disturbance_type_land_type_lookup[
+                int(row["DefaultDisturbanceTypeId"])
+            ] = int(row["land_type_id"])
 
         for row in self.archive_index.get_parameters("disturbance_types"):
             if row.DistTypeID in self.multi_year_disturbance_type_ids:
                 continue
-            landclasstransition = (
-                disturbance_type_land_class_lookup[row.DistTypeID]
-                if row.DistTypeID in disturbance_type_land_class_lookup
+            land_type_id = (
+                disturbance_type_land_type_lookup[row.DistTypeID]
+                if row.DistTypeID in disturbance_type_land_type_lookup
                 else None
             )
             cbm_defaults_database.add_record(
                 self.connection,
                 "disturbance_type",
                 id=row.DistTypeID,
-                transition_land_class_id=landclasstransition,
+                land_type_id=land_type_id,
             )
 
         tr_id = 1

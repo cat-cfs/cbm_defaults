@@ -54,19 +54,28 @@ CREATE TABLE dom_pool (
   pool_id integer(10) NOT NULL UNIQUE,
   PRIMARY KEY (id),
   FOREIGN KEY(pool_id) REFERENCES pool(id));
+CREATE TABLE land_type (
+  id         INTEGER NOT NULL,
+  land_type  clob NOT NULL UNIQUE,
+  PRIMARY KEY (id)
+);
 CREATE TABLE land_class (
-  id                   INTEGER NOT NULL,
+  id                  INTEGER NOT NULL,
   code                clob NOT NULL UNIQUE,
   is_forest           integer NOT NULL,
   is_simulated        integer NOT NULL,
   transitional_period integer(10) NOT NULL,
   transition_id       integer(10) NOT NULL,
-  PRIMARY KEY (id));
+  land_type_id_1      integer(10) NOT NULL,
+  land_type_id_2      integer(10) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(land_type_id_1) REFERENCES land_type(id),
+  FOREIGN KEY(land_type_id_2) REFERENCES land_type(id));
 CREATE TABLE disturbance_type (
   id                        INTEGER NOT NULL,
-  transition_land_class_id integer(10),
+  land_type_id              integer(10),
   PRIMARY KEY (id),
-  FOREIGN KEY(transition_land_class_id) REFERENCES land_class(id));
+  FOREIGN KEY(land_type_id) REFERENCES land_type(id));
 CREATE TABLE disturbance_matrix_association (
   spatial_unit_id       integer(10) NOT NULL,
   disturbance_type_id   integer(10) NOT NULL,

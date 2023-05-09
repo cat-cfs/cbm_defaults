@@ -22,4 +22,7 @@ landclass_id,description
 20,Unmanaged Forest Land converted to Settlements
 21,Unmanaged Forest Land converted to Other
 22,Unmanaged Forest Land converted to Managed Forest
-23,Peatland
+23,Wetlands remaining
+24,Wetlands converted to Forest Land
+25,Forest Land converted to Wetlands
+26,Unmanaged Forest Land converted to Wetlands

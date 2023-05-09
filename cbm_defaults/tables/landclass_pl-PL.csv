@@ -22,4 +22,7 @@ landclass_id,description
 20,Niezagospodarowany teren leśny przekształcony w osady
 21,Niezagospodarowany teren leśny przekształcony w inne
 22,Niezagospodarowany las przekształcony w las zagospodarowany
-23,Peatland
+23,Zachowane bagna
+24,Bagna przekształcone w teren leśny
+25,Teren leśny przekształcony w bagna
+26,Niezagospodarowany teren leśny przekształcony w bagna

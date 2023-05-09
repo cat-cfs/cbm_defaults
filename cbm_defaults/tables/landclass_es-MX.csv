@@ -22,4 +22,7 @@ landclass_id,description
 20,Suelo forestal no explotado convertido en poblado
 21,Suelo forestal no explotado en otros
 22,Suelo forestal no explotado convertido en bosque explotado
-23,Peatland
+23,Humedales mantenidos
+24,Humedal convertido en suelo forestal
+25,Suelo forestal convertido en humedal
+26,Suelo forestal no explotado convertido en humedal
