@@ -34,10 +34,13 @@ def get_connection(sqlite_path):
         sqlite_path (str): path to a sqlite database
     """
     logger.info("opening %s", sqlite_path)
-    with sqlite3.connect(sqlite_path) as conn:
+    try:
+        conn = sqlite3.connect(sqlite_path)
         conn.execute("PRAGMA foreign_keys = 1")
         yield conn
+    finally:
         logger.info("closing %s", sqlite_path)
+        conn.close()
 
 
 def execute_ddl_file(ddl_path, sqlite_path):
