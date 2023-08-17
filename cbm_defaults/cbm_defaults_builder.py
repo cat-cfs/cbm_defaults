@@ -506,7 +506,7 @@ class CBMDefaultsBuilder:
                 self.connection,
                 "land_type",
                 id=row["id"],
-                land_type=row["land_type"]
+                land_type=row["land_type"],
             )
 
     def _populate_land_classes(self):
@@ -521,7 +521,7 @@ class CBMDefaultsBuilder:
                 transitional_period=row["transitional_period"],
                 transition_id=row["transition_id"],
                 land_type_id_1=row["land_type_id_1"],
-                land_type_id_2=row["land_type_id_2"]
+                land_type_id_2=row["land_type_id_2"],
             )
 
         land_class_tr_id = 1
@@ -554,7 +554,6 @@ class CBMDefaultsBuilder:
         self.multi_year_dmids = set([row.DMID for row in rows])
 
     def _populate_disturbance_types(self):
-
         disturbance_type_land_type_lookup = {}
         for row in local_csv_table.read_csv_file(
             "disturbance_type_land_type.csv"

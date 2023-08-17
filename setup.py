@@ -13,7 +13,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="cbm_defaults",
-    version="2.0.3",
+    version="2.1.0",
     description="CBM-CFS3 archive-index database to sqlite utility",
     keywords=["cbm-cfs3"],
     long_description=long_description,
@@ -35,7 +35,8 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "cbm_defaults_export = cbm_defaults.scripts.main:main"
+            "cbm_defaults_export = cbm_defaults.scripts.main:main",
+            "cbm_defaults_db_update = cbm_defaults.scripts.db_update:main"
         ]
     },
     install_requires=requirements,
