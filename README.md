@@ -4,7 +4,7 @@ This package creates a streamlined parameters sqlite database based mostly on th
 
 In addition to the default parameters in the AIDB this script will load several other [default tables](/cbm_defaults/tables) drawn from hardcoded values in the CBM-CFS3 source code among other places.
 
-The database schema supports localization, and it can be configured to load localized strings, such as those found in the CBM-CFS3 model. 
+The database schema supports localization, and it can be configured to load localized strings, such as those found in the CBM-CFS3 model.
 
 ## Schema
 
@@ -45,4 +45,22 @@ An example of the configuration format:
             "path": "ArchiveIndex_Beta_Install_fr.mdb"},
         ]
     }
+```
+
+## Migrating database version
+
+### 1.x to 2.x
+`cbm_defaults` has an update utility to migrate version 1.x schema to 2.x.  Changes were introduced in April 2023 for land class tracking support, and 1.x versions will not work with newer 2.x versions of [libcbm](https://github.com/cat-cfs/libcbm_py)
+
+In python:
+
+```python
+from cbm_defaults.update import db_updater
+db_updater.update("1x_to_2x", input_db_path, output_db_path)
+```
+
+If cbm_defaults is installed to your python environment, it can be called at the command line with the following:
+
+```
+cbm_defaults_db_update --input_db_path .\cbm_defaults.db --output_db_path  .\cbm_defaults_updated.db
 ```
