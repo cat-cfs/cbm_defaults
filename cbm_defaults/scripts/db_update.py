@@ -43,7 +43,7 @@ def main():
         args = parser.parse_args()
 
         logger.info("startup")
-        db_updater.update(args.input_db_path, args.output_db_path)
+        db_updater.update("1x_to_2x", args.input_db_path, args.output_db_path)
         logger.info("finished")
 
     except:  # noqa E722
