@@ -1,10 +1,9 @@
-SELECT tblDisturbanceTypeDefault.DistTypeID,
-tblDisturbanceTypeDefault.DistTypeName,
-tblDisturbanceTypeDefault.Description
-FROM tblDisturbanceTypeDefault LEFT JOIN (
-	SELECT tblDMAssociationDefault.DefaultDisturbanceTypeID
-	FROM tblDMAssociationDefault
-	GROUP BY tblDMAssociationDefault.DefaultDisturbanceTypeID) as dma
-	on tblDisturbanceTypeDefault.DistTypeID =
-	dma.DefaultDisturbanceTypeID
-WHERE dma.DefaultDisturbanceTypeID is not Null;
+SELECT DistTypeID, DistTypeName, Description
+FROM tbldisturbancetypedefault
+WHERE disttypeid IN (
+    SELECT DISTINCT defaultdisturbancetypeid
+    FROM tbldmassociationdefault
+) OR disttypeid IN (
+    SELECT DISTINCT defaultdisturbancetypeid
+    FROM tbldmassociationspudefault
+)

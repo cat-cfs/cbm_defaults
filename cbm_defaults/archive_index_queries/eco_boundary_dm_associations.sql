@@ -1,15 +1,11 @@
 SELECT
-    tblDMAssociationDefault.DefaultDisturbanceTypeID,
-    tblSPUDefault.SPUID,
-    tblDMAssociationDefault.DMID
-FROM
-    tblDMAssociationDefault
-INNER JOIN tblSPUDefault ON
-    tblDMAssociationDefault.DefaultEcoBoundaryID = tblSPUDefault.EcoBoundaryID
-GROUP BY
-    tblDMAssociationDefault.DefaultDisturbanceTypeID,
-    tblSPUDefault.SPUID,
-    tblDMAssociationDefault.DMID,
-    tblDMAssociationDefault.DefaultDisturbanceTypeID
-HAVING
-    tblDMAssociationDefault.DefaultDisturbanceTypeID<>1;
+    DefaultDisturbanceTypeID,
+    SPUID,
+    DMID
+FROM tblDMAssociationDefault dma
+INNER JOIN tblSPUDefault spu
+    ON dma.DefaultEcoBoundaryID = spu.EcoBoundaryID
+WHERE DefaultDisturbanceTypeID NOT IN (
+    SELECT DISTINCT DefaultDisturbanceTypeID
+    FROM tblDMAssociationSPUDefault
+);
