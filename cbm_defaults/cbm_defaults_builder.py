@@ -7,7 +7,7 @@ the CBM-CFS3 archive index database format.
 from cbm_defaults import cbm_defaults_database
 from cbm_defaults import local_csv_table
 from cbm_defaults import helper
-
+import pandas as pd
 logger = helper.get_logger()
 
 
@@ -555,12 +555,32 @@ class CBMDefaultsBuilder:
 
     def _populate_disturbance_types(self):
         disturbance_type_land_type_lookup = {}
-        for row in local_csv_table.read_csv_file(
-            "disturbance_type_land_type.csv"
+        if self.archive_index.table_exists(
+            "tblDisturbanceTypeLandclassTransition"
         ):
-            disturbance_type_land_type_lookup[
-                int(row["DefaultDisturbanceTypeId"])
-            ] = int(row["land_type_id"])
+            landtype_df = pd.DataFrame(
+                list(local_csv_table.read_csv_file("landtype.csv"))
+            )
+
+            merged_land_type = self.archive_index.get_parameters_df(
+                "disturbance_type_landclass_transition"
+            ).merge(
+                landtype_df,
+                left_on="TransitionLandClass",
+                right_on="land_type"
+            )
+            for _, row in merged_land_type.iterrows():
+                disturbance_type_land_type_lookup[
+                    int(row["DefaultDistTypeID"])
+                ] = int(row["id"])
+
+        else:
+            for row in local_csv_table.read_csv_file(
+                "disturbance_type_land_type.csv"
+            ):
+                disturbance_type_land_type_lookup[
+                    int(row["DefaultDisturbanceTypeId"])
+                ] = int(row["land_type_id"])
 
         for row in self.archive_index.get_parameters("disturbance_types"):
             if row.DistTypeID in self.multi_year_disturbance_type_ids:
