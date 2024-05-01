@@ -77,10 +77,12 @@ class DBUpdateIntegrationTest(unittest.TestCase):
                 output_db_inspector = sqlalchemy.inspect(output_db_engine)
                 for table in output_db_inspector.get_table_names():
                     input_df = pd.read_sql_query(
-                        f"select * from {table}", input_db_engine,
+                        f"select * from {table}",
+                        input_db_engine,
                     )
                     output_df = pd.read_sql_query(
-                        f"select * from {table}", output_db_engine,
+                        f"select * from {table}",
+                        output_db_engine,
                     )
                     pd.testing.assert_frame_equal(input_df, output_df)
             finally:

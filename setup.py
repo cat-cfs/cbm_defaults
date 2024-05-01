@@ -36,7 +36,7 @@ setup(
     entry_points={
         "console_scripts": [
             "cbm_defaults_export = cbm_defaults.scripts.main:main",
-            "cbm_defaults_db_update = cbm_defaults.scripts.db_update:main"
+            "cbm_defaults_db_update = cbm_defaults.scripts.db_update:main",
         ]
     },
     install_requires=requirements,

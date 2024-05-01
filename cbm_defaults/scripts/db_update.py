@@ -23,9 +23,7 @@ def main():
         helper.start_logging(logpath, "w+")
 
         parser = argparse.ArgumentParser(
-            description=(
-                "Script to migrate versions of cbm_defaults database"
-            )
+            description=("Script to migrate versions of cbm_defaults database")
         )
         parser.add_argument(
             "--input_db_path",
