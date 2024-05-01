@@ -54,6 +54,19 @@ class ArchiveIndex:
             path = self.paths_by_locale[self.default_locale]
         return path
 
+    def table_exists(self, tableName, locale=None):
+        """
+        check if the specified table name matches the name of an existing
+        table in the database
+        """
+        path = self._get_path(locale)
+        with access_db.get_connection(path) as connection:
+            cursor = connection.cursor()
+            for row in cursor.tables():
+                if row.table_name.lower() == tableName.lower():
+                    return True
+            return False
+
     def query(self, sql, params=None, locale=None):
         """Query the archive index database.
 
