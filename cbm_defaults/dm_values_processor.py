@@ -4,7 +4,7 @@ import itertools
 
 
 def process_dm_values(
-    rows: list, pool_cross_walk: dict[int, int]
+    rows: list, colnames: list[str], pool_cross_walk: dict[int, int]
 ) -> pd.DataFrame:
 
     # rows is a list of dicts with the following keys:
@@ -13,7 +13,10 @@ def process_dm_values(
     # tblDMValuesLookup.DMColumn,
     # tblDMValuesLookup.Proportion
 
-    aidb_dm_values = pd.DataFrame(data=rows)
+    aidb_dm_values = pd.DataFrame(
+        columns=colnames,
+        data=rows
+    )
 
     # drop DM values where the CBM-CFS3 pool cross walk maps to -1
     # this affects the following CBM-CFS3 pools that are not carried forward

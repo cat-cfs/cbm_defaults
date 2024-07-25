@@ -107,7 +107,9 @@ def test_dm_values_processor():
     ]
 
     result = dm_values_processor.process_dm_values(
-        input.to_dict("records"), pool_cross_walk
+        input.to_dict("records"),
+        ["DMID", "DMRow", "DMColumn", "Proportion"],
+        pool_cross_walk
     )
 
     pd.testing.assert_frame_equal(
