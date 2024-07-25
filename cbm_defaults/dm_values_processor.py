@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import itertools
 
+
 def process_dm_values(
     rows: list, pool_cross_walk: dict[int, int]
 ) -> pd.DataFrame:
@@ -33,9 +34,8 @@ def process_dm_values(
     )
     if pd.isnull(aidb_dm_values["DMColumn"]).any():
         raise ValueError("pool_cross_walk DMColumn mapping failure")
-    drop_loc = (
-        (aidb_dm_values["DMRow"] == -1) |
-        (aidb_dm_values["DMColumn"] == -1)
+    drop_loc = (aidb_dm_values["DMRow"] == -1) | (
+        aidb_dm_values["DMColumn"] == -1
     )
 
     # now compensate for a GCBM supported format that does not work in libcbm:
@@ -45,7 +45,8 @@ def process_dm_values(
     aidb_dm_values = aidb_dm_values[~drop_loc].reset_index(drop=True)
     unique_dmids = aidb_dm_values["DMID"].drop_duplicates()
     all_unique_pool_ids = [
-        p_id for p_id in pool_cross_walk.values()
+        p_id
+        for p_id in pool_cross_walk.values()
         if p_id not in [-1, 22, 23, 24, 25, 26]
         # exclude the unmapped, and emission pools so they dont
         # appear in the diagonal to match CBM-CFS3 format
@@ -54,13 +55,14 @@ def process_dm_values(
         itertools.product(unique_dmids, all_unique_pool_ids)
     )
 
-    off_diag_rowsums = aidb_dm_values.loc[
-        aidb_dm_values["DMRow"] != aidb_dm_values["DMColumn"]
-    ][
-        ["DMID", "DMRow", "Proportion"]
-    ].groupby(
-        ["DMID", "DMRow"]
-    ).sum().reset_index()
+    off_diag_rowsums = (
+        aidb_dm_values.loc[
+            aidb_dm_values["DMRow"] != aidb_dm_values["DMColumn"]
+        ][["DMID", "DMRow", "Proportion"]]
+        .groupby(["DMID", "DMRow"])
+        .sum()
+        .reset_index()
+    )
 
     off_diag_rowsums_dict = {
         (int(row["DMID"]), int(row["DMRow"])): float(row["Proportion"])
@@ -86,8 +88,8 @@ def process_dm_values(
             "DMID": diag_dmids,
             "DMRow": diag_dmrow_dmcol,
             "DMColumn": diag_dmrow_dmcol,
-            "Proportion": diag_proportions
-        }
+            "Proportion": diag_proportions,
+        },
     )
 
     # merge onto the source data:
@@ -96,41 +98,38 @@ def process_dm_values(
         left_on=["DMID", "DMRow", "DMColumn"],
         right_on=["DMID", "DMRow", "DMColumn"],
         how="outer",
-        suffixes=("_cbm3", "_diag")
+        suffixes=("_cbm3", "_diag"),
     )
 
     output_dm_values = pd.DataFrame(
         data={
-            "DMID": np.where(
-                pd.isnull(dm_value_merged["DMID_cbm3"]),
-                dm_value_merged["DMID_diag"],
-                dm_value_merged["DMID_cbm3"]
-            ),
-            "DMRow": np.where(
-                pd.isnull(dm_value_merged["DMRow_cbm3"]),
-                dm_value_merged["DMRow_diag"],
-                dm_value_merged["DMRow_cbm3"]
-            ),
-            "DMColumn": np.where(
-                pd.isnull(dm_value_merged["DMColumn_cbm3"]),
-                dm_value_merged["DMColumn_diag"],
-                dm_value_merged["DMColumn_cbm3"]
-            ),
+            "DMID": dm_value_merged["DMID"],
+            "DMRow": dm_value_merged["DMRow"],
+            "DMColumn": dm_value_merged["DMColumn"],
             "Proportion": np.where(
                 pd.isnull(dm_value_merged["Proportion_cbm3"]),
                 dm_value_merged["Proportion_diag"],
-                dm_value_merged["Proportion_cbm3"]
-            )
+                dm_value_merged["Proportion_cbm3"],
+            ),
         }
     )
 
+    # CBM3 dm values format also does not include 0 diagonal values
+    diag_zeros_loc = (
+        (output_dm_values["DMRow"] == output_dm_values["DMColumn"])
+        & (output_dm_values["Proportion"] == 0.0)
+    )
+    output_dm_values = output_dm_values[~diag_zeros_loc]
+
     # qaqc check:
-    rowsums = output_dm_values[
-        ["DMID", "DMRow", "Proportion"]
-    ].groupby(
-        ["DMID", "DMRow"]
-    ).sum()["Proportion"]
+    rowsums = (
+        output_dm_values[["DMID", "DMRow", "Proportion"]]
+        .groupby(["DMID", "DMRow"])
+        .sum()["Proportion"]
+    )
     if not np.allclose(rowsums, 1.0):
         raise ValueError("rowsums not close to 1.0")
 
-    return output_dm_values.sort_values(by=["DMID", "DMRow", "DMColumn"])
+    return output_dm_values.sort_values(
+        by=["DMID", "DMRow", "DMColumn"]
+    ).reset_index(drop=True)
