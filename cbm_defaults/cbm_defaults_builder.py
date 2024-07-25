@@ -617,13 +617,24 @@ class CBMDefaultsBuilder:
                 "disturbance_matrix"
             )
         )
+
         dm_values = dm_values_processor.process_dm_values(
-            dm_value_rows, pool_cross_walk
+            [list(x) for x in dm_value_rows],
+            colnames=[str(x[0]) for x in dm_value_rows[0].cursor_description],
+            pool_cross_walk=pool_cross_walk
         )
-        dm_values.to_sql(
+
+        dm_values.rename(
+            columns={
+                "DMID": "disturbance_matrix_id",
+                "DMRow": "source_pool_id",
+                "DMColumn": "sink_pool_id",
+                "Proportion": "proportion",
+            }
+        ).to_sql(
             name="disturbance_matrix_value",
             con=self.connection,
-            if_exists="replace",
+            if_exists="append",
             index=False,
         )
 
