@@ -13,7 +13,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="cbm_defaults",
-    version="2.1.1",
+    version="2.2.0",
     description="CBM-CFS3 archive-index database to sqlite utility",
     keywords=["cbm-cfs3"],
     long_description=long_description,
