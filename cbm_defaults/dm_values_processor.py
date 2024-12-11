@@ -81,7 +81,11 @@ def process_dm_values(
         key = (int(combo[0]), int(combo[1]))
         if key in off_diag_rowsums_dict:
             row_sum = off_diag_rowsums_dict[key]
-            diag_proportions.append(1.0 - row_sum)
+            retention = 1.0 - row_sum
+            if np.isclose(abs(retention), 0.0, atol=1.e-6):
+                diag_proportions.append(0.0)
+            else:
+                diag_proportions.append(retention)
         else:
             diag_proportions.append(1.0)
 
