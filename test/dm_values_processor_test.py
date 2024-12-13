@@ -144,11 +144,11 @@ def test_dm_values_processor_zero_retentions():
             # the 3, 21 and 3, 20 pool flows sum to < 1.0 resulting in a
             # slightly positive retention,
             [506, 3, 21, 0.25],
-            [506, 3, 20, 0.7499999],
+            [506, 3, 20, 0.749999],
             # the 2,13 and 2,14 pool flows sum to > 1.0 resulting in a
             # slightly negative retention.
             [506, 2, 13, 0.25],
-            [506, 2, 14, 0.7500001],
+            [506, 2, 14, 0.750001],
             [506, 1, 20, 0.25],
             [506, 1, 21, 0.75],
             [10, 1, 20, 1],
