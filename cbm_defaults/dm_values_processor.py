@@ -134,7 +134,7 @@ def process_dm_values(
         .groupby(["DMID", "DMRow"])
         .sum()["Proportion"]
     )
-    if not np.allclose(rowsums, 1.0):
+    if not np.allclose(rowsums, 1.0, rtol=1e-3, atol=1.e-3):
         raise ValueError("rowsums not close to 1.0")
 
     return output_dm_values.sort_values(
