@@ -7,7 +7,8 @@ the CBM-CFS3 archive index database format.
 from cbm_defaults import cbm_defaults_database
 from cbm_defaults import local_csv_table
 from cbm_defaults import helper
-
+from cbm_defaults import dm_values_processor
+import pandas as pd
 logger = helper.get_logger()
 
 
@@ -596,7 +597,7 @@ class CBMDefaultsBuilder:
                 tr_id += 1
 
     def _populate_disturbance_matrix_values(self):
-        pool_cross_walk = {}
+        pool_cross_walk: dict[int, int] = {}
         for row in local_csv_table.read_csv_file("pool_cross_walk.csv"):
             pool_cross_walk[int(row["cbm3_pool_code"])] = int(
                 row["cbm3_5_pool_code"]
@@ -611,21 +612,31 @@ class CBMDefaultsBuilder:
                 self.connection, "disturbance_matrix", id=row.DMID
             )
 
-            for dm_value_row in self.archive_index.get_parameters(
-                "disturbance_matrix", params=(row.DMID,)
-            ):
-                src = pool_cross_walk[dm_value_row.DMRow]
-                sink = pool_cross_walk[dm_value_row.DMColumn]
-                if src == -1 or sink == -1:
-                    continue
-                cbm_defaults_database.add_record(
-                    self.connection,
-                    "disturbance_matrix_value",
-                    disturbance_matrix_id=row.DMID,
-                    source_pool_id=src,
-                    sink_pool_id=sink,
-                    proportion=dm_value_row.Proportion,
-                )
+        dm_value_rows = list(
+            self.archive_index.get_parameters(
+                "disturbance_matrix"
+            )
+        )
+
+        dm_values = dm_values_processor.process_dm_values(
+            [list(x) for x in dm_value_rows],
+            colnames=[str(x[0]) for x in dm_value_rows[0].cursor_description],
+            pool_cross_walk=pool_cross_walk
+        )
+
+        dm_values.rename(
+            columns={
+                "DMID": "disturbance_matrix_id",
+                "DMRow": "source_pool_id",
+                "DMColumn": "sink_pool_id",
+                "Proportion": "proportion",
+            }
+        ).to_sql(
+            name="disturbance_matrix_value",
+            con=self.connection,
+            if_exists="append",
+            index=False,
+        )
 
         tr_id = 1
         for locale in self.locales:
