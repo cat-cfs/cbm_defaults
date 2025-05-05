@@ -1,19 +1,19 @@
 # cbm_defaults
 
-This package creates a streamlined parameters sqlite database based mostly on the CBM-CFS3 parameters stored in the archive index format (AIDB).  The purpose of the streamlined database is to act as a component in the development of next generation models based on CBM-CFS3.
+This package can be used to create a streamlined SQLite database based mainly on the parameters and table formats stored in the Archive Index Database (AIDB) of the Carbon Budget Model of the Canadian Forest Sector (CBM-CFS3). This streamlined database acts as a component in the development of next generation models based on the CBM-CFS3.
 
-In addition to the default parameters in the AIDB this script will load several other [default tables](/cbm_defaults/tables) drawn from hardcoded values in the CBM-CFS3 source code among other places.
+In addition, this script will also load several other [default tables](/cbm_defaults/tables) drawn from hardcoded values in the CBM-CFS3 source code.
 
-The database schema supports localization, and it can be configured to load localized strings, such as those found in the CBM-CFS3 model.
+The database schema supports localization, and it can be configured to load localized strings, such as those found in the CBM-CFS3.
 
 ## Schema
 
 The schema can be viewed in text form [here](https://github.com/cat-cfs/cbm_defaults/blob/master/cbm_defaults/schema/cbmDefaults.ddl)
 
 
-## Example usage
+## Example application
 
-A command line app is included in this repository. The single parameter it uses is the path to a json formatted configuration file.  The installed CLI app is named `cbm_defaults_export`
+A command line interface (CLI) app is included in this repository. The only parameter it uses is the path to a .json formatted configuration file.  The installed CLI app is named "cbm_defaults_export."
 
 See: [main.py](cbm_defaults/scripts/main.py), [app.py](cbm_defaults/app.py)
 
@@ -28,7 +28,7 @@ from cbm_defaults import app
 app.run(config)
 ```
 
-An example of the configuration format:
+Below is an example of the configuration format.
 
 ```json
     {
@@ -47,19 +47,19 @@ An example of the configuration format:
     }
 ```
 
-## Migrating database version
+## Migrating the database version (1.x to 2.x)
 
 ### 1.x to 2.x
-`cbm_defaults` has an update utility to migrate version 1.x schema to 2.x.  Changes were introduced in April 2023 for land class tracking support, and 1.x versions will not work with newer 2.x versions of [libcbm](https://github.com/cat-cfs/libcbm_py)
+The cbm_defaults.app has an update utility to migrate the version 1.x schema to 2.x. Note that changes were introduced in April 2023 for land class tracking support, and 1.x versions will not work with 2.x versions of [libcbm](https://github.com/cat-cfs/libcbm_py)
 
-In python:
+To migrate versions, enter the following script in python:
 
 ```python
 from cbm_defaults.update import db_updater
 db_updater.update("1x_to_2x", input_db_path, output_db_path)
 ```
 
-If cbm_defaults is installed to your python environment, it can be called at the command line with the following:
+If the cbm_defaults.app is installed to the python environment, it can be called at the command line with the following script:
 
 ```
 cbm_defaults_db_update --input_db_path .\cbm_defaults.db --output_db_path  .\cbm_defaults_updated.db
