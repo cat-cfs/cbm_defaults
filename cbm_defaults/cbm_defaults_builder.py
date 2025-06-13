@@ -632,11 +632,11 @@ class CBMDefaultsBuilder:
                 self.connection, "disturbance_matrix", id=row.DMID
             )
 
-        dm_value_rows = list(
-            self.archive_index.get_parameters(
+        dm_value_rows = [
+            row for row in self.archive_index.get_parameters(
                 "disturbance_matrix"
-            )
-        )
+            ) if row.DMID not in self.multi_year_dmids
+        ]
 
         dm_values = dm_values_processor.process_dm_values(
             [list(x) for x in dm_value_rows],
