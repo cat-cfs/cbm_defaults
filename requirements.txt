@@ -1,4 +1,4 @@
 pyodbc
 sqlalchemy
-sqlalchemy-access
+sqlalchemy-access; platform_system == "Windows"
 pandas
