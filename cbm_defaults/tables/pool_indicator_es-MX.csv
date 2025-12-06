@@ -1,0 +1,31 @@
+pool_indicator_id,name
+1,Coníferas comerciables
+2,Follaje de coníferas
+3,Otras coníferas
+4,Raíces gruesas de coníferas
+5,Raíces finas de coníferas
+6,Caducifolios comerciables
+7,Follaje de caducifolios
+8,Otros caducifolios
+9,Raíces gruesas de caducifolios
+10,Raíces finas de caducifolios
+11,MOM muy rápida superficial
+12,MOM muy rápida subterránea
+13,MOM rápida superficial 
+14,MOM rápida subterránea 
+15,MOM regular
+16,MOM lenta superficial 
+17,MOM lenta subterránea
+18,Troncos muertos de coníferas
+19,Ramas  muertas de coníferas
+20,Troncos muertos de caducifolios
+21,Ramas  muertas de caducifolios
+22,Biomasa superficial
+23,Biomasa subterránea
+24,MOM superficial
+25,MOM subterránea
+26,Ecosistema total
+27,Hojarasca
+28,Madera muerta
+29,C del suelo
+30,MOM

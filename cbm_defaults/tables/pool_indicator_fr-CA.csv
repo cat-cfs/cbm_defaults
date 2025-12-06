@@ -1,0 +1,31 @@
+pool_indicator_id,name
+1,Résineux marchand 
+2,Résineux feuillage 
+3,Résineux autre
+4,Résineux grosses racines
+5,Résineux radicelles
+6,Feuillu marchand
+7,Feuillus feuillage
+8,Feuillu autre
+9,Feuillu grosses racines
+10,Feuillu radicelles
+11,MOM aérienne très rapide
+12,MOM souterraine très rapide 
+13,MOM aérienne rapide
+14,MOM souterraine rapide
+15,MOM médium
+16,MOM aérienne lente
+17,MOM souterraine lente
+18,Chicot de tige de résineux
+19,Chicot de branche de résineux
+20,Chicot de tige de feuillu
+21,Chicot de branche de feuillu
+22,Biomasse aérienne
+23,Biomasse souterraine
+24,MOM aérienne
+25,MOM souterraine
+26,Total écosystème
+27,Litière
+28,Bois mort
+29,C du sol
+30,MOM

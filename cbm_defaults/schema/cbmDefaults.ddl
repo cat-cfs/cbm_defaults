@@ -291,6 +291,28 @@ CREATE TABLE forest_type_tr (
   name           clob NOT NULL,
   FOREIGN KEY(forest_type_id) REFERENCES forest_type(id),
   FOREIGN KEY(locale_id) REFERENCES locale(id));
+CREATE TABLE pool_indicator(
+  id               INTEGER NOT NULL,
+  code             clob NOT NULL UNIQUE,
+  PRIMARY KEY (id)
+);
+CREATE TABLE pool_indicator_tr (
+  id                  INTEGER NOT NULL,
+  pool_indicator_id   INTEGER NOT NULL,
+  locale_id           integer(10) NOT NULL,
+  name                clob NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(pool_indicator_id) REFERENCES pool_indicator(id),
+  FOREIGN KEY(locale_id) REFERENCES locale(id)
+);
+CREATE TABLE pool_indicator_value (
+  id                  INTEGER NOT NULL,
+  pool_indicator_id   INTEGER NOT NULL,
+  pool_id   integer(10) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY(pool_id) REFERENCES pool(id),
+  FOREIGN KEY(pool_indicator_id) REFERENCES pool_indicator(id)
+);
 CREATE TABLE flux_indicator (
   id               INTEGER NOT NULL,
   name            clob NOT NULL UNIQUE,
