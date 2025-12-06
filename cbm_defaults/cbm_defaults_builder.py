@@ -94,6 +94,7 @@ class CBMDefaultsBuilder:
             self._populate_growth_multipliers,
             self._populate_flux_indicators,
             self._populate_afforestation,
+            self._populate_pool_indicators
         ]
         for func in all_functions:
             logger.info(func.__name__.replace("_", " ").strip())
@@ -751,40 +752,50 @@ class CBMDefaultsBuilder:
 
             growth_multiplier_id += 1
 
-    def _populate_flux_indicators(self):
-        def insert_csv_file(table_name, csv_file_name):
-            for row in local_csv_table.read_csv_file(csv_file_name):
+    def _insert_csv(self, table_name):
+        self._insert_csv_file(table_name, f"{table_name}.csv")
+
+    def _insert_csv_file(self, table_name, csv_file_name):
+        for row in local_csv_table.read_csv_file(csv_file_name):
+            cbm_defaults_database.add_record(
+                self.connection, table_name, **row
+            )
+
+    def _insert_localized_csv(self, table_name, locales):
+        translation_id = 1
+        for locale in locales:
+            path = local_csv_table.get_localized_csv_file_path(
+                f"{table_name}.csv", locale["code"]
+            )
+            for row in local_csv_table.read_csv_file(path):
+                args = {"id": translation_id, "locale_id": locale["id"]}
+                args.update(row)
                 cbm_defaults_database.add_record(
-                    self.connection, table_name, **row
+                    self.connection, f"{table_name}_tr", **args
                 )
+                translation_id += 1
 
-        def insert_csv(table_name):
-            insert_csv_file(table_name, f"{table_name}.csv")
+    def _populate_flux_indicators(self):
 
-        def insert_localized_csv(table_name, locales):
-            translation_id = 1
-            for locale in locales:
-                path = local_csv_table.get_localized_csv_file_path(
-                    f"{table_name}.csv", locale["code"]
-                )
-                for row in local_csv_table.read_csv_file(path):
-                    args = {"id": translation_id, "locale_id": locale["id"]}
-                    args.update(row)
-                    cbm_defaults_database.add_record(
-                        self.connection, f"{table_name}_tr", **args
-                    )
-                    translation_id += 1
+        self._insert_csv("flux_process")
+        self._insert_csv("flux_indicator")
+        self._insert_csv("flux_indicator_source")
+        self._insert_csv("flux_indicator_sink")
+        self._insert_csv("composite_flux_indicator_category")
+        self._insert_csv("composite_flux_indicator")
+        self._insert_csv("composite_flux_indicator_value")
 
-        insert_csv("flux_process")
-        insert_csv("flux_indicator")
-        insert_csv("flux_indicator_source")
-        insert_csv("flux_indicator_sink")
-        insert_csv("composite_flux_indicator_category")
-        insert_csv("composite_flux_indicator")
-        insert_csv("composite_flux_indicator_value")
+        self._insert_localized_csv(
+            "composite_flux_indicator_category", self.locales
+        )
+        self._insert_localized_csv("composite_flux_indicator", self.locales)
 
-        insert_localized_csv("composite_flux_indicator_category", self.locales)
-        insert_localized_csv("composite_flux_indicator", self.locales)
+    def _populate_pool_indicators(self):
+        self._insert_csv("pool_indicator")
+        self._insert_csv("pool_indicator_value")
+        self._insert_localized_csv(
+            "pool_indicator", self.locales
+        )
 
     def _populate_afforestation(self):
         pool_id_map = {
