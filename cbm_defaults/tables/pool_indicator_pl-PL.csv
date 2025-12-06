@@ -1,0 +1,31 @@
+pool_indicator_id,name
+1,Iglaste Grubizna
+2,Iglaste aparat asymilacyjny
+3,Iglaste inne
+4,Iglaste grube korzenie
+5,Iglaste drobne korzenie
+6,Lisciaste grubizna
+7,Lisciaste aparat asymilacyjny
+8,Lisciaste inne
+9,Lisciaste grube korzenie
+10,Lisciaste drobne korzenie
+11,"Nadziemna, bardzo szybko rozpuszczona martwa materia organiczna"
+12,"Podziemna, bardzo szybko rozpuszczona martwa materia organiczna"
+13,"Nadziemna, szybko rozpuszczona martwa materia organiczna"
+14,"Podziemna, szybko rozpuszczona martwa materia organiczna"
+15,Srednio rozpuszczona martwa materia organiczna
+16,"Nadziemna, wolno rozpuszczona martwa materia organiczna"
+17,"Podziemna, wolno rozpuszczona martwa materia organiczna"
+18,Iglaste posusz pnie
+19,Iglaste posusz galezie
+20,Lisciaste posusz pnie
+21,Lisciaste posusz galezie
+22,Biomasa nadziemna
+23,Biomasa podziemna
+24,"Nadziemna, rozpuszczona martwa materia organiczna"
+25,"Podziemna, rozpuszczona martwa materia organiczna"
+26,Calkowity ekosystem
+27,Sciólka
+28,Martwe drewno
+29,Wegiel w glebie
+30,Rozpuszczona martwa materia organiczna

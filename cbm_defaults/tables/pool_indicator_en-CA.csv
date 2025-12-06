@@ -1,0 +1,31 @@
+pool_indicator_id,name
+1,Softwood Merchantable
+2,Softwood Foliage
+3,Softwood Other
+4,Softwood Coarse Roots
+5,Softwood Fine Roots
+6,Hardwood Merchantable
+7,Hardwood Foliage
+8,Hardwood Other
+9,Hardwood Coarse Roots
+10,Hardwood Fine Roots
+11,Aboveground Very Fast DOM
+12,Belowground Very Fast DOM
+13,Aboveground Fast DOM
+14,Belowground Fast DOM
+15,Medium DOM
+16,Aboveground Slow DOM
+17,Belowground Slow DOM
+18,Softwood Stem Snag
+19,Softwood Branch Snag
+20,Hardwood Stem Snag
+21,Hardwood Branch Snag
+22,Aboveground Biomass
+23,Belowground Biomass
+24,Aboveground DOM
+25,Belowground DOM
+26,Total Ecosystem
+27,Litter
+28,Deadwood
+29,Soil C
+30,DOM
